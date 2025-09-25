@@ -150,9 +150,9 @@ export default function EditProjectPage() {
       }
 
       // Check if project can be edited (not completed or cancelled)
-      console.log('Project status:', projectData.status)
+      //console.log('Project status:', projectData.status)
       if (projectData.status === 'completed' || projectData.status === 'cancelled') {
-        console.log('Project cannot be edited, redirecting to view page')
+        //console.log('Project cannot be edited, redirecting to view page')
         router.push(`/projects/${projectId}`)
         return
       }

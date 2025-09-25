@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         // Backup to Cloudinary (non-blocking)
         uploadToCloudinary(buffer, fileName, file.type, folderType)
           .then(result => {
-            console.log('Backup upload to Cloudinary successful:', result.secure_url)
+            //console.log('Backup upload to Cloudinary successful:', result.secure_url)
           })
           .catch(error => {
             console.error('Backup upload to Cloudinary failed:', error)
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
 
     // Default: Try local storage first, then backup to Cloudinary
     try {
-      console.log('Attempting local storage upload...')
+      //console.log('Attempting local storage upload...')
       
       // Create uploads directory if it doesn't exist
       const uploadsDir = join(process.cwd(), 'public', 'uploads', folderType)
@@ -129,13 +129,13 @@ export async function POST(request: NextRequest) {
       // Also upload to cloud as backup (non-blocking)
       uploadToCloudinary(buffer, fileName, file.type, folderType)
         .then(result => {
-          console.log('Backup upload to Cloudinary successful:', result.secure_url)
+          //console.log('Backup upload to Cloudinary successful:', result.secure_url)
         })
         .catch(error => {
           console.error('Backup upload to Cloudinary failed:', error)
         })
 
-      console.log('Upload successful to local storage')
+      //console.log('Upload successful to local storage')
       return NextResponse.json({
         success: true,
         data: {
@@ -152,12 +152,12 @@ export async function POST(request: NextRequest) {
       
       // Fallback to Cloudinary
       try {
-        console.log('Trying Cloudinary as backup...')
+        //console.log('Trying Cloudinary as backup...')
         
         // Upload to Cloudinary using our service
         const result = await uploadToCloudinary(buffer, fileName, file.type, folderType)
 
-        console.log('Upload successful to Cloudinary')
+        //console.log('Upload successful to Cloudinary')
         return NextResponse.json({
           success: true,
           data: {

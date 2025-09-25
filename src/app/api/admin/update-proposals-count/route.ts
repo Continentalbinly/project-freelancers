@@ -39,11 +39,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Starting proposals count update...')
+    //console.log('Starting proposals count update...')
     
     // Get all projects
     const projectsSnapshot = await getDocs(collection(db, 'projects'))
-    console.log(`Found ${projectsSnapshot.size} projects`)
+    //console.log(`Found ${projectsSnapshot.size} projects`)
     
     let updatedCount = 0
     const results = []
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
           proposalsCount: actualProposalsCount,
           updatedAt: new Date()
         })
-        console.log(`Updated project ${projectId}: ${projectData.proposalsCount} → ${actualProposalsCount}`)
+        //console.log(`Updated project ${projectId}: ${projectData.proposalsCount} → ${actualProposalsCount}`)
         results.push({
           projectId,
           oldCount: projectData.proposalsCount,
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    console.log(`Update complete! Updated ${updatedCount} projects.`)
+    //console.log(`Update complete! Updated ${updatedCount} projects.`)
     
     return NextResponse.json({
       success: true,

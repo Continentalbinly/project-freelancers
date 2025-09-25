@@ -27,11 +27,11 @@ export default function Header() {
 
   // Debug log for auth state
   useEffect(() => {
-    console.log('Header - Current auth state:', {
-      user: user ? 'Logged in' : 'Not logged in',
-      profile: profile ? 'Profile loaded' : 'No profile',
-      userEmail: user?.email
-    })
+    // console.log('Header - Current auth state:', {
+    //   user: user ? 'Logged in' : 'Not logged in',
+    //   profile: profile ? 'Profile loaded' : 'No profile',
+    //   userEmail: user?.email
+    // })
   }, [user, profile])
 
   // Combined header search and route change functionality
@@ -143,11 +143,11 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      console.log('User attempting to logout...')
+      //console.log('User attempting to logout...')
       const result = await logoutUser()
 
       if (result.success) {
-        console.log('Logout successful, redirecting...')
+        //console.log('Logout successful, redirecting...')
         setIsDrawerOpen(false)
 
         // Clear sessionStorage but keep viewedProjects for view counting

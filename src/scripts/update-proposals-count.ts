@@ -3,11 +3,11 @@ import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/fire
 
 async function updateProposalsCount() {
   try {
-    console.log('Starting proposals count update...')
+    //console.log('Starting proposals count update...')
     
     // Get all projects
     const projectsSnapshot = await getDocs(collection(db, 'projects'))
-    console.log(`Found ${projectsSnapshot.size} projects`)
+    //console.log(`Found ${projectsSnapshot.size} projects`)
     
     let updatedCount = 0
     
@@ -29,12 +29,12 @@ async function updateProposalsCount() {
           proposalsCount: actualProposalsCount,
           updatedAt: new Date()
         })
-        console.log(`Updated project ${projectId}: ${projectData.proposalsCount} → ${actualProposalsCount}`)
+        //console.log(`Updated project ${projectId}: ${projectData.proposalsCount} → ${actualProposalsCount}`)
         updatedCount++
       }
     }
     
-    console.log(`Update complete! Updated ${updatedCount} projects.`)
+    //console.log(`Update complete! Updated ${updatedCount} projects.`)
   } catch (error) {
     console.error('Error updating proposals count:', error)
   }
