@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('Auth state changed:', firebaseUser ? 'User logged in' : 'User logged out')
+      //console.log('Auth state changed:', firebaseUser ? 'User logged in' : 'User logged out')
       setUser(firebaseUser)
       
       if (firebaseUser) {
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await fetchProfile(firebaseUser)
       } else {
         // Clear profile when user logs out
-        console.log('Clearing profile data')
+        //console.log('Clearing profile data')
         setProfile(null)
       }
       

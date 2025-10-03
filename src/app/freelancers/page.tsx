@@ -34,13 +34,13 @@ export default function FreelancersPage() {
       )
       
       const projectsSnap = await getDocs(projectsQuery)
-      console.log('Found completed projects:', projectsSnap.docs.length)
+      //console.log('Found completed projects:', projectsSnap.docs.length)
       
       // Fetch freelancer profiles for each completed project
       const projectsWithFreelancers = await Promise.all(
         projectsSnap.docs.map(async (projectDoc) => {
           const projectData = projectDoc.data()
-          console.log('Project data:', projectData.title, 'Freelancer ID:', projectData.acceptedFreelancerId)
+          //console.log('Project data:', projectData.title, 'Freelancer ID:', projectData.acceptedFreelancerId)
           
           // Fetch freelancer profile
           let freelancerProfile: any = null
@@ -51,9 +51,9 @@ export default function FreelancersPage() {
               const profileDocSnap = await getDoc(profileDocRef)
               if (profileDocSnap.exists()) {
                 freelancerProfile = profileDocSnap.data()
-                console.log('Freelancer profile found by ID:', freelancerProfile.fullName)
+                //console.log('Freelancer profile found by ID:', freelancerProfile.fullName)
               } else {
-                console.log('No profile found for ID:', projectData.acceptedFreelancerId)
+                //console.log('No profile found for ID:', projectData.acceptedFreelancerId)
               }
             } catch (error) {
               console.error('Error fetching profile:', error)
@@ -69,7 +69,7 @@ export default function FreelancersPage() {
         })
       )
       
-      console.log('Final projects with freelancers:', projectsWithFreelancers)
+      //console.log('Final projects with freelancers:', projectsWithFreelancers)
       setCompletedProjects(projectsWithFreelancers)
     } catch (error) {
       console.error('Error fetching completed projects:', error)

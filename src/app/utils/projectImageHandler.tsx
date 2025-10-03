@@ -79,16 +79,16 @@ export default function ProjectImage({
   const fallbackText = fallback || (projectTitle ? projectTitle.slice(0, 2).toUpperCase() : 'PJ')
 
   // Debug logging
-  if (src) {
-    console.log('ProjectImage Debug:', {
-      originalSrc: src,
-      processedSrc,
-      isGoogleDrive: src.includes('drive.google.com') || src.includes('docs.google.com'),
-      projectTitle,
-      fallback,
-      fileId: src.match(/\/file\/d\/([a-zA-Z0-9-_]+)/)?.[1] || 'not found'
-    })
-  }
+  // if (src) {
+  //   console.log('ProjectImage Debug:', {
+  //     originalSrc: src,
+  //     processedSrc,
+  //     isGoogleDrive: src.includes('drive.google.com') || src.includes('docs.google.com'),
+  //     projectTitle,
+  //     fallback,
+  //     fileId: src.match(/\/file\/d\/([a-zA-Z0-9-_]+)/)?.[1] || 'not found'
+  //   })
+  // }
 
   if (!processedSrc || imageError) {
     return (
@@ -127,11 +127,11 @@ export default function ProjectImage({
             imageLoading ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
           } hover:scale-105`}
           onLoad={() => {
-            console.log('Project image loaded successfully:', processedSrc)
+            //console.log('Project image loaded successfully:', processedSrc)
             setImageLoading(false)
           }}
           onError={() => {
-            console.log('Project image failed to load:', processedSrc)
+            //console.log('Project image failed to load:', processedSrc)
             setImageError(true)
             setImageLoading(false)
           }}
@@ -164,11 +164,11 @@ export function getProjectImageProps(project: any) {
   }
   
   // Debug logging for getProjectImageProps
-  console.log('getProjectImageProps Debug:', {
-    projectImageUrl: project?.imageUrl,
-    projectTitle: project?.title,
-    finalProps: props
-  })
+  //console.log('getProjectImageProps Debug:', {
+  //   projectImageUrl: project?.imageUrl,
+  //   projectTitle: project?.title,
+  //   finalProps: props
+  // })
   
   return props
 } 

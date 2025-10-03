@@ -38,7 +38,7 @@ export default function ProjectDetailPage() {
     if (project && id && !hasIncrementedViews) {
       // Small delay to ensure project is fully loaded
       const timer = setTimeout(() => {
-        console.log('Project loaded, current views:', project.views)
+        //console.log('Project loaded, current views:', project.views)
         setHasIncrementedViews(true)
         incrementProjectViews(id as string)
       }, 100)
@@ -132,7 +132,7 @@ export default function ProjectDetailPage() {
   // Function to increment project views
   const incrementProjectViews = async (projectId: string) => {
     try {
-      console.log('🚀 Starting view increment for project:', projectId)
+      //console.log('🚀 Starting view increment for project:', projectId)
       const projectRef = doc(db, 'projects', projectId)
       // First, let's check if the project exists and get current views
       const projectSnap = await getDoc(projectRef)
@@ -142,16 +142,16 @@ export default function ProjectDetailPage() {
       }
       const currentData = projectSnap.data()
       const currentViews = currentData.views || 0
-      console.log('📊 Current views before increment:', currentViews)
+      //console.log('📊 Current views before increment:', currentViews)
       // Simple manual update approach
       const newViews = currentViews + 1
       await updateDoc(projectRef, {
         views: newViews,
         updatedAt: new Date()
       })
-      console.log('✅ Manual update completed successfully - new views:', newViews)
+      //console.log('✅ Manual update completed successfully - new views:', newViews)
       // Do NOT update local state here to avoid triggering useEffect loop
-      console.log('🎉 Project view count incremented successfully')
+      //console.log('🎉 Project view count incremented successfully')
     } catch (error) {
       console.error('❌ Error incrementing project views:', error)
       if (error instanceof Error) {

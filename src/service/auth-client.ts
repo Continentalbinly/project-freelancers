@@ -187,9 +187,9 @@ export async function logoutUser(): Promise<AuthResponse> {
   }
 
   try {
-    console.log('Starting logout process...')
+    //console.log('Starting logout process...')
     await signOut(auth)
-    console.log('Logout successful')
+    //console.log('Logout successful')
     return { success: true }
   } catch (error: any) {
     console.error('Logout error:', error)

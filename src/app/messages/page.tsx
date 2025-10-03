@@ -56,7 +56,7 @@ function ChatRoom({ chatRoom, user, onBack }: { chatRoom: any, user: any, onBack
               }))
             }
           } catch (err) {
-            console.log('Could not fetch profile for user:', userId, err)
+            //console.log('Could not fetch profile for user:', userId, err)
           }
         }
       })
@@ -90,7 +90,7 @@ function ChatRoom({ chatRoom, user, onBack }: { chatRoom: any, user: any, onBack
           })
         }
       } catch (err) {
-        console.log('Could not fetch receiver profile:', err)
+        //console.log('Could not fetch receiver profile:', err)
       }
     }
 
@@ -199,7 +199,7 @@ function ChatRoom({ chatRoom, user, onBack }: { chatRoom: any, user: any, onBack
           senderName = senderData.fullName || senderName
         }
       } catch (profileErr) {
-        console.log('Could not fetch sender profile:', profileErr)
+        //console.log('Could not fetch sender profile:', profileErr)
       }
 
       await addDoc(collection(db, 'chatMessages'), {

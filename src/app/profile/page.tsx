@@ -294,14 +294,14 @@ export default function ProfilePage() {
       const uploadResult = await uploadProfileImage(selectedFile)
 
       if (uploadResult.success) {
-        console.log('Upload result:', uploadResult);
-        console.log('Attempting to update Firestore for user:', user.uid, 'with URL:', uploadResult.url);
+        //console.log('Upload result:', uploadResult);
+        //console.log('Attempting to update Firestore for user:', user.uid, 'with URL:', uploadResult.url);
         try {
           await updateDoc(userRef, {
             avatarUrl: uploadResult.url,
             updatedAt: new Date()
           });
-          console.log('Firestore avatarUrl updated:', uploadResult.url);
+          //console.log('Firestore avatarUrl updated:', uploadResult.url);
         } catch (err) {
           console.error('Error updating Firestore avatarUrl:', err);
           alert('Image uploaded, but failed to update profile. Please try again.');
@@ -315,7 +315,7 @@ export default function ProfilePage() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ url: prevAvatarUrl })
             });
-            console.log('Previous avatar deleted:', prevAvatarUrl);
+            //console.log('Previous avatar deleted:', prevAvatarUrl);
           } catch (err) {
             console.warn('Failed to delete previous avatar:', prevAvatarUrl, err);
           }

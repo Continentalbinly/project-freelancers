@@ -178,7 +178,7 @@ export default function ProjectsPage() {
   // Function to increment project views
   const incrementProjectViews = async (projectId: string) => {
     try {
-      console.log('🚀 Starting view increment for project:', projectId)
+      //console.log('🚀 Starting view increment for project:', projectId)
 
       const projectRef = doc(db, 'projects', projectId)
 
@@ -191,7 +191,7 @@ export default function ProjectsPage() {
 
       const currentData = projectSnap.data()
       const currentViews = currentData.views || 0
-      console.log('📊 Current views before increment:', currentViews)
+      //console.log('📊 Current views before increment:', currentViews)
 
       // Simple manual update approach
       const newViews = currentViews + 1
@@ -199,20 +199,20 @@ export default function ProjectsPage() {
         views: newViews,
         updatedAt: new Date()
       })
-      console.log('✅ Manual update completed successfully - new views:', newViews)
+      //console.log('✅ Manual update completed successfully - new views:', newViews)
 
       // Update local state to reflect the new view count
       setProjects(prevProjects =>
         prevProjects.map(project => {
           if (project.id === projectId) {
-            console.log('🔄 Updated local view count for project', projectId, 'from', project.views, 'to', newViews)
+            //console.log('🔄 Updated local view count for project', projectId, 'from', project.views, 'to', newViews)
             return { ...project, views: newViews }
           }
           return project
         })
       )
 
-      console.log('🎉 Project view count incremented successfully')
+      //console.log('🎉 Project view count incremented successfully')
     } catch (error) {
       console.error('❌ Error incrementing project views:', error)
       // Log more details about the error
