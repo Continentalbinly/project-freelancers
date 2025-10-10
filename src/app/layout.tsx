@@ -23,10 +23,10 @@ const notoSansLao = Noto_Sans_Lao({
 });
 
 export const metadata: Metadata = {
-  title: "StudentFreelance - Where Students Earn & Learn",
+  title: "UniJobs - Where Students Earn & Learn",
   description: "Join the largest academic freelancing community where students earn money while gaining real-world experience. Connect with opportunities, build skills, and grow your career.",
   keywords: ["freelance", "students", "teachers", "university", "work", "projects"],
-  authors: [{ name: "StudentFreelance Team" }],
+  authors: [{ name: "UniJobs Team" }],
 };
 
 export const viewport = {

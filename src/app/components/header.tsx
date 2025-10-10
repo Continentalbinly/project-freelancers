@@ -126,26 +126,27 @@ export default function Header() {
     };
   }, []); // Empty dependency array to run only once
 
+  const drawerRef = useRef<HTMLDivElement>(null);
   // Handle click outside for drawer and profile menu
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      // Close drawer if clicking outside
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsDrawerOpen(false);
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Node;
+
+      // Only run when drawer is open
+      if (isDrawerOpen) {
+        // If click is outside the drawer panel, close it
+        if (drawerRef.current && !drawerRef.current.contains(target)) {
+          setIsDrawerOpen(false);
+          return;
+        }
       }
 
-      // Close drawer if clicking outside profile menu
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target as Node)
-      ) {
-        setIsDrawerOpen(false);
-      }
+      // Optional: handle a separate profile popover here using profileMenuRef
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [isDrawerOpen]);
 
   const handleLogout = async () => {
     try {
@@ -457,11 +458,9 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">SF</span>
+                <span className="text-white font-bold text-sm">U</span>
               </div>
-              <span className="text-xl font-bold text-primary">
-                StudentFreelance
-              </span>
+              <span className="text-xl font-bold text-primary">UniJobs</span>
             </Link>
 
             {/* Desktop Navigation - Hidden on mobile */}
@@ -684,7 +683,7 @@ export default function Header() {
                             </span>
                           </div>
                           <span className="text-xl font-bold text-primary">
-                            StudentFreelance
+                            UniJobs
                           </span>
                         </div>
                         <button
