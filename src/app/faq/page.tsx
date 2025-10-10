@@ -17,8 +17,8 @@ export default function FAQPage() {
   const faqData: FAQItem[] = [
     // General Questions
     {
-      question: t('faq.questions.whatIsStudentFreelance.question'),
-      answer: t('faq.questions.whatIsStudentFreelance.answer'),
+      question: t('faq.questions.whatIsUniJobs.question'),
+      answer: t('faq.questions.whatIsUniJobs.answer'),
       category: "general"
     },
     {

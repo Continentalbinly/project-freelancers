@@ -114,7 +114,7 @@ export default function CareersPage() {
               <Link href="/contact" className="btn btn-primary">
                 {t('careers.openPositions.noPositions.contactUs')}
               </Link>
-              <a href="mailto:careers@studentfreelance.com" className="btn btn-secondary">
+              <a href="mailto:careers@UniJobs.com" className="btn btn-secondary">
                 {t('careers.openPositions.noPositions.sendResume')}
               </a>
             </div>
@@ -264,7 +264,7 @@ export default function CareersPage() {
             <Link href="/contact" className="btn bg-white text-primary hover:bg-gray-100 px-8 py-4 text-lg">
               {t('careers.cta.contactUs')}
             </Link>
-            <a href="mailto:careers@studentfreelance.com" className="btn bg-white text-secondary hover:bg-gray-100 px-8 py-4 text-lg">
+            <a href="mailto:careers@UniJobs.com" className="btn bg-white text-secondary hover:bg-gray-100 px-8 py-4 text-lg">
               {t('careers.cta.sendResume')}
             </a>
           </div>

@@ -93,11 +93,11 @@ const en = {
         privacyPolicy: 'Privacy Policy',
         termsOfService: 'Terms of Service',
         cookiePolicy: 'Cookie Policy',
-        copyright: '© 2025 StudentFreelance. All rights reserved.',
+        copyright: '© 2025 UniJobs. All rights reserved.',
     },
     contact: {
         title: 'Contact Us',
-        subtitle: 'Have questions or need support? We are here to help you succeed on StudentFreelance.',
+        subtitle: 'Have questions or need support? We are here to help you succeed on UniJobs.',
         sendMessage: 'Send us a message',
         successTitle: 'Message sent successfully!',
         successMessage: 'Thank you for contacting us. We will get back to you within 24 hours.',
@@ -114,7 +114,7 @@ const en = {
         sendMessageButton: 'Send Message',
         getInTouch: 'Get in touch',
         emailSupport: 'Email',
-        emailAddress: 'support@studentfreelance.com',
+        emailAddress: 'support@UniJobs.com',
         emailResponse: 'We usually respond within 24 hours',
         phoneSupport: 'Phone',
         phoneNumber: '+1 (555) 123-4567',
@@ -123,10 +123,10 @@ const en = {
         officeLocation: '123 Education Road\nUniversity District\nCity, State 12345',
         officeNote: 'By appointment only',
         quickHelp: 'Quick Help',
-        quickHelpDesc: 'Check our FAQ section for answers to common questions about using StudentFreelance.',
+        quickHelpDesc: 'Check our FAQ section for answers to common questions about using UniJobs.',
         viewFaq: 'View FAQ →',
         faqTitle: 'Frequently Asked Questions',
-        faqSubtitle: 'Find quick answers to common questions about StudentFreelance',
+        faqSubtitle: 'Find quick answers to common questions about UniJobs',
         faqStudentTitle: 'How do I get started as a student?',
         faqStudentAnswer: 'Just sign up, create your profile, browse available projects, and submit proposals to clients.',
         faqTeacherTitle: 'How do I post a project as a teacher?',
@@ -139,11 +139,11 @@ const en = {
     },
     // About page translations
     aboutPage: {
-        title: 'About StudentFreelance',
+        title: 'About UniJobs',
         subtitle: 'The largest professional freelance community where students can earn income while studying',
         mission: {
             title: 'Our Mission',
-            paragraph1: 'StudentFreelance was founded with a simple but powerful mission: to create the largest community where university students can earn income while gaining valuable real-world experience.',
+            paragraph1: 'UniJobs was founded with a simple but powerful mission: to create the largest community where university students can earn income while gaining valuable real-world experience.',
             paragraph2: 'We believe that students shouldn\'t have to choose between earning income and gaining valuable experience. Our platform provides both, while creating a vibrant community of learners, creators, and opportunity seekers.',
             paragraph3: 'By creating this ecosystem, we haven\'t just helped freelancing—we\'ve created meaningful connections that benefit students, teachers, and entire academic communities, ultimately strengthening the future workforce.',
             values: {
@@ -164,7 +164,7 @@ const en = {
         },
         impact: {
             title: 'Our Impact',
-            subtitle: 'See how StudentFreelance is making a difference in academic communities',
+            subtitle: 'See how UniJobs is making a difference in academic communities',
             freelancers: 'Freelancers',
             clients: 'Clients',
             projects: 'Projects',
@@ -193,9 +193,9 @@ const en = {
         },
         story: {
             title: 'Our Story',
-            paragraph1: 'StudentFreelance was born from a simple observation: university students wanted real-world experience and income, while teachers wanted quality work done efficiently.',
+            paragraph1: 'UniJobs was born from a simple observation: university students wanted real-world experience and income, while teachers wanted quality work done efficiently.',
             paragraph2: 'Our founder, a former university professor, noticed that many talented students were struggling to find opportunities that aligned with their academic goals. At the same time, colleagues were seeking trusted help with research, projects, and administrative work.',
-            paragraph3: 'This led to the creation of StudentFreelance—a platform that not only connects these two groups but also ensures quality, security, and mutual benefit. Today, we\'re proud to serve thousands of students and teachers in academic communities.',
+            paragraph3: 'This led to the creation of UniJobs—a platform that not only connects these two groups but also ensures quality, security, and mutual benefit. Today, we\'re proud to serve thousands of students and teachers in academic communities.',
             beliefs: {
                 title: 'What We Believe',
                 belief1: 'Every student deserves the opportunity to earn while learning',
@@ -217,7 +217,7 @@ const en = {
         subtitle: 'Help us build the future of professional freelance work and create the largest community where students earn and learn',
         mission: {
             title: 'Our Mission',
-            paragraph1: 'At StudentFreelance, we\'re passionate about creating the largest community where students can earn income while gaining real-world experience. We believe that every student deserves the opportunity to earn while learning, and every opportunity should contribute to their growth.',
+            paragraph1: 'At UniJobs, we\'re passionate about creating the largest community where students can earn income while gaining real-world experience. We believe that every student deserves the opportunity to earn while learning, and every opportunity should contribute to their growth.',
             paragraph2: 'Our platform creates a vibrant ecosystem where students, teachers, and opportunities come together, building communities that support professional growth and career development.',
             paragraph3: 'Join us in revolutionizing how students access education and develop their careers, creating learning that is accessible, practical, and valuable for everyone involved.',
             whyWorkWithUs: {
@@ -325,7 +325,7 @@ const en = {
         },
         signup: {
             title: 'Create Your Account',
-            subtitle: 'Join StudentFreelance to connect with opportunities',
+            subtitle: 'Join UniJobs to connect with opportunities',
             step1: {
                 title: 'Basic Information',
                 subtitle: 'Tell us about yourself',
@@ -541,14 +541,14 @@ const en = {
     },
     // Auth layout translations
     authLayout: {
-        title: 'StudentFreelance',
+        title: 'UniJobs',
         subtitle: 'Where students can earn while learning.'
     },
     // Help page translations
     help: {
         hero: {
             title: 'Help Center',
-            subtitle: 'Everything you need to know about using StudentFreelance effectively'
+            subtitle: 'Everything you need to know about using UniJobs effectively'
         },
         quickHelp: {
             title: 'Quick Help',
@@ -557,7 +557,7 @@ const en = {
         sections: {
             gettingStarted: {
                 title: 'Getting Started',
-                description: 'New to StudentFreelance? Learn the basics and get started quickly.',
+                description: 'New to UniJobs? Learn the basics and get started quickly.',
                 link: 'Learn More →'
             },
             forFreelancers: {
@@ -588,7 +588,7 @@ const en = {
         },
         videoTutorials: {
             title: 'Video Tutorials',
-            subtitle: 'Watch step-by-step guides to master StudentFreelance',
+            subtitle: 'Watch step-by-step guides to master UniJobs',
             tutorials: {
                 gettingStarted: {
                     title: 'Getting Started Guide',
@@ -618,7 +618,7 @@ const en = {
     // FAQ page translations
     faq: {
         title: 'Frequently Asked Questions',
-        subtitle: 'Find answers to common questions about StudentFreelance',
+        subtitle: 'Find answers to common questions about UniJobs',
         categories: {
             all: 'All Questions',
             general: 'General',
@@ -636,17 +636,17 @@ const en = {
         },
         questions: {
             // General Questions
-            whatIsStudentFreelance: {
-                question: 'What is StudentFreelance?',
-                answer: 'StudentFreelance is the largest professional freelance community where students can earn income while gaining real-world experience. Students can find opportunities that align with their studies, build portfolios, and develop their skills while earning income to support their education.'
+            whatIsUniJobs: {
+                question: 'What is UniJobs?',
+                answer: 'UniJobs is the largest professional freelance community where students can earn income while gaining real-world experience. Students can find opportunities that align with their studies, build portfolios, and develop their skills while earning income to support their education.'
             },
             howDoesItWork: {
-                question: 'How does StudentFreelance work?',
+                question: 'How does UniJobs work?',
                 answer: 'Clients post projects with requirements and budget. Freelancers browse available projects, submit proposals, and work on selected projects. Payments are handled securely through our payment system.'
             },
             isItFree: {
-                question: 'Is StudentFreelance free to use?',
-                answer: 'Yes, joining StudentFreelance is completely free. We only charge a small fee on completed projects to maintain the platform and provide support.'
+                question: 'Is UniJobs free to use?',
+                answer: 'Yes, joining UniJobs is completely free. We only charge a small fee on completed projects to maintain the platform and provide support.'
             },
             projectTypes: {
                 question: 'What types of projects are available?',
@@ -714,14 +714,14 @@ const en = {
             // Technical Questions
             technicalIssues: {
                 question: 'What if I have technical issues?',
-                answer: 'Contact our support team at support@studentfreelance.com or use the live chat feature during business hours. We typically respond within 24 hours.'
+                answer: 'Contact our support team at support@UniJobs.com or use the live chat feature during business hours. We typically respond within 24 hours.'
             },
             isDataSecure: {
                 question: 'Is my data secure?',
                 answer: 'Yes, we use industry-standard encryption and security measures to protect your personal data and project information. We never share your data with third parties.'
             },
             canIUseOnMobile: {
-                question: 'Can I use StudentFreelance on mobile?',
+                question: 'Can I use UniJobs on mobile?',
                 answer: 'Yes, our platform is fully responsive and works on all devices including smartphones and tablets. You can browse projects, submit proposals, and manage your account from anywhere.'
             },
             howToUpdateProfile: {
@@ -910,7 +910,7 @@ const en = {
         },
         cta: {
             title: 'Ready to Get Started?',
-            subtitle: 'Join thousands of freelancers and clients who are already using StudentFreelance to connect and collaborate.',
+            subtitle: 'Join thousands of freelancers and clients who are already using UniJobs to connect and collaborate.',
             joinAsFreelancer: 'Join as Freelancer',
             joinAsClient: 'Join as Client'
         }
@@ -942,7 +942,7 @@ const en = {
             ]
         },
         benefits: {
-            title: 'Why Choose StudentFreelance?',
+            title: 'Why Choose UniJobs?',
             subtitle: 'Join thousands of freelancers who are already earning and growing their careers',
             features: [
                 {
@@ -1063,7 +1063,7 @@ const en = {
                 {
                     name: 'Sarah Chen',
                     role: 'Web Developer',
-                    quote: 'I\'ve earned over ₭5M through StudentFreelance while building my portfolio. The platform helped me land my first full-time job!',
+                    quote: 'I\'ve earned over ₭5M through UniJobs while building my portfolio. The platform helped me land my first full-time job!',
                     earnings: '₭5M+ earned'
                 },
                 {
@@ -1707,11 +1707,11 @@ const en = {
         sections: {
             acceptance: {
                 title: '1. Acceptance of Terms',
-                content: 'By accessing and using StudentFreelance ("the Platform"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.'
+                content: 'By accessing and using UniJobs ("the Platform"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.'
             },
             description: {
                 title: '2. Description of Service',
-                content: 'StudentFreelance is a platform that connects students and freelancers with clients seeking professional services. The Platform facilitates project posting, proposal submission, and project management between clients and freelancers.'
+                content: 'UniJobs is a platform that connects students and freelancers with clients seeking professional services. The Platform facilitates project posting, proposal submission, and project management between clients and freelancers.'
             },
             userAccounts: {
                 title: '3. User Accounts',
@@ -1779,7 +1779,7 @@ const en = {
             contactInformation: {
                 title: '11. Contact Information',
                 content: 'For questions about these Terms of Service, please contact us at',
-                email: 'support@studentfreelance.com'
+                email: 'support@UniJobs.com'
             }
         }
     },
@@ -1864,7 +1864,7 @@ const en = {
             contactUs: {
                 title: 'Contact Us',
                 content: 'If you have any questions about our use of cookies, please contact us at',
-                email: 'privacy@studentfreelance.com'
+                email: 'privacy@UniJobs.com'
             }
         }
     },
@@ -1876,8 +1876,8 @@ const en = {
         sections: {
             introduction: {
                 title: 'Introduction',
-                content: 'StudentFreelance ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.',
-                agreement: 'By using StudentFreelance, you agree to the collection and use of information in accordance with this policy.'
+                content: 'UniJobs ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.',
+                agreement: 'By using UniJobs, you agree to the collection and use of information in accordance with this policy.'
             },
             informationWeCollect: {
                 title: 'Information We Collect',
@@ -1988,7 +1988,7 @@ const en = {
                 title: 'Contact Us',
                 description: 'If you have any questions about this Privacy Policy or our data practices, please contact us:',
                 email: 'Email:',
-                emailAddress: 'privacy@studentfreelance.com',
+                emailAddress: 'privacy@UniJobs.com',
                 address: 'Address:',
                 addressValue: '123 Education Street, University District, City, State 12345',
                 phone: 'Phone:',
@@ -2158,7 +2158,7 @@ const en = {
             }
         },
         features: {
-            title: 'Why Choose StudentFreelance?',
+            title: 'Why Choose UniJobs?',
             subtitle: 'Join thousands of students who are already earning while learning',
             earnWhileLearn: {
                 title: 'Earn While You Learn',
@@ -2201,7 +2201,7 @@ const en = {
         },
         stats: {
             title: 'Platform Statistics',
-            subtitle: 'See how StudentFreelance is helping students and teachers connect',
+            subtitle: 'See how UniJobs is helping students and teachers connect',
             freelancers: 'Freelancers',
             clients: 'Clients',
             projects: 'Projects',
@@ -2209,7 +2209,7 @@ const en = {
         },
         cta: {
             title: 'Ready to Get Started?',
-            subtitle: 'Join thousands of freelancers and clients who are already using StudentFreelance to connect and collaborate.',
+            subtitle: 'Join thousands of freelancers and clients who are already using UniJobs to connect and collaborate.',
             startAsFreelancer: 'Start as Freelancer',
             startAsClient: 'Start as Client'
         }
@@ -2313,7 +2313,7 @@ const en = {
             ]
         },
         benefits: {
-            title: 'Why Choose StudentFreelance?',
+            title: 'Why Choose UniJobs?',
             subtitle: 'Find freelancers with the skills to help you with your projects and tasks',
             features: [
                 {
@@ -2366,7 +2366,7 @@ const en = {
         },
         cta: {
             title: 'Ready to Get Started?',
-            subtitle: 'Join thousands of freelancers and clients who are already using StudentFreelance to connect and collaborate.',
+            subtitle: 'Join thousands of freelancers and clients who are already using UniJobs to connect and collaborate.',
             postFirstProject: 'Post Your First Project',
             browseFreelancers: 'Browse Freelancers'
         }
