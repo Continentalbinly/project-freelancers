@@ -224,7 +224,7 @@ export default function ProjectProposalsPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
-            <button
+            <button suppressHydrationWarning
               onClick={() => router.back()}
               className="p-2 rounded-lg bg-white shadow-sm border border-border hover:shadow-md transition-all"
             >
@@ -367,7 +367,7 @@ export default function ProjectProposalsPage() {
                     {/* Actions */}
                     <div className="flex items-center justify-between pt-4 border-t border-border">
                       <div className="flex items-center gap-2">
-                        <button
+                        <button suppressHydrationWarning
                           onClick={() => setSelectedProposal(proposal)}
                           className="flex items-center gap-2 text-sm text-primary hover:text-primary-dark font-medium"
                         >
@@ -378,14 +378,14 @@ export default function ProjectProposalsPage() {
                       <div className="flex items-center gap-2">
                         {proposal.status === 'pending' && (
                           <>
-                            <button
+                            <button suppressHydrationWarning
                               onClick={() => handleAcceptProposal(proposal)}
                               className="flex items-center gap-2 text-sm text-success hover:text-success-dark font-medium"
                             >
                               <CheckIcon className="w-4 h-4" />
                               Accept
                             </button>
-                            <button
+                            <button suppressHydrationWarning
                               onClick={() => handleRejectProposal(proposal)}
                               className="flex items-center gap-2 text-sm text-error hover:text-error-dark font-medium"
                             >
@@ -411,7 +411,7 @@ export default function ProjectProposalsPage() {
                 <h3 className="text-lg font-semibold text-text-primary">
                   Proposal from {selectedProposal.freelancer?.fullName}
                 </h3>
-                <button
+                <button suppressHydrationWarning
                   onClick={() => setSelectedProposal(null)}
                   className="text-text-secondary hover:text-text-primary"
                 >
@@ -470,7 +470,7 @@ export default function ProjectProposalsPage() {
 
                 {selectedProposal.status === 'pending' && (
                   <div className="flex gap-2 pt-4 border-t border-border">
-                    <button
+                    <button suppressHydrationWarning
                       onClick={() => {
                         handleAcceptProposal(selectedProposal)
                         setSelectedProposal(null)
@@ -480,7 +480,7 @@ export default function ProjectProposalsPage() {
                       <CheckIcon className="w-4 h-4 mr-2" />
                       Accept Proposal
                     </button>
-                    <button
+                    <button suppressHydrationWarning
                       onClick={() => {
                         handleRejectProposal(selectedProposal)
                         setSelectedProposal(null)

@@ -234,7 +234,7 @@ function ChatRoom({ chatRoom, user, onBack }: { chatRoom: any, user: any, onBack
       {/* Chat Header - Fixed Height */}
       <div className="flex-shrink-0 bg-white border-b border-border px-4 py-3 h-16 flex items-center">
         <div className="flex items-center gap-3 w-full">
-          <button
+          <button suppressHydrationWarning
             onClick={onBack}
             className="p-2 rounded-full hover:bg-background-secondary transition-colors focus:outline-none focus:ring-2 focus:ring-primary lg:hidden"
             aria-label={t('dashboard.messagesPage.backToMessages')}
@@ -348,7 +348,7 @@ function ChatRoom({ chatRoom, user, onBack }: { chatRoom: any, user: any, onBack
       {/* Message Input - Fixed Height */}
       <div className="flex-shrink-0 bg-white border-t border-border px-4 py-3 h-16 flex items-center">
         <form onSubmit={handleSendMessage} className="flex items-center gap-3 w-full">
-          <input
+          <input suppressHydrationWarning
             type="text"
             value={newMessage}
             onChange={e => setNewMessage(e.target.value)}
@@ -357,7 +357,7 @@ function ChatRoom({ chatRoom, user, onBack }: { chatRoom: any, user: any, onBack
             disabled={sending}
             autoFocus
           />
-          <button
+          <button suppressHydrationWarning
             type="submit"
             className="btn btn-primary rounded-full p-2 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={sending || !newMessage.trim()}
@@ -468,7 +468,7 @@ export default function MessagesPage() {
           {/* Search */}
           <div className="relative">
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-secondary" />
-            <input
+            <input suppressHydrationWarning
               type="text"
               placeholder={t('dashboard.messagesPage.searchPlaceholder')}
               value={searchQuery}

@@ -203,7 +203,7 @@ export default function ManageProjectsPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
-            <button
+            <button suppressHydrationWarning
               onClick={() => router.back()}
               className="p-2 rounded-lg bg-white shadow-sm border border-border hover:shadow-md transition-all"
             >
@@ -231,7 +231,7 @@ export default function ManageProjectsPage() {
             {/* Search */}
             <div className="lg:col-span-2">
               <label className="block text-sm font-medium text-text-primary mb-2">{t('manageProjects.searchProjects')}</label>
-              <input
+              <input suppressHydrationWarning
                 type="text"
                 placeholder={t('manageProjects.searchPlaceholder')}
                 value={searchQuery}
@@ -406,7 +406,7 @@ export default function ManageProjectsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {project.status === 'open' && (
-                          <button className="flex items-center gap-2 text-sm text-error hover:text-error-dark font-medium">
+                          <button suppressHydrationWarning className="flex items-center gap-2 text-sm text-error hover:text-error-dark font-medium">
                             <TrashIcon className="w-4 h-4" />
                             {t('manageProjects.cancelProject')}
                           </button>

@@ -68,7 +68,7 @@ export default function ContactPage() {
                   <p className="text-text-secondary">
                     {t('contact.successMessage')}
                   </p>
-                  <button
+                  <button suppressHydrationWarning
                     onClick={() => setSubmitted(false)}
                     className="mt-4 text-primary hover:text-primary-hover font-medium"
                   >
@@ -81,7 +81,7 @@ export default function ContactPage() {
                     <label htmlFor="name" className="block text-sm font-medium text-text-primary mb-2">
                       {t('contact.fullName')}
                     </label>
-                    <input
+                    <input suppressHydrationWarning
                       type="text"
                       id="name"
                       name="name"
@@ -97,7 +97,7 @@ export default function ContactPage() {
                     <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
                       {t('contact.email')}
                     </label>
-                    <input
+                    <input suppressHydrationWarning
                       type="email"
                       id="email"
                       name="email"
@@ -113,7 +113,7 @@ export default function ContactPage() {
                     <label htmlFor="subject" className="block text-sm font-medium text-text-primary mb-2">
                       {t('contact.subject')}
                     </label>
-                    <input
+                    <input suppressHydrationWarning
                       type="text"
                       id="subject"
                       name="subject"
@@ -141,7 +141,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <button
+                  <button suppressHydrationWarning
                     type="submit"
                     disabled={loading}
                     className="btn btn-primary w-full py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed"

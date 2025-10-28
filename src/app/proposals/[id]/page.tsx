@@ -279,7 +279,7 @@ export default function ProposalDetailPage() {
                 {/* Header */}
                 <div className="mb-8">
                     <div className="flex items-center gap-4 mb-6">
-                        <button
+                        <button suppressHydrationWarning
                             onClick={() => router.back()}
                             className="p-2 rounded-lg bg-white shadow-sm border border-border hover:shadow-md transition-all"
                         >
@@ -516,11 +516,11 @@ export default function ProposalDetailPage() {
                             <div className="space-y-3">
                                 {proposal.status === 'pending' && isClient && (
                                     <>
-                                        <button className="cursor-pointer w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                        <button suppressHydrationWarning className="cursor-pointer w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center">
                                             <CheckCircleIcon className="w-4 h-4 mr-2" />
                                             {t('proposals.detail.accept')}
                                         </button>
-                                        <button className="cursor-pointer w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                        <button suppressHydrationWarning className="cursor-pointer w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center">
                                             <XCircleIcon className="w-4 h-4 mr-2" />
                                             {t('proposals.detail.reject')}
                                         </button>
@@ -550,7 +550,7 @@ export default function ProposalDetailPage() {
                 {selectedImage && (
                     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
                         <div className="relative max-w-4xl max-h-full">
-                            <button
+                            <button suppressHydrationWarning
                                 onClick={() => setSelectedImage(null)}
                                 className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
                             >

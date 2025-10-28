@@ -97,19 +97,19 @@ export default function CookieConsent() {
                             </div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                            <button
+                            <button suppressHydrationWarning
                                 onClick={() => setShowPreferences(true)}
                                 className="btn btn-outline btn-sm"
                             >
                                 {t('customize')}
                             </button>
-                            <button
+                            <button suppressHydrationWarning
                                 onClick={handleRejectAll}
                                 className="btn btn-outline btn-sm"
                             >
                                 {t('cookieConsent.rejectAll')}
                             </button>
-                            <button
+                            <button suppressHydrationWarning
                                 onClick={handleAcceptAll}
                                 className="btn btn-primary btn-sm"
                             >
@@ -134,7 +134,7 @@ export default function CookieConsent() {
                                         {t('cookieConsent.preferences')}
                                     </h2>
                                 </div>
-                                <button
+                                <button suppressHydrationWarning
                                     onClick={() => setShowPreferences(false)}
                                     className="text-text-secondary hover:text-text-primary transition-colors"
                                 >
@@ -157,7 +157,7 @@ export default function CookieConsent() {
                                             </p>
                                         </div>
                                         <div className="flex items-center">
-                                            <input
+                                            <input suppressHydrationWarning
                                                 type="checkbox"
                                                 checked={preferences.essential}
                                                 disabled
@@ -182,7 +182,7 @@ export default function CookieConsent() {
                                             </p>
                                         </div>
                                         <div className="flex items-center">
-                                            <input
+                                            <input suppressHydrationWarning
                                                 type="checkbox"
                                                 checked={preferences.performance}
                                                 onChange={() => togglePreference('performance')}
@@ -207,7 +207,7 @@ export default function CookieConsent() {
                                             </p>
                                         </div>
                                         <div className="flex items-center">
-                                            <input
+                                            <input suppressHydrationWarning
                                                 type="checkbox"
                                                 checked={preferences.functionality}
                                                 onChange={() => togglePreference('functionality')}
@@ -232,7 +232,7 @@ export default function CookieConsent() {
                                             </p>
                                         </div>
                                         <div className="flex items-center">
-                                            <input
+                                            <input suppressHydrationWarning
                                                 type="checkbox"
                                                 checked={preferences.targeting}
                                                 onChange={() => togglePreference('targeting')}
@@ -247,13 +247,13 @@ export default function CookieConsent() {
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-border">
-                                <button
+                                <button suppressHydrationWarning
                                     onClick={handleRejectAll}
                                     className="btn btn-outline flex-1"
                                 >
                                     {t('cookieConsent.rejectAll')}
                                 </button>
-                                <button
+                                <button suppressHydrationWarning
                                     onClick={handleAcceptSelected}
                                     className="btn btn-primary flex-1"
                                 >

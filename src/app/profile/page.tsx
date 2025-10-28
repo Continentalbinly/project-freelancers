@@ -361,7 +361,7 @@ export default function ProfilePage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
-            <button
+            <button suppressHydrationWarning
               onClick={() => router.back()}
               className="p-2 rounded-lg bg-white shadow-sm border border-border hover:shadow-md transition-all"
             >
@@ -389,7 +389,7 @@ export default function ProfilePage() {
                         alt="Profile Preview"
                         className="w-full h-full object-cover rounded-full border-2 border-primary"
                       />
-                      <button
+                      <button suppressHydrationWarning
                         type="button"
                         onClick={removeSelectedFile}
                         className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
@@ -397,7 +397,7 @@ export default function ProfilePage() {
                         <XMarkIcon className="w-3 h-3" />
                       </button>
                     </div>
-                    <button
+                    <button suppressHydrationWarning
                       onClick={handleProfileImageUpload}
                       disabled={uploading}
                       className="w-full px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
@@ -407,7 +407,7 @@ export default function ProfilePage() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <button
+                    <button suppressHydrationWarning
                       type="button"
                       onClick={handleFileButtonClick}
                       className="w-full px-3 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors text-sm flex items-center justify-center gap-2"
@@ -415,7 +415,7 @@ export default function ProfilePage() {
                       <PhotoIcon className="w-4 h-4" />
                       {t('profile.profileImage.changePhoto')}
                     </button>
-                    <input
+                    <input suppressHydrationWarning
                       type="file"
                       ref={fileInputRef}
                       onChange={handleFileSelect}
@@ -451,7 +451,7 @@ export default function ProfilePage() {
                   <p className="text-sm text-text-secondary">{profile?.email || user.email}</p>
                 </div>
 
-                <button
+                <button suppressHydrationWarning
                   onClick={() => startEditing('fullName', profile?.fullName || '')}
                   className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
@@ -487,7 +487,7 @@ export default function ProfilePage() {
           <div className="border-b border-border">
             <nav className="flex space-x-8 px-6">
               {tabs.map((tab) => (
-                <button
+                <button suppressHydrationWarning
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
@@ -622,7 +622,7 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-text-primary">{t('profile.portfolioSection.title')}</h3>
-                  <button className="btn btn-primary text-sm">
+                  <button suppressHydrationWarning className="btn btn-primary text-sm">
                     {t('profile.portfolioSection.addProject')}
                   </button>
                 </div>
@@ -714,7 +714,7 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-text-primary">{t('profile.skillsSection.title')}</h3>
-                  <button
+                  <button suppressHydrationWarning
                     onClick={() => startEditing('skills', '')}
                     className="btn btn-primary text-sm"
                   >
@@ -728,7 +728,7 @@ export default function ProfilePage() {
                       {profile.skills.map((skill, index) => (
                         <div key={index} className="flex items-center gap-2 px-3 py-2 bg-primary-light text-primary rounded-full">
                           <span className="text-sm font-medium">{skill}</span>
-                          <button
+                          <button suppressHydrationWarning
                             onClick={() => removeSkill(skill)}
                             className="text-primary hover:text-primary-hover"
                           >
@@ -762,7 +762,7 @@ export default function ProfilePage() {
 
               {editField === 'skills' ? (
                 <div className="space-y-4">
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
@@ -770,7 +770,7 @@ export default function ProfilePage() {
                     className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                   <div className="flex gap-2">
-                    <button
+                    <button suppressHydrationWarning
                       onClick={() => {
                         if (editValue.trim()) {
                           addSkill(editValue.trim())
@@ -781,7 +781,7 @@ export default function ProfilePage() {
                     >
                       {t('profile.skillsSection.addSkillButton')}
                     </button>
-                    <button
+                    <button suppressHydrationWarning
                       onClick={cancelEditing}
                       className="btn btn-outline flex-1"
                     >
@@ -791,7 +791,7 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <input
+                  <input suppressHydrationWarning
                     type="text"
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
@@ -799,14 +799,14 @@ export default function ProfilePage() {
                     className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                   <div className="flex gap-2">
-                    <button
+                    <button suppressHydrationWarning
                       onClick={saveProfile}
                       disabled={saving}
                       className="btn btn-primary flex-1"
                     >
                       {saving ? t('profile.editModal.saving') : t('profile.editModal.save')}
                     </button>
-                    <button
+                    <button suppressHydrationWarning
                       onClick={cancelEditing}
                       className="btn btn-outline flex-1"
                     >
