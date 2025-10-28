@@ -93,6 +93,7 @@ function LanguageSwitcher() {
         <div className="absolute bottom-full left-0 mb-1 bg-white border border-border rounded-lg shadow-lg z-10 min-w-[120px]">
           {orderedLanguages.map((lang) => (
             <button
+              suppressHydrationWarning
               key={lang}
               onClick={() => handleLanguageChange(lang)}
               className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-background-secondary transition-colors ${
@@ -143,12 +144,13 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">U</span>
-              </div>
-              <span className="text-xl font-bold text-primary">
-                UniJobs
-              </span>
+              <img
+                src="/favicon.svg"
+                alt="UniJobs logo"
+                width={80}
+                height={80}
+                className="rounded-md"
+              />
             </div>
             <p className="text-text-secondary mb-4">
               {t("footer.companyDescription")}
@@ -197,6 +199,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="md:hidden">
               <button
+                suppressHydrationWarning
                 onClick={() => toggleSection("platform")}
                 className="flex items-center justify-between w-full text-left font-semibold text-text-primary mb-4"
               >
@@ -275,6 +278,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="md:hidden">
               <button
+                suppressHydrationWarning
                 onClick={() => toggleSection("support")}
                 className="flex items-center justify-between w-full text-left font-semibold text-text-primary mb-4"
               >
@@ -337,6 +341,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="md:hidden">
               <button
+                suppressHydrationWarning
                 onClick={() => toggleSection("company")}
                 className="flex items-center justify-between w-full text-left font-semibold text-text-primary mb-4"
               >

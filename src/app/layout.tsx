@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Lao } from "next/font/google";
 import "./globals.css";
 import CookieConsent from "./components/CookieConsent";
@@ -22,24 +22,39 @@ const notoSansLao = Noto_Sans_Lao({
   weight: ["400", "500", "600", "700"],
 });
 
+// ✅ Add favicon and manifest info
 export const metadata: Metadata = {
   title: "UniJobs - Where Students Earn & Learn",
-  description: "Join the largest academic freelancing community where students earn money while gaining real-world experience. Connect with opportunities, build skills, and grow your career.",
-  keywords: ["freelance", "students", "teachers", "university", "work", "projects"],
+  description:
+    "Join the largest academic freelancing community where students earn money while gaining real-world experience. Connect with opportunities, build skills, and grow your career.",
+  keywords: [
+    "freelance",
+    "students",
+    "teachers",
+    "university",
+    "work",
+    "projects",
+  ],
   authors: [{ name: "UniJobs Team" }],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
 };
 
-export const viewport = {
-  width: 'device-width',
+export const viewport: Viewport = {
+  width: "device-width",
   initialScale: 1,
   themeColor: "#06A764",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className="scroll-smooth light">
       <body
@@ -47,9 +62,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <LanguageProvider>
-            <LayoutWrapper>
-              {children}
-            </LayoutWrapper>
+            <LayoutWrapper>{children}</LayoutWrapper>
             <CookieConsent />
           </LanguageProvider>
         </AuthProvider>

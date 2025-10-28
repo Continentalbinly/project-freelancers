@@ -94,7 +94,7 @@ export default function NotFound() {
               Help Center
             </Link>
             <span className="text-text-muted hidden sm:inline">•</span>
-            <button 
+            <button suppressHydrationWarning 
               onClick={() => window.history.back()}
               className="text-xs sm:text-sm text-primary hover:text-primary-hover font-medium"
             >

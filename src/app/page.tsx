@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import LandingPage from './components/LandingPage'
-import UserHomePage from './components/UserHomePage'
+import UserHomePage from './components/userHomePage/UserHomePage'
 import { useTranslationContext } from '@/app/components/LanguageProvider'
 
 

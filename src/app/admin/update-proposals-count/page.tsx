@@ -56,7 +56,7 @@ export default function UpdateProposalsCountPage() {
             This will update the proposalsCount field for all projects by counting the actual proposals in the database.
           </p>
 
-          <button
+          <button suppressHydrationWarning
             onClick={handleUpdate}
             disabled={loading}
             className="btn btn-primary w-full py-3 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"

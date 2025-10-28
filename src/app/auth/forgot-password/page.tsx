@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
           <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
             Email Address
           </label>
-          <input
+          <input suppressHydrationWarning
             id="email"
             name="email"
             type="email"
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
             placeholder="Enter your email"
           />
         </div>
-        <button
+        <button suppressHydrationWarning
           type="submit"
           disabled={loading}
           className="w-full btn btn-primary py-2 sm:py-3 text-sm sm:text-base font-medium"

@@ -287,7 +287,7 @@ export default function ProposalsPage() {
                 {/* Tabs */}
                 <div className="bg-white rounded-xl shadow-sm border border-border mb-3 sm:mb-4 lg:mb-6">
                     <nav className="flex space-x-0 sm:space-x-8 px-2 sm:px-6 overflow-x-auto">
-                        <button
+                        <button suppressHydrationWarning
                             onClick={() => handleTabChange('submitted')}
                             className={`py-3 px-4 sm:px-6 border-b-2 font-medium text-sm transition-colors flex-1 sm:flex-none text-center ${activeTab === 'submitted'
                                 ? 'border-primary text-primary'
@@ -296,7 +296,7 @@ export default function ProposalsPage() {
                         >
                             {t('proposals.tabs.submitted')}
                         </button>
-                        <button
+                        <button suppressHydrationWarning
                             onClick={() => handleTabChange('received')}
                             className={`py-3 px-4 sm:px-6 border-b-2 font-medium text-sm transition-colors flex-1 sm:flex-none text-center ${activeTab === 'received'
                                 ? 'border-primary text-primary'
@@ -507,11 +507,11 @@ export default function ProposalsPage() {
                                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                                             {proposal.status === 'pending' && activeTab === 'received' && (
                                                 <>
-                                                    <button className="cursor-pointer text-xs sm:text-sm text-success hover:text-success-dark font-semibold flex items-center gap-1 sm:gap-2 hover:underline transition-all duration-200">
+                                                    <button suppressHydrationWarning className="cursor-pointer text-xs sm:text-sm text-success hover:text-success-dark font-semibold flex items-center gap-1 sm:gap-2 hover:underline transition-all duration-200">
                                                         <span className="w-1 h-3 sm:h-4 bg-success rounded-full"></span>
                                                         {t('proposals.proposalCard.accept')}
                                                     </button>
-                                                    <button className="cursor-pointer text-xs sm:text-sm text-error hover:text-error-dark font-semibold flex items-center gap-1 sm:gap-2 hover:underline transition-all duration-200">
+                                                    <button suppressHydrationWarning className="cursor-pointer text-xs sm:text-sm text-error hover:text-error-dark font-semibold flex items-center gap-1 sm:gap-2 hover:underline transition-all duration-200">
                                                         <span className="w-1 h-3 sm:h-4 bg-error rounded-full"></span>
                                                         {t('proposals.proposalCard.reject')}
                                                     </button>

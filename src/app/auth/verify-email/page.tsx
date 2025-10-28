@@ -82,7 +82,7 @@ export default function VerifyEmailPage() {
         </div>
 
         <div className="space-y-3 sm:space-y-4">
-          <button
+          <button suppressHydrationWarning
             onClick={handleResendVerification}
             disabled={loading}
             className="w-full btn btn-outline py-2 sm:py-3 text-sm sm:text-base"

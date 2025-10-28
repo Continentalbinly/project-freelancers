@@ -102,7 +102,7 @@ export default function FavoriteButton({
   }
 
   return (
-    <button
+    <button suppressHydrationWarning
       onClick={handleToggleFavorite}
       disabled={loading}
       className={`flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${

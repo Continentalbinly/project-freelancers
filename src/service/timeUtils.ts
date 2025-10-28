@@ -1,71 +1,51 @@
+// src/service/timeUtils.ts
+
 /**
- * Utility functions for time calculations and formatting
+ * Safely converts Firestore Timestamp, string, number, or Date
+ * into a JavaScript Date object.
  */
+export function convertTimestampToDate(value: any): Date {
+  if (!value) return new Date();
 
-export const timeAgo = (dateString: Date | string): string => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInMs = now.getTime() - date.getTime()
-  const diffInMinutes = Math.floor(diffInMs / (1000 * 60))
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  const diffInDays = Math.floor(diffInHours / 24)
-  
-  if (diffInDays > 0) {
-    if (diffInDays >= 7) {
-      const diffInWeeks = Math.floor(diffInDays / 7)
-      if (diffInWeeks >= 4) {
-        const diffInMonths = Math.floor(diffInDays / 30)
-        return `${diffInMonths}m ago`
-      }
-      return `${diffInWeeks}w ago`
-    }
-    return `${diffInDays}d ago`
-  } else if (diffInHours > 0) {
-    const remainingMinutes = diffInMinutes % 60
-    if (remainingMinutes === 0) {
-      return `${diffInHours}h ago`
-    } else {
-      return `${diffInHours}h ${remainingMinutes}m ago`
-    }
-  } else if (diffInMinutes > 0) {
-    return `${diffInMinutes}m ago`
-  } else {
-    return 'Just now'
+  // Firestore Timestamp
+  if (value.toDate && typeof value.toDate === "function") {
+    return value.toDate();
   }
-}
 
-export const formatRelativeTime = (dateString: Date | string): string => {
-  return timeAgo(dateString)
-}
-
-export const getTimeDifference = (dateString: Date | string) => {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInMs = now.getTime() - date.getTime()
-  
-  return {
-    milliseconds: diffInMs,
-    seconds: Math.floor(diffInMs / 1000),
-    minutes: Math.floor(diffInMs / (1000 * 60)),
-    hours: Math.floor(diffInMs / (1000 * 60 * 60)),
-    days: Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+  // Already a Date
+  if (value instanceof Date) {
+    return value;
   }
+
+  // String or number
+  return new Date(value);
 }
 
-export const isRecent = (dateString: Date | string, hours: number = 24): boolean => {
-  const diff = getTimeDifference(dateString)
-  return diff.hours < hours
-}
+/**
+ * Returns a relative "time ago" string like "3 days ago"
+ * Works with Date, Timestamp, or string inputs.
+ */
+export function timeAgo(input: any): string {
+  const date = convertTimestampToDate(input); // ✅ Ensure it's a Date
+  const now = new Date();
 
-export const isToday = (dateString: Date | string): boolean => {
-  const date = new Date(dateString)
-  const today = new Date()
-  return date.toDateString() === today.toDateString()
-}
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  if (isNaN(seconds)) return "—";
 
-export const isYesterday = (dateString: Date | string): boolean => {
-  const date = new Date(dateString)
-  const yesterday = new Date()
-  yesterday.setDate(yesterday.getDate() - 1)
-  return date.toDateString() === yesterday.toDateString()
-} 
+  const intervals: [number, string][] = [
+    [31536000, "year"],
+    [2592000, "month"],
+    [86400, "day"],
+    [3600, "hour"],
+    [60, "minute"],
+  ];
+
+  for (const [unit, label] of intervals) {
+    const count = Math.floor(seconds / unit);
+    if (count >= 1) {
+      return `${count} ${label}${count > 1 ? "s" : ""} ago`;
+    }
+  }
+
+  return "Just now";
+}
