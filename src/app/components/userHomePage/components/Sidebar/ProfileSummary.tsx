@@ -49,30 +49,6 @@ export default function ProfileSummary({ user, profile }: any) {
           value={stats.projectsCompleted}
         />
 
-        {hasBoth ? (
-          <>
-            <SummaryRow
-              label={t("userHomePage.profileSummary.totalEarned")}
-              value={formatEarnings(stats.totalEarned)}
-            />
-            <SummaryRow
-              label={t("userHomePage.profileSummary.totalSpent")}
-              value={formatEarnings(stats.totalSpent)}
-            />
-          </>
-        ) : (
-          <SummaryRow
-            label={
-              isClient
-                ? t("userHomePage.profileSummary.totalSpent")
-                : t("userHomePage.profileSummary.totalEarned")
-            }
-            value={formatEarnings(
-              isClient ? stats.totalSpent : stats.totalEarned
-            )}
-          />
-        )}
-
         <SummaryRow
           label={t("userHomePage.profileSummary.activeProjects")}
           value={stats.activeProjects}
