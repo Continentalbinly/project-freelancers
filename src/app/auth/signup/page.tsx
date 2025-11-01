@@ -37,10 +37,12 @@ export default function SignupPage() {
     yearsOfExperience: 0,
     userCategory: "student",
     clientCategory: "teacher",
+    occupation: "",
     acceptTerms: false,
     acceptPrivacyPolicy: false,
     acceptMarketingEmails: false,
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
@@ -52,6 +54,16 @@ export default function SignupPage() {
     setError("");
 
     try {
+      // ✅ Compute occupation automatically
+      const mainRole = formData.userRoles[0] || "freelancer";
+      const category =
+        mainRole === "freelancer"
+          ? formData.userCategory
+          : formData.clientCategory;
+
+      const occupation = category ? `${mainRole}_${category}` : mainRole;
+
+      // ✅ Initial billing
       const initialBillingData = {
         credit: 0,
         plan: "free",
@@ -62,14 +74,17 @@ export default function SignupPage() {
         totalSpentOnPlans: 0,
       };
 
+      // ✅ Sign up user and create profile
       const result = await signupUser(
         formData.email,
         formData.password,
         formData.fullName,
-        formData.userRoles[0] || "freelancer",
+        mainRole, // ✅ role string, not array
         formData.avatarUrl,
         {
-          userType: formData.userRoles,
+          userType: mainRole, // ✅ Fix: should be a string
+          userRoles: [mainRole],
+          occupation, // ✅ new field
           dateOfBirth: formData.dateOfBirth,
           gender: formData.gender,
           phone: formData.phone,
@@ -95,12 +110,14 @@ export default function SignupPage() {
       if (result.success) {
         const userId = result.user?.id || result.user?.uid;
         if (userId && (formData.userCategory || formData.clientCategory)) {
+          // ✅ Send occupation + category to API
           await fetch(`/api/profile/${userId}/update-category`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               userCategory: formData.userCategory,
               clientCategory: formData.clientCategory,
+              occupation, // ✅ new
             }),
           });
         }
@@ -114,12 +131,14 @@ export default function SignupPage() {
         setError(result.error || t("auth.signup.errors.signupFailed"));
       }
     } catch (err) {
+      console.error("❌ Signup error:", err);
       setError(t("auth.signup.errors.unexpectedError"));
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Validation
   const isStepValid = (): boolean => {
     switch (currentStep) {
       case 1:
@@ -136,6 +155,11 @@ export default function SignupPage() {
 
         if (formData.userRoles.includes("freelancer")) {
           return !!(formData.userCategory && formData.userCategory.length > 0);
+        }
+        if (formData.userRoles.includes("client")) {
+          return !!(
+            formData.clientCategory && formData.clientCategory.length > 0
+          );
         }
         return true;
       case 3:

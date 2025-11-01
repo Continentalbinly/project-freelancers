@@ -14,7 +14,7 @@ import { timeAgo } from "@/service/timeUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function RecentActivity({ user }: any) {
-  const { t } = useTranslationContext();
+  const { t, currentLanguage } = useTranslationContext();
   const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,7 +82,7 @@ export default function RecentActivity({ user }: any) {
               <span className="text-lg">{getIcon(a.type)}</span>
               <div>
                 <p className="text-sm text-text-primary">{getText(a, t)}</p>
-                <p className="text-xs text-text-secondary">{timeAgo(a.ts)}</p>
+                <p className="text-xs text-text-secondary">{timeAgo(a.ts, currentLanguage)}</p>
               </div>
             </div>
           ))}

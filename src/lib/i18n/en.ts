@@ -1,3 +1,5 @@
+import { mark } from "framer-motion/client";
+
 const en = {
   language: "English",
   welcome: "Welcome",
@@ -7,6 +9,20 @@ const en = {
   common: {
     loading: "Loading...",
     loadingUser: "Loading information...",
+    cancel: "Cancel",
+    processing: "Processing...",
+    samples: "Samples",
+    noRating: "No ratings yet",
+    noNotes: "No notes",
+    confirm: "Confirm",
+    status: {
+      statusOpen: "Open",
+      statusInProgress: "In Progress",
+      statusInReview: "In Review",
+      statusCompleted: "Completed",
+      statusCancelled: "Cancelled",
+    },
+    createdAt: "Created at",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -83,6 +99,7 @@ const en = {
     credit: "Credit",
     topUp: "Top-Up",
     transactions: "Transactions",
+    withdraw: "Withdraw",
   },
   // Footer translations
   footer: {
@@ -382,6 +399,18 @@ const en = {
         loginFailed: "Login failed",
         unexpectedError: "An unexpected error occurred",
       },
+      error: {
+        "invalid-credential": "Incorrect email or password. Please try again.",
+        "user-not-found": "No account found with this email.",
+        "wrong-password": "Incorrect password. Please try again.",
+        "invalid-email": "Invalid email address format.",
+        "too-many-requests":
+          "Too many login attempts. Please wait and try again later.",
+        "missing-password": "Please enter your password.",
+        "network-request-failed":
+          "Network error. Please check your internet connection.",
+        unknown: "Email or password is incorrect. Please try again.",
+      },
     },
     signup: {
       title: "Create Your Account",
@@ -614,6 +643,30 @@ const en = {
         invalidFileType:
           "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.",
         fileTooLarge: "File size too large. Maximum size is 5MB.",
+      },
+    },
+    verifyEmail: {
+      title: "Check your email",
+      subtitle: "We've sent a verification link to",
+      whatsNextTitle: "What's next?",
+      steps: {
+        checkInbox: "Check your email inbox (and spam folder)",
+        clickLink: "Click the verification link in the email",
+        returnToLogin: "Return here to sign in to your account",
+      },
+      buttons: {
+        resend: "Resend verification email",
+        sending: "Sending...",
+        goHome: "Go to Home",
+      },
+      alreadyVerified: "Already verified?",
+      signIn: "Sign in",
+      success: {
+        sent: "Verification email sent successfully!",
+      },
+      errors: {
+        noUser: "No user found. Please sign in again.",
+        failedToSend: "Failed to send verification email.",
       },
     },
   },
@@ -1419,6 +1472,22 @@ const en = {
     unknownDate: "Unknown date",
     client: "Client",
     ownProjectMessage: "You cannot apply to your own project",
+    noCompletionYet: "No completion status yet",
+    noCompletionYetDesc:
+      "The project is still in progress. No completion status has been set.",
+    waitingClientCompletion: "Waiting for client to mark as completed",
+    waitingFreelancerCompletion: "Waiting for freelancer to mark as completed",
+    markAsCompleted: "Mark as Completed",
+    confirmCompletion: "Confirm Completion",
+    confirmFreelancerTitle: "Confirm Project Completion",
+    confirmFreelancerDesc:
+      "Are you sure you want to mark this project as completed? This action cannot be undone.",
+    confirmClientTitle: "Confirm Project Completion",
+    confirmClientDesc:
+      "Are you sure you want to mark this project as completed? This action cannot be undone.",
+    projectInReview: "Project In Review",
+    projectInReviewDesc:
+      "The project is currently under review by the client. Please wait for their confirmation.",
   },
   // Manage projects page translations
   manageProjects: {
@@ -1455,6 +1524,14 @@ const en = {
     design: "Design",
     research: "Research",
     translation: "Translation",
+    confirmCancelTitle: "Confirm Project Cancellation",
+    confirmCancelDesc:
+      "Are you sure you want to cancel this project? This action cannot be undone.",
+    confirmDelete: "Confirm",
+    projectDeletedNoRefund:
+      "Project cancelled. No refunds will be issued for any payments made.",
+    projectDeletedWithRefund:
+      "Project cancelled. A refund has been issued for any payments made.",
   },
   // Create project page translations
   createProject: {
@@ -1555,6 +1632,8 @@ const en = {
       "You do not have enough credits to create this project.",
     buyCredits: "Top Up",
     cancel: "Cancel",
+    replaceImage: "Replace Image",
+    removeImage: "Remove Image",
   },
   // Profile page translations
   profile: {
@@ -1782,6 +1861,7 @@ const en = {
       notFoundMessage:
         "The proposal you are looking for does not exist or has been removed.",
       backToProposals: "Back to Proposals",
+      due: "Due Date",
     },
   },
   // Settings page translations
@@ -2759,6 +2839,7 @@ const en = {
     estimatedDuration: "Estimated Duration",
     dueDate: "Due Date",
     submitting: "Submitting...",
+    milestoneDueDateLabel: "Milestone Due Date *",
   },
   pay: {
     title: "Subscription Payment",
@@ -2833,17 +2914,96 @@ const en = {
       date: "Date",
       id: "Transaction ID",
     },
-
+    stats: {
+      totalTopup: "Total Top-ups",
+      escrowHeld: "Total Escrow Held",
+      refunded: "Total Refunded",
+    },
     types: {
       subscription: "Subscription",
       topup: "Top-up",
     },
-
     status: {
+      held: "Held",
+      released: "Released",
+      refunded: "Refunded",
       confirmed: "Confirmed",
       pending: "Pending",
       failed: "Failed",
     },
+  },
+
+  withdraw: {
+    title: "Withdraw Request",
+    creditBalance: "Credit Balance",
+    totalEarned: "Total Earned",
+    accountName: "Account Full Name",
+    accountNumber: "Account / PromptPay Number",
+    withdrawFrom: "Withdraw From",
+    options: {
+      credit: "Credit Balance",
+      totalEarned: "Total Earned",
+      all: "All Balances",
+    },
+    amount: "Amount (LAK)",
+    submit: "Request Withdraw",
+    processing: "Processing...",
+    success: "✅ Withdraw request sent successfully!",
+    allButton: "All",
+    errors: {
+      invalidAmount: "⚠️ Please enter a valid amount.",
+      insufficientCredit: "⚠️ Insufficient credit balance.",
+      insufficientTotalEarned: "⚠️ Insufficient total earned balance.",
+      insufficientBalance: "⚠️ Insufficient total balance.",
+      failed: "Failed to send request",
+      unknown: "⚠️ Something went wrong. Please try again later.",
+    },
+    confirm: {
+      title: "Confirm Withdrawal",
+      from: "From",
+      amount: "Amount",
+      fee: "Fee",
+      noFee: "No fee (Freelancer Student)",
+      net: "Net You Receive",
+      cancel: "Cancel",
+      confirm: "Confirm Withdraw",
+      breakdownPrefix: "Includes ",
+      breakdownMid: " from credit + ",
+      breakdownSuffix: " from total earned.",
+    },
+    summary: {
+      title: "Available Balances",
+      credit: "Credit Balance",
+      earned: "Total Earned",
+    },
+    history: {
+      title: "Withdraw History",
+      empty: "No withdraw requests yet.",
+    },
+    status: {
+      pending: "Pending",
+      approved: "Approved",
+      rejected: "Rejected",
+    },
+    method: {
+      manual_bank_transfer: "Manual Bank Transfer",
+      credit_balance: "Credit Balance",
+      promptpay: "PromptPay Transfer",
+    },
+  },
+  rating: {
+    rateFreelancer: "Rate Freelancer",
+    rateClient: "Rate Client",
+    ratingLabel: "Rating",
+    subtitle: "How was your experience working together?",
+    placeholder:
+      "Leave a comment about your experience (optional)...",
+    submit: "Submit Rating",
+    thankYou: "Thank you for your feedback!",
+    communication: "Communication",
+    quality: "Quality of Work",
+    timeliness: "Timeliness",
+    value: "Value for Money",
   },
 };
 

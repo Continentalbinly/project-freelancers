@@ -72,7 +72,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
             {t("projectDetail.posted")}:
           </span>
           <span className="font-semibold text-text-primary">
-            {timeAgo(project.createdAt)}
+            {timeAgo(project.createdAt, currentLanguage)}
           </span>
         </div>
 
@@ -82,7 +82,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
             {t("projectDetail.lastUpdated")}:
           </span>
           <span className="font-semibold text-text-primary">
-            {timeAgo(project.updatedAt)}
+            {timeAgo(project.updatedAt, currentLanguage)}
           </span>
         </div>
       </div>

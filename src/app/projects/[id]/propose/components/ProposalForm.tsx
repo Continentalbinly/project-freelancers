@@ -10,16 +10,12 @@ import ProposalSummary from "./ProposalSummary";
 
 export default function ProposalForm({ project, user, profile, t }: any) {
   const [coverLetter, setCoverLetter] = useState("");
-  const [proposedBudget, setProposedBudget] = useState(
-    project.budget?.toString() || ""
-  );
+  const [proposedBudget] = useState(project.budget?.toString() || "");
   const [proposedRate, setProposedRate] = useState(
     project.budgetType === "hourly" ? "15000" : ""
   );
   const [estimatedDuration, setEstimatedDuration] = useState("");
   const [workPlan, setWorkPlan] = useState("");
-  const [communicationPreferences, setCommunicationPreferences] = useState("");
-  const [availability, setAvailability] = useState("");
   const [workSamples, setWorkSamples] = useState<any[]>([]);
   const [milestones, setMilestones] = useState<any[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -36,26 +32,6 @@ export default function ProposalForm({ project, user, profile, t }: any) {
       const proposalRef = doc(collection(db, "proposals"));
       const proposalId = proposalRef.id;
 
-      // upload files
-      const uploadedSamples: any[] = [];
-      for (const sample of workSamples) {
-        if (sample.file) {
-          const formData = new FormData();
-          formData.append("file", sample.file);
-          formData.append("folderType", "proposalsImage");
-          formData.append("subfolder", proposalId);
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-          });
-          const result = await res.json();
-          if (result.success) {
-            const { file, ...rest } = sample;
-            uploadedSamples.push({ ...rest, url: result.data.url });
-          }
-        } else uploadedSamples.push(sample);
-      }
-
       const data = {
         id: proposalId,
         projectId: project.id,
@@ -66,15 +42,19 @@ export default function ProposalForm({ project, user, profile, t }: any) {
         estimatedDuration,
         workPlan,
         milestones,
-        workSamples: uploadedSamples,
-        communicationPreferences,
-        availability,
+        workSamples: workSamples.map((s) => ({
+          title: s.title,
+          url: s.url,
+          type: s.type,
+          publicId: s.publicId || null,
+        })),
         status: "pending",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       await setDoc(proposalRef, data);
+
       await updateDoc(doc(db, "projects", project.id), {
         proposalsCount: (project.proposalsCount || 0) + 1,
         updatedAt: new Date(),
@@ -91,6 +71,7 @@ export default function ProposalForm({ project, user, profile, t }: any) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {/* Profile Header */}
       <div className="bg-white rounded-xl shadow-sm border border-border p-6 flex items-center gap-4 mb-4">
         <Avatar {...getAvatarProps(profile, user)} size="md" />
         <div>
@@ -103,6 +84,7 @@ export default function ProposalForm({ project, user, profile, t }: any) {
         </div>
       </div>
 
+      {/* Proposal Form */}
       <div className="bg-white rounded-xl shadow-sm border border-border p-6 space-y-6">
         <h2 className="text-xl font-semibold text-text-primary">
           {t("proposePage.proposalDetails")}
@@ -112,7 +94,7 @@ export default function ProposalForm({ project, user, profile, t }: any) {
           <div className="p-3 bg-error/10 text-error rounded">{error}</div>
         )}
 
-        {/* Cover letter */}
+        {/* Cover Letter */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
             {t("proposePage.coverLetterLabel")}
@@ -127,7 +109,7 @@ export default function ProposalForm({ project, user, profile, t }: any) {
           />
         </div>
 
-        {/* Budget + Duration */}
+        {/* Budget + Hourly Rate */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">
@@ -136,11 +118,11 @@ export default function ProposalForm({ project, user, profile, t }: any) {
             <input
               type="number"
               value={proposedBudget}
-              onChange={(e) => setProposedBudget(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
+              readOnly
+              className="w-full px-3 py-2 border border-border rounded-lg bg-gray-50 text-text-secondary cursor-not-allowed"
             />
           </div>
+
           {project.budgetType === "hourly" && (
             <div>
               <label className="block text-sm font-medium text-text-primary mb-2">
@@ -186,7 +168,7 @@ export default function ProposalForm({ project, user, profile, t }: any) {
           </select>
         </div>
 
-        {/* Work plan */}
+        {/* Work Plan */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
             {t("proposePage.workPlanLabel")}
@@ -198,30 +180,6 @@ export default function ProposalForm({ project, user, profile, t }: any) {
             placeholder={t("proposePage.workPlanPlaceholder")}
             className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
           />
-        </div>
-
-        {/* Preferences */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              {t("proposePage.communicationPreferencesLabel")}
-            </label>
-            <input
-              value={communicationPreferences}
-              onChange={(e) => setCommunicationPreferences(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              {t("proposePage.availabilityLabel")}
-            </label>
-            <input
-              value={availability}
-              onChange={(e) => setAvailability(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
-            />
-          </div>
         </div>
 
         {/* Work Samples */}

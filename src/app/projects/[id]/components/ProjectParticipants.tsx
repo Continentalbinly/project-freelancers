@@ -33,6 +33,11 @@ export default function ProjectParticipants({
             <p className="font-medium text-text-primary">
               {clientProfile?.fullName || t("projectDetail.client")}
             </p>
+            <span className="text-text-secondary">
+              {clientProfile?.rating
+                ? ` • ⭐ ${clientProfile.rating.toFixed(1)}`
+                : ` • ${t("common.noRating")}`}
+            </span>
             <p className="text-sm text-text-secondary">
               {t("projectDetail.projectCreator")}
             </p>
@@ -52,6 +57,11 @@ export default function ProjectParticipants({
               <p className="font-medium text-text-primary">
                 {freelancerProfile.fullName}
               </p>
+              <span className="text-text-secondary">
+                {freelancerProfile.rating
+                  ? ` • ⭐ ${freelancerProfile.rating.toFixed(1)}`
+                  : ` • ${t("common.noRating")}`}
+              </span>
               <p className="text-sm text-text-secondary">
                 {t("projectDetail.assignedFreelancer")}
               </p>

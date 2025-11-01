@@ -19,7 +19,7 @@ import { timeAgo } from "@/service/timeUtils";
 import Avatar from "@/app/utils/avatarHandler";
 
 export default function PortfolioSection() {
-  const { t } = useTranslationContext();
+  const { t, currentLanguage } = useTranslationContext();
   const [completedProjects, setCompletedProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -122,7 +122,7 @@ export default function PortfolioSection() {
                         "-"}
                     </span>
                     <span className="text-xs text-text-secondary">
-                      {timeAgo(project.completedAt)}
+                      {timeAgo(project.completedAt, currentLanguage)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

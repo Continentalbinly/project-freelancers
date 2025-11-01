@@ -2,12 +2,25 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image"; // ✅ import this
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/service/auth-client";
 import { LoginCredentials } from "@/types/auth";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+
+/* 🌐 Helper: extract short Firebase error key */
+function getErrorKey(rawCode: string): string {
+  let code = rawCode?.toLowerCase().trim();
+
+  if (code.startsWith("firebase: error (") && code.endsWith(").")) {
+    code = code.slice(16, -2); // → "auth/invalid-credential"
+  }
+
+  // extract "invalid-credential" part
+  const match = code.match(/auth\/(.+)/);
+  return match ? match[1] : "unknown";
+}
 
 export default function LoginPage() {
   const { t } = useTranslationContext();
@@ -16,7 +29,7 @@ export default function LoginPage() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errorKey, setErrorKey] = useState<string>("");
   const router = useRouter();
   const { user } = useAuth();
 
@@ -27,21 +40,31 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setErrorKey("");
 
     try {
       const result = await loginUser(formData.email, formData.password);
-      if (result.success) router.push("/");
-      else setError(result.error || t("auth.login.errors.loginFailed"));
-    } catch {
-      setError(t("auth.login.errors.unexpectedError"));
+
+      if (result.success) {
+        router.push("/");
+      } else {
+        const code =
+          result.errorCode ||
+          (result.error?.includes("auth/") ? result.error : "auth/unknown");
+        setErrorKey(getErrorKey(code));
+      }
+    } catch (err: any) {
+      const code =
+        err?.code ||
+        (err?.message?.includes("auth/") ? err.message : "auth/unknown");
+      setErrorKey(getErrorKey(code));
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
   };
 
   if (user) {
@@ -60,7 +83,6 @@ export default function LoginPage() {
   return (
     <div className="bg-white py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full">
       <div className="text-center mb-4 sm:mb-6">
-        {/* ✅ Logo on top */}
         <Link href="/" className="flex justify-center mb-3">
           <Image
             src="/favicon.svg"
@@ -71,8 +93,6 @@ export default function LoginPage() {
             priority
           />
         </Link>
-
-        {/* Title & Subtitle */}
         <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-text-primary">
           {t("auth.login.title")}
         </h2>
@@ -81,14 +101,13 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-3 sm:space-y-4 lg:space-y-6"
       >
-        {error && (
+        {errorKey && (
           <div className="bg-error/10 border border-error/20 text-error px-3 sm:px-4 py-2 sm:py-3 rounded-md text-sm sm:text-base">
-            {error}
+            {t(`auth.login.error.${errorKey}`)}
           </div>
         )}
 
@@ -99,7 +118,7 @@ export default function LoginPage() {
           >
             {t("auth.login.email")}
           </label>
-          <input suppressHydrationWarning
+          <input
             id="email"
             name="email"
             type="email"
@@ -118,7 +137,7 @@ export default function LoginPage() {
           >
             {t("auth.login.password")}
           </label>
-          <input suppressHydrationWarning
+          <input
             id="password"
             name="password"
             type="password"
@@ -132,7 +151,7 @@ export default function LoginPage() {
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
           <div className="flex items-center">
-            <input suppressHydrationWarning
+            <input
               id="remember-me"
               name="remember-me"
               type="checkbox"
@@ -154,7 +173,6 @@ export default function LoginPage() {
         </div>
 
         <button
-          suppressHydrationWarning
           type="submit"
           disabled={loading}
           className="w-full btn btn-primary py-2 sm:py-3 text-sm sm:text-base font-medium"

@@ -1,3 +1,5 @@
+"use client";
+
 import { Dispatch, SetStateAction } from "react";
 import { SignupCredentials } from "@/types/auth";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -13,44 +15,39 @@ export default function RoleSelection({
 }: RoleSelectionProps) {
   const { t } = useTranslationContext();
 
-  const handleRoleChange = (
-    role: "freelancer" | "client",
-    checked: boolean
-  ) => {
-    const newRoles = checked
-      ? [...formData.userRoles.filter((r) => r !== role), role]
-      : formData.userRoles.filter((r) => r !== role);
-
+  const handleRoleChange = (role: "freelancer" | "client") => {
+    // ✅ only one role at a time
     setFormData((prev) => ({
       ...prev,
-      userRoles: newRoles as ("freelancer" | "client" | "admin")[],
-      userType: (newRoles.length > 0 ? newRoles[0] : "freelancer") as
-        | "freelancer"
-        | "client"
-        | "admin",
+      userRoles: [role],
+      userType: role, // ✅ string, not array
     }));
   };
+
+  const selectedRole = formData.userRoles[0] || "";
 
   return (
     <div>
       <label className="block text-sm font-semibold text-text-primary mb-3 sm:mb-4">
         {t("auth.signup.step1.roleTitle")}
       </label>
+
       <div className="space-y-3 sm:space-y-4">
-        {/* Freelancer Role */}
+        {/* Freelancer */}
         <label
           className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-            formData.userRoles.includes("freelancer")
+            selectedRole === "freelancer"
               ? "border-primary bg-primary-light/20"
               : "border-border hover:border-primary/50"
           }`}
+          onClick={() => handleRoleChange("freelancer")}
         >
           <input
-            suppressHydrationWarning
-            type="checkbox"
-            checked={formData.userRoles.includes("freelancer")}
-            onChange={(e) => handleRoleChange("freelancer", e.target.checked)}
-            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border rounded"
+            type="radio"
+            name="role"
+            checked={selectedRole === "freelancer"}
+            onChange={() => handleRoleChange("freelancer")}
+            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border"
           />
           <div className="ml-3 sm:ml-4 flex-1">
             <div className="flex items-center mb-2">
@@ -79,20 +76,21 @@ export default function RoleSelection({
           </div>
         </label>
 
-        {/* Client Role */}
+        {/* Client */}
         <label
           className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-            formData.userRoles.includes("client")
+            selectedRole === "client"
               ? "border-secondary bg-secondary-light/20"
               : "border-border hover:border-secondary/50"
           }`}
+          onClick={() => handleRoleChange("client")}
         >
           <input
-            suppressHydrationWarning
-            type="checkbox"
-            checked={formData.userRoles.includes("client")}
-            onChange={(e) => handleRoleChange("client", e.target.checked)}
-            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border rounded"
+            type="radio"
+            name="role"
+            checked={selectedRole === "client"}
+            onChange={() => handleRoleChange("client")}
+            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border"
           />
           <div className="ml-3 sm:ml-4 flex-1">
             <div className="flex items-center mb-2">
@@ -122,7 +120,7 @@ export default function RoleSelection({
         </label>
       </div>
 
-      {formData.userRoles.length === 0 && (
+      {!selectedRole && (
         <p className="text-sm text-error mt-3">
           {t("auth.signup.step1.roleError")}
         </p>
