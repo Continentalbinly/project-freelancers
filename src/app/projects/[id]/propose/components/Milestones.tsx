@@ -1,6 +1,10 @@
 "use client";
 
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  PlusIcon,
+  XMarkIcon,
+  CalendarDaysIcon,
+} from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 export default function Milestones({ t, milestones, setMilestones }: any) {
@@ -8,26 +12,19 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
   const [newItem, setNewItem] = useState({
     title: "",
     description: "",
-    budget: "",
     dueDate: "",
   });
 
   const addMilestone = () => {
-    if (
-      newItem.title &&
-      newItem.description &&
-      newItem.budget &&
-      newItem.dueDate
-    ) {
+    if (newItem.title && newItem.description && newItem.dueDate) {
       setMilestones([
         ...milestones,
         {
           ...newItem,
           id: Date.now().toString(),
-          budget: Number(newItem.budget),
         },
       ]);
-      setNewItem({ title: "", description: "", budget: "", dueDate: "" });
+      setNewItem({ title: "", description: "", dueDate: "" });
       setShowForm(false);
     }
   };
@@ -37,7 +34,8 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
         <label className="block text-sm font-medium text-text-primary">
           {t("proposePage.milestonesLabel")}
         </label>
@@ -50,35 +48,44 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
         </button>
       </div>
 
+      {/* Existing milestones list */}
       {milestones.map((m: any) => (
         <div
           key={m.id}
-          className="flex items-center justify-between bg-background-secondary rounded-lg px-3 py-2 mb-2"
+          className="flex items-center justify-between bg-background-secondary rounded-lg px-4 py-3 mb-2"
         >
           <div className="text-sm">
             <div className="font-medium text-text-primary">{m.title}</div>
             <div className="text-xs text-text-secondary">{m.description}</div>
-            <div className="text-xs text-text-secondary">
-              ₭{m.budget.toLocaleString()} — {m.dueDate}
+            <div className="text-xs text-text-secondary flex items-center gap-1 mt-1">
+              <CalendarDaysIcon className="w-3.5 h-3.5 text-primary/70" />
+              <span>
+                {t("proposePage.dueDate")}:{" "}
+                <strong className="text-text-primary">
+                  {new Date(m.dueDate).toLocaleDateString()}
+                </strong>
+              </span>
             </div>
           </div>
           <button
             onClick={() => removeMilestone(m.id)}
-            className="text-error hover:text-error/80"
+            className="text-error hover:text-error/80 transition"
+            title={t("proposePage.removeMilestone")}
           >
             <XMarkIcon className="w-4 h-4" />
           </button>
         </div>
       ))}
 
+      {/* Add form */}
       {showForm && (
-        <div className="bg-background-secondary rounded-lg p-4 mt-2">
+        <div className="bg-background-secondary rounded-lg p-4 mt-3">
           <input
             type="text"
             placeholder={t("proposePage.milestoneTitlePlaceholder")}
             value={newItem.title}
             onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm"
+            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm focus:ring-2 focus:ring-primary"
           />
           <textarea
             placeholder={t("proposePage.milestoneDescriptionPlaceholder")}
@@ -86,29 +93,27 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
             onChange={(e) =>
               setNewItem({ ...newItem, description: e.target.value })
             }
-            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm"
+            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm focus:ring-2 focus:ring-primary"
             rows={2}
           />
-          <div className="grid grid-cols-2 gap-3 mb-2">
-            <input
-              type="text"
-              placeholder={t("proposePage.milestoneDueDatePlaceholder")}
-              value={newItem.dueDate}
-              onChange={(e) =>
-                setNewItem({ ...newItem, dueDate: e.target.value })
-              }
-              className="px-3 py-2 border border-border rounded-lg text-sm"
-            />
-            <input
-              type="number"
-              placeholder={t("proposePage.milestoneBudgetPlaceholder")}
-              value={newItem.budget}
-              onChange={(e) =>
-                setNewItem({ ...newItem, budget: e.target.value })
-              }
-              className="px-3 py-2 border border-border rounded-lg text-sm"
-            />
+          <div className="relative mb-3">
+            <label className="block text-xs text-text-secondary mb-1">
+              {t("proposePage.milestoneDueDateLabel")}
+            </label>
+            <div className="flex items-center gap-2">
+              <CalendarDaysIcon className="w-4 h-4 text-primary/70" />
+              <input
+                type="date"
+                value={newItem.dueDate}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, dueDate: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary"
+              />
+            </div>
           </div>
+
+          {/* Buttons */}
           <div className="flex justify-end gap-2">
             <button
               type="button"

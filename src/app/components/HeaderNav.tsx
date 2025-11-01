@@ -34,9 +34,15 @@ export default function HeaderNav({ pathname, t, user }: any) {
         </>
       )}
 
-      <Link href="/about" className={linkClasses("/about")}>
-        {t("header.about")}
-      </Link>
+      {user ? (
+        <Link href="/withdraw" className={linkClasses("/withdraw")}>
+          {t("header.withdraw")}
+        </Link>
+      ) : (
+        <Link href="/about" className={linkClasses("/about")}>
+          {t("header.about")}
+        </Link>
+      )}
     </nav>
   );
 }

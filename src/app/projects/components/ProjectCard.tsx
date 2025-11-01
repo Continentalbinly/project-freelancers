@@ -9,6 +9,7 @@ import FavoriteButton from "@/app/components/FavoriteButton";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { formatLAK } from "@/service/currencyUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { timeAgo } from "@/service/timeUtils";
 
 export default function ProjectCard({
   project,
@@ -52,6 +53,8 @@ export default function ProjectCard({
         return "bg-green-100 text-green-700 border border-green-200";
       case "in_progress":
         return "bg-yellow-100 text-yellow-700 border border-yellow-200";
+      case "in_review":
+        return "bg-amber-100 text-amber-700 border border-amber-200";
       case "completed":
         return "bg-blue-100 text-blue-700 border border-blue-200";
       case "cancelled":
@@ -64,13 +67,15 @@ export default function ProjectCard({
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "open":
-        return t("projects.statuses.open") || "Open";
+        return t("common.status.statusopen") || "Open";
       case "in_progress":
-        return t("projects.statuses.inProgress") || "In Progress";
+        return t("common.status.statusInProgress") || "In Progress";
+      case "in_review":
+        return t("common.status.statusInReview") || "In Review";
       case "completed":
-        return t("projects.statuses.completed") || "Completed";
+        return t("common.status.statusCompleted") || "Completed";
       case "cancelled":
-        return t("projects.statuses.cancelled") || "Cancelled";
+        return t("common.status.statusCancelled") || "Cancelled";
       default:
         return status || "Unknown";
     }
@@ -80,7 +85,7 @@ export default function ProjectCard({
     <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden flex flex-col hover:shadow-md transition-all duration-300">
       {/* 🖼️ Image */}
       <div
-        className="relative h-40 sm:h-44 md:h-48 cursor-pointer overflow-hidden"
+        className="relative h-40 sm:h-44 md:h-48 cursor-pointer overflow-hidden group"
         onClick={async () => {
           await incrementProjectViews(project.id);
           window.location.href = `/projects/${project.id}`;
@@ -109,7 +114,7 @@ export default function ProjectCard({
             {/* 🟢 Status Badge */}
             {project.status && (
               <span
-                className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${getStatusColor(
                   project.status
                 )}`}
               >
@@ -130,6 +135,11 @@ export default function ProjectCard({
               <div className="text-xs text-text-secondary truncate">
                 <span className="font-medium text-text-primary">
                   {owner.fullName}
+                </span>
+                <span>
+                  {owner.rating
+                    ? ` • ⭐ ${owner.rating.toFixed(1)}`
+                    : ` • ${t("common.noRating")}`}
                 </span>
               </div>
             </div>
@@ -152,6 +162,12 @@ export default function ProjectCard({
             </span>
             <span className="font-medium text-text-primary">
               {formatBudget(project.budget, project.budgetType)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary">{t("common.createdAt")}</span>
+            <span className="font-medium text-text-primary">
+              {timeAgo(project.createdAt, currentLanguage)}
             </span>
           </div>
         </div>

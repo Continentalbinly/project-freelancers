@@ -23,7 +23,7 @@ import Step3Details from "./components/Step3Details";
 import Step4Requirements from "./components/Step4Requirements";
 import Step5Media from "./components/Step5Media";
 import Step6Review from "./components/Step6Review";
-import GlobalStatus from "../../components/GlobalStatus"; // ✅ Global reusable component
+import GlobalStatus from "../../components/GlobalStatus";
 
 export interface ProjectFormData {
   title: string;
@@ -50,7 +50,6 @@ export default function CreateProjectPage() {
   const router = useRouter();
   const { user, profile } = useAuth();
 
-  // 🪄 Step system
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<ProjectFormData>({
     title: "",
@@ -74,7 +73,7 @@ export default function CreateProjectPage() {
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 🔹 Step list
+  // Step list
   const steps = [
     t("createProject.projectTypeVisibility"),
     t("createProject.basicInformation"),
@@ -84,7 +83,7 @@ export default function CreateProjectPage() {
     t("createProject.reviewSubmit"),
   ];
 
-  // 🔹 Step validation
+  // Step validation
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
@@ -116,6 +115,7 @@ export default function CreateProjectPage() {
 
     setLoading(true);
     try {
+      // Fetch user profile
       const profileRef = doc(db, "profiles", user.uid);
       const profileSnap = await getDoc(profileRef);
       if (!profileSnap.exists()) throw new Error("Profile not found.");
@@ -130,7 +130,7 @@ export default function CreateProjectPage() {
         return;
       }
 
-      // ➕ Add project
+      // ➕ Create project
       const projectRef = await addDoc(collection(db, "projects"), {
         title: formData.title,
         description: formData.description,
@@ -138,6 +138,7 @@ export default function CreateProjectPage() {
         category: formData.category,
         budget: projectBudget,
         budgetType: formData.budgetType,
+        clientId: user.uid,
         timeline: formData.timeline,
         skillsRequired: formData.skillsRequired,
         deadline: formData.deadline || null,
@@ -158,7 +159,7 @@ export default function CreateProjectPage() {
         updatedAt: serverTimestamp(),
       });
 
-      // 🧾 Add transaction record
+      // 🧾 Add escrow transaction
       const transactionId = `TXN-${Date.now()}-${Math.random()
         .toString(36)
         .substring(2, 8)
@@ -167,16 +168,27 @@ export default function CreateProjectPage() {
       await addDoc(collection(db, "transactions"), {
         userId: user.uid,
         transactionId,
-        type: "project_creation",
+        type: "escrow_hold",
         amount: projectBudget,
         currency: "LAK",
-        status: "completed",
+        status: "held",
+        direction: "out",
         paymentMethod: "credit_balance",
         projectId: projectRef.id,
         createdAt: serverTimestamp(),
         previousBalance: currentCredit,
         newBalance: newCredit,
-        description: `Created project "${formData.title}"`,
+        description: `Held ${projectBudget} LAK for project "${formData.title}"`,
+      });
+
+      // 💼 Optional: Escrow record for transparency
+      await addDoc(collection(db, "escrows"), {
+        projectId: projectRef.id,
+        clientId: user.uid,
+        freelancerId: null,
+        amount: projectBudget,
+        status: "held",
+        createdAt: serverTimestamp(),
       });
 
       router.push("/projects");
@@ -225,7 +237,6 @@ export default function CreateProjectPage() {
   return (
     <div className="bg-background min-h-screen">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Breadcrumb */}
         <nav className="mb-6 text-sm">
           <Link href="/projects" className="text-primary hover:underline">
             {t("createProject.projects")}
@@ -233,12 +244,10 @@ export default function CreateProjectPage() {
           / {t("createProject.createProject")}
         </nav>
 
-        {/* Card */}
         <div className="bg-white rounded-lg shadow-sm border">
           <StepProgress currentStep={currentStep} steps={steps} />
 
           <div className="p-6">
-            {/* Steps */}
             {currentStep === 1 && (
               <Step1ProjectType
                 formData={formData}
@@ -283,7 +292,6 @@ export default function CreateProjectPage() {
               <Step6Review formData={formData} previewUrl={previewUrl} t={t} />
             )}
 
-            {/* Navigation */}
             <NavigationButtons
               currentStep={currentStep}
               stepsLength={steps.length}

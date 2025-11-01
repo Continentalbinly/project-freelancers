@@ -12,21 +12,15 @@ import {
   updateDoc,
   getDoc,
   increment,
+  addDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/service/firebase";
-import {
-  CheckCircle,
-  XCircle,
-  Clock,
-  User,
-  CreditCard,
-  Package,
-  Hash,
-  Calendar,
-} from "lucide-react";
+import TransactionHeader from "./components/TransactionHeader";
+import TransactionTable from "./components/TransactionTable";
+import GlobalStatus from "../../components/GlobalStatus";
 
-interface Transaction {
+export interface Transaction {
   id: string;
   transactionId?: string;
   userId: string;
@@ -36,23 +30,20 @@ interface Transaction {
   status: string;
   paymentMethod?: string;
   createdAt?: any;
+  accountName?: string;
+  accountNumber?: string;
+  source?: "credit" | "totalEarned" | "all";
+  description?: string;
+  currency?: string;
+  previousCredit?: number;
+  previousTotal?: number;
+  newCredit?: number;
+  newTotal?: number;
 }
 
-interface UserProfile {
+export interface UserProfile {
   fullName?: string;
   email?: string;
-}
-
-function Money({ amount }: { amount: number }) {
-  return (
-    <span>
-      {new Intl.NumberFormat("lo-LA", {
-        style: "currency",
-        currency: "LAK",
-        maximumFractionDigits: 0,
-      }).format(amount)}
-    </span>
-  );
 }
 
 export default function AdminTransactionsPage() {
@@ -63,7 +54,7 @@ export default function AdminTransactionsPage() {
   );
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
-  // ✅ Check admin role from Firestore (userType array)
+  // ✅ Check admin role
   useEffect(() => {
     async function checkRole() {
       if (!user?.uid) return setIsAdmin(false);
@@ -77,7 +68,7 @@ export default function AdminTransactionsPage() {
     checkRole();
   }, [user]);
 
-  // 🔹 Fetch pending transactions (real-time)
+  // 🔹 Fetch transactions (real-time)
   useEffect(() => {
     if (!isAdmin) return;
     const q = query(
@@ -85,13 +76,14 @@ export default function AdminTransactionsPage() {
       where("status", "==", "pending"),
       orderBy("createdAt", "desc")
     );
+
     const unsub = onSnapshot(q, async (snap) => {
       const txs = snap.docs.map(
         (doc) => ({ id: doc.id, ...doc.data() } as Transaction)
       );
       setTransactions(txs);
 
-      // Fetch associated user profiles for display
+      // Fetch related profiles
       const users: Record<string, UserProfile> = {};
       for (const tx of txs) {
         if (!users[tx.userId]) {
@@ -99,31 +91,31 @@ export default function AdminTransactionsPage() {
           const snap = await getDoc(ref);
           if (snap.exists()) {
             const d = snap.data();
-            users[tx.userId] = {
-              fullName: d.fullName,
-              email: d.email,
-            };
+            users[tx.userId] = { fullName: d.fullName, email: d.email };
           }
         }
       }
       setUserProfiles(users);
     });
+
     return () => unsub();
   }, [isAdmin]);
 
-  // ✅ Approve payment
+  // ✅ Approve Transaction
   async function handleApprove(tx: Transaction) {
-    if (!confirm(`Approve payment of ₭${tx.amount.toLocaleString()}?`)) return;
+    if (!confirm(`Approve ${tx.type} of ₭${tx.amount.toLocaleString()}?`))
+      return;
 
     const txRef = doc(db, "transactions", tx.id);
     const userRef = doc(db, "profiles", tx.userId);
 
     await updateDoc(txRef, {
       status: "confirmed",
+      approvedBy: user?.uid || "admin",
+      confirmedAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
 
-    // update user depending on type
     if (tx.type === "subscription") {
       await updateDoc(userRef, {
         plan: tx.plan || "basic",
@@ -137,162 +129,104 @@ export default function AdminTransactionsPage() {
         credit: increment(tx.amount),
         updatedAt: serverTimestamp(),
       });
+    } else if (tx.type === "withdraw_request") {
+      // Withdraw is already deducted on request — just mark as confirmed
+      console.log("✅ Withdraw confirmed, no credit change required.");
     }
 
     alert("✅ Transaction approved successfully!");
   }
 
-  // ❌ Reject payment
+  // ❌ Reject Transaction (with precise rollback)
   async function handleReject(tx: Transaction) {
     if (!confirm("Reject this transaction?")) return;
+
     const txRef = doc(db, "transactions", tx.id);
+    const userRef = doc(db, "profiles", tx.userId);
+
+    // Mark transaction rejected
     await updateDoc(txRef, {
       status: "rejected",
+      rejectedBy: user?.uid || "admin",
       updatedAt: serverTimestamp(),
     });
-    alert("🚫 Transaction rejected.");
+
+    // 🪙 Refund logic only for withdraws
+    if (tx.type === "withdraw_request") {
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        const updateData: any = { updatedAt: serverTimestamp() };
+
+        // ✅ Use accurate rollback if available
+        if (
+          typeof tx.previousCredit === "number" &&
+          typeof tx.previousTotal === "number"
+        ) {
+          updateData.credit = tx.previousCredit;
+          updateData.totalEarned = tx.previousTotal;
+        } else {
+          // 🧭 Backward compatibility fallback
+          const source = tx.source || "credit";
+          if (source === "credit") {
+            updateData.credit = increment(tx.amount);
+          } else if (source === "totalEarned") {
+            updateData.totalEarned = increment(tx.amount);
+          } else if (source === "all") {
+            // Refund proportionally or to credit if no split data
+            updateData.credit = increment(tx.amount);
+          }
+        }
+
+        await updateDoc(userRef, updateData);
+
+        // ✅ Log refund transaction for audit trail
+        await addDoc(collection(db, "transactions"), {
+          userId: tx.userId,
+          type: "refund",
+          status: "confirmed",
+          direction: "in",
+          currency: tx.currency || "LAK",
+          amount: tx.amount,
+          description: `Refund for rejected withdrawal ${tx.transactionId}`,
+          restoredCredit:
+            typeof tx.previousCredit === "number"
+              ? tx.previousCredit
+              : data.credit || 0,
+          restoredTotalEarned:
+            typeof tx.previousTotal === "number"
+              ? tx.previousTotal
+              : data.totalEarned || 0,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      }
+    }
+
+    alert("🚫 Transaction rejected and user balance restored.");
   }
 
+  // 🔒 Guard states
   if (isAdmin === null)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Checking admin access...</p>
-      </div>
-    );
+    return <GlobalStatus type="loading" message="Checking admin access..." />;
 
   if (!isAdmin)
     return (
-      <div className="min-h-screen flex items-center justify-center text-text-secondary">
-        <p>🚫 You don’t have permission to access this page.</p>
-      </div>
+      <GlobalStatus
+        type="denied"
+        message="🚫 You don’t have permission to access this page."
+      />
     );
 
   return (
-    <div className="bg-background min-h-screen">
-      {/* Header */}
-      <section className="border-b border-border bg-gradient-to-br from-primary/5 to-secondary/5">
-        <div className="max-w-6xl mx-auto px-4 py-8 text-center">
-          <h1 className="text-3xl font-bold text-text-primary">
-            Admin Dashboard — Transactions
-          </h1>
-          <p className="text-text-secondary mt-1">
-            Approve or reject pending user payments.
-          </p>
-        </div>
-      </section>
-
-      {/* Pending Transactions */}
-      <section className="py-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {transactions.length === 0 ? (
-            <p className="text-center text-text-secondary">
-              No pending transactions.
-            </p>
-          ) : (
-            <div className="overflow-x-auto rounded-xl border border-border bg-white shadow-sm">
-              <table className="w-full border-collapse text-sm">
-                <thead className="bg-gray-50 border-b border-border">
-                  <tr className="text-left text-gray-700">
-                    <th className="py-3.5 px-4 font-semibold">User</th>
-                    <th className="py-3.5 px-4 font-semibold">Type</th>
-                    <th className="py-3.5 px-4 font-semibold">Plan</th>
-                    <th className="py-3.5 px-4 font-semibold">Amount</th>
-                    <th className="py-3.5 px-4 font-semibold">Method</th>
-                    <th className="py-3.5 px-4 font-semibold">Date</th>
-                    <th className="py-3.5 px-4 font-semibold">
-                      Transaction ID
-                    </th>
-                    <th className="py-3.5 px-4 font-semibold text-center">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {transactions.map((tx) => {
-                    const profile = userProfiles[tx.userId];
-                    return (
-                      <tr
-                        key={tx.id}
-                        className="hover:bg-gray-50 transition-colors duration-150"
-                      >
-                        {/* User info */}
-                        <td className="py-3 px-4 align-top">
-                          <div>
-                            <div className="flex items-center gap-2 font-medium text-text-primary">
-                              <User className="w-4 h-4 text-primary" />
-                              {profile?.fullName || "Unknown User"}
-                            </div>
-                            <p className="text-[12px] text-gray-500 mt-0.5">
-                              {profile?.email || tx.userId}
-                            </p>
-                          </div>
-                        </td>
-
-                        {/* Type */}
-                        <td className="py-3 px-4 capitalize text-text-secondary">
-                          <div className="flex items-center gap-2">
-                            {tx.type === "topup" ? (
-                              <CreditCard className="w-4 h-4 text-primary" />
-                            ) : (
-                              <Package className="w-4 h-4 text-primary" />
-                            )}
-                            {tx.type}
-                          </div>
-                        </td>
-
-                        {/* Plan */}
-                        <td className="py-3 px-4 text-gray-600">
-                          {tx.plan || "—"}
-                        </td>
-
-                        {/* Amount */}
-                        <td className="py-3 px-4 font-medium text-primary whitespace-nowrap">
-                          <Money amount={tx.amount} />
-                        </td>
-
-                        {/* Method */}
-                        <td className="py-3 px-4 text-gray-600 text-sm whitespace-nowrap">
-                          {tx.paymentMethod || "QR_Manual"}
-                        </td>
-
-                        {/* Date */}
-                        <td className="py-3 px-4 text-gray-600 text-sm whitespace-nowrap">
-                          {tx.createdAt
-                            ? new Date(tx.createdAt.toDate()).toLocaleString()
-                            : "—"}
-                        </td>
-
-                        {/* Transaction ID */}
-                        <td className="py-3 px-4 font-mono text-xs text-gray-600 whitespace-nowrap">
-                          {tx.transactionId || tx.id}
-                        </td>
-
-                        {/* Actions */}
-                        <td className="py-3 px-4 text-center">
-                          <div className="flex justify-center gap-2">
-                            <button suppressHydrationWarning
-                              onClick={() => handleApprove(tx)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-green-600 text-white hover:bg-green-700"
-                            >
-                              <CheckCircle className="w-4 h-4" /> Approve
-                            </button>
-                            <button suppressHydrationWarning
-                              onClick={() => handleReject(tx)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-red-600 text-white hover:bg-red-700"
-                            >
-                              <XCircle className="w-4 h-4" /> Reject
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </section>
+    <div className="bg-gray-50 min-h-screen">
+      <TransactionHeader />
+      <TransactionTable
+        transactions={transactions}
+        userProfiles={userProfiles}
+        onApprove={handleApprove}
+        onReject={handleReject}
+      />
     </div>
   );
 }

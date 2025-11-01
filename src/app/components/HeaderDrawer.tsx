@@ -2,6 +2,7 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import Link from "next/link";
+import Image from "next/image"; // ✅ import this
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { useAuth } from "@/contexts/AuthContext";
 import { logoutUser } from "@/service/auth-client";
@@ -51,14 +52,21 @@ export default function HeaderDrawer({
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-4 border-b border-border">
                   <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">U</span>
+                    <div className="rounded-lg flex items-center justify-center">
+                      <Link href="/" className="flex items-center space-x-2">
+                        <Image
+                          src="/favicon.svg"
+                          alt="UniJobs logo"
+                          width={80}
+                          height={80}
+                          className="rounded-md"
+                          priority
+                        />
+                      </Link>
                     </div>
-                    <span className="text-xl font-bold text-primary">
-                      UniJobs
-                    </span>
                   </div>
-                  <button suppressHydrationWarning
+                  <button
+                    suppressHydrationWarning
                     onClick={() => setIsDrawerOpen(false)}
                     className="p-2 rounded-lg hover:bg-background-secondary"
                   >
@@ -122,9 +130,10 @@ export default function HeaderDrawer({
                       <hr className="my-2 border-border" />
 
                       {/* Logout */}
-                      <button suppressHydrationWarning
+                      <button
+                        suppressHydrationWarning
                         onClick={handleLogout}
-                        className="block w-full text-left px-2 py-2 rounded hover:bg-background-secondary text-error font-medium"
+                        className="block cursor-pointer w-full text-left px-2 py-2 rounded hover:bg-background-secondary text-error font-medium"
                       >
                         {t("header.signOut")}
                       </button>

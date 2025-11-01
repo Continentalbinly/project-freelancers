@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 import Avatar, { getAvatarProps } from '@/app/utils/avatarHandler'
 import { timeAgo } from '@/service/timeUtils'
-import { formatLAK, formatEarnings } from '@/service/currencyUtils'
+import { formatEarnings } from '@/service/currencyUtils'
 import { collection, query, orderBy, limit, getDocs, where } from 'firebase/firestore'
 import { db } from '@/service/firebase'
 import { useTranslationContext } from '@/app/components/LanguageProvider'
@@ -631,7 +631,7 @@ export default function DashboardPage() {
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
                             {activity.status.replace('_', ' ')}
                           </span>
-                          <span className="text-xs text-text-secondary">{timeAgo(activity.date)}</span>
+                          <span className="text-xs text-text-secondary">{timeAgo(activity.date, currentLanguage)}</span>
                           {activity.amount && (
                             <span className="text-xs font-medium text-success">{formatEarnings(activity.amount)}</span>
                           )}

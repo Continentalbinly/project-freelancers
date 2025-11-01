@@ -133,7 +133,7 @@ export default function ProjectDetailPage() {
             size="full"
           />
 
-          <div className="bg-white p-6 rounded-lg border">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-border">
             <ProjectHeader project={project} user={user} t={t} />
             <ProjectDescription description={project.description} t={t} />
             <ProjectSkills skills={project.skillsRequired} t={t} />

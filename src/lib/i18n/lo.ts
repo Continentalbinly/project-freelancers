@@ -9,6 +9,20 @@ const lo = {
   common: {
     loading: "ກຳລັງໂຫລດ...",
     loadingUser: "ກຳລັງໂຫລດຂໍ້ມູນ...",
+    cancel: "ຍົກເລີກ",
+    processing: "ກຳລັງດຳເນີນການ...",
+    samples: "ຕົວຢ່າງ",
+    noRating: "ບໍ່ມີເລດຕິ້ງເທື່ອ",
+    noNotes: "ບໍ່ມີບັນທຶກໂນ້ດ",
+    confirm: "ຢືນຢັນ",
+    status: {
+      statusOpen: "ເປີດ",
+      statusInProgress: "ກຳລັງດຳເນີນຢູ່",
+      statusInReview: "ກຳລັງກວດສອບ",
+      statusCompleted: "ສຳເລັດແລ້ວ",
+      statusCancelled: "ຍົກເລີກແລ້ວ",
+    },
+    createdAt: "ສ້າງເມື່ອ",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -85,6 +99,7 @@ const lo = {
     credit: "ເງິນໃນບັນຊີ",
     topUp: "ເຕີມເງິນ",
     transactions: "ທຸລະກຳ",
+    withdraw: "ຖອນເງິນ",
   },
   // Add more keys as needed
   // Footer translations
@@ -383,6 +398,18 @@ const lo = {
         loginFailed: "ການເຂົ້າສູ່ລະບົບລົ້ມເຫລວ",
         unexpectedError: "ເກີດຂໍ້ຜິດພາດທີ່ບໍ່ຄາດຄິດ",
       },
+      error: {
+        "invalid-credential": "ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່.",
+        "user-not-found": "ບໍ່ພົບບັນຊີທີ່ໃຊ້ອີເມວນີ້.",
+        "wrong-password": "ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ.",
+        "invalid-email": "ຮູບແບບອີເມວບໍ່ຖືກຕ້ອງ.",
+        "too-many-requests":
+          "ທ່ານໄດ້ລອງເຂົ້າຫຼາຍເທື່ອເກີນໄປ. ກະລຸນາລໍຖ້າແລ້ວລອງໃໝ່.",
+        "missing-password": "ກະລຸນາປ້ອນລະຫັດຜ່ານ.",
+        "network-request-failed":
+          "ບໍ່ສາມາດເຊື່ອມຕໍ່ເຄື່ອຂ່າຍໄດ້. ກະລຸນາກວດເບິ່ງອິນເຕີເນັດ.",
+        unknown: "ອີເມວ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່.",
+      },
     },
     signup: {
       title: "ສ້າງບັນຊີຂອງທ່ານ",
@@ -592,6 +619,30 @@ const lo = {
         invalidFileType:
           "ປະເພດໄຟລ໌ບໍ່ຖືກຕ້ອງ. ຮູບ JPEG, PNG, GIF, ແລະ WebP ເທົ່ານັ້ນທີ່ອະນຸຍາດ.",
         fileTooLarge: "ຂະໜາດໄຟລ໌ໃຫຍ່ເກີນໄປ. ຂະໜາດສູງສຸດແມ່ນ 5MB.",
+      },
+    },
+    verifyEmail: {
+      title: "ກວດສອບອີເມວຂອງທ່ານ",
+      subtitle: "ພວກເຮົາໄດ້ສົ່ງລິ້ງຢືນຢັນໄປຫາ:",
+      whatsNextTitle: "ຕໍ່ໄປເປັນຫຍັງ?",
+      steps: {
+        checkInbox: "ກວດສອບກ່ອງອີເມວຂອງທ່ານ (ລວມທັງສະແປມ)",
+        clickLink: "ຄລິກທີ່ລິ້ງຢືນຢັນໃນອີເມວ",
+        returnToLogin: "ກັບມາທີ່ນີ້ເພື່ອເຂົ້າລະບົບ",
+      },
+      buttons: {
+        resend: "ສົ່ງອີເມວຢືນຢັນອີກຄັ້ງ",
+        sending: "ກຳລັງສົ່ງ...",
+        goHome: "ໄປທີ່ໜ້າຫຼັກ",
+      },
+      alreadyVerified: "ຢືນຢັນແລ້ວບໍ?",
+      signIn: "ເຂົ້າລະບົບ",
+      success: {
+        sent: "ສົ່ງອີເມວຢືນຢັນສຳເລັດ!",
+      },
+      errors: {
+        noUser: "ບໍ່ພົບຜູ້ໃຊ້ ກະລຸນາເຂົ້າລະບົບອີກຄັ້ງ.",
+        failedToSend: "ສົ່ງອີເມວຢືນຢັນບໍ່ສຳເລັດ.",
       },
     },
   },
@@ -1481,7 +1532,7 @@ const lo = {
     actions: "ການດຳເນີນການ",
     submitProposal: "ສົ່ງຂໍສະເໜີ",
     editProject: "ແກ້ໄຂໂປຣເຈັກ",
-    completionStatus: "ສະຖານະການສຳເລັດ",
+    completionStatus: "ສະຖານະ",
     projectCompleted: "ໂປຣເຈັກສຳເລັດແລ້ວ",
     projectCompletedDesc:
       "ຜູ້ວ່າຈ້າງ ແລະ ຜູ້ເຮັດວຽກອິດສະລະໄດ້ມາກໂປຣເຈັກເປັນສຳເລັດແລ້ວ",
@@ -1492,6 +1543,20 @@ const lo = {
     unknownDate: "ວັນທີທີ່ບໍ່ຮູ້",
     client: "ຜູ້ວ່າຈ້າງ",
     ownProjectMessage: "ທ່ານບໍ່ສາມາດສະໝັກໂປຣເຈັກຂອງທ່ານໄດ້",
+    noCompletionYet: "ຍັງບໍ່ສຳເລັດ",
+    noCompletionYetDesc: "ຍັງບໍ່ມີຜູ້ໃດທີ່ໄດ້ຢືນຢັນສຳເລັດໂປຣເຈັກນີ້",
+    waitingClientCompletion: "ລໍຖ້າຜູ້ວ່າຈ້າງຢືນຢັນສຳເລັດ",
+    waitingFreelancerCompletion: "ລໍຖ້າຜູ້ເຮັດວຽກອິດສະລະຢືນຢັນສຳເລັດ",
+    markAsCompleted: "ຕິດໝາຍເປັນສຳເລັດ",
+    confirmCompletion: "ຢືນຢັນສຳເລັດ",
+    confirmFreelancerTitle: "ຢືນຢັນສຳເລັດໂປຣເຈັກ",
+    confirmFreelancerDesc:
+      "ທ່ານແນ່ໃຈແລ້ວບໍ່ທີ່ຈະຢືນຢັນສຳເລັດໂປຣເຈັກນີ້? ຫຼັງຈາກຢືນຢັນແລ້ວ ທ່ານຈະບໍ່ສາມາດແກ້ໄຂໂປຣເຈັກນີ້ໄດ້ອີກ.",
+    confirmClientTitle: "ຢືນຢັນສຳເລັດໂປຣເຈັກ",
+    confirmClientDesc:
+      "ທ່ານແນ່ໃຈແລ້ວບໍ່ທີ່ຈະຢືນຢັນສຳເລັດໂປຣເຈັກນີ້? ຫຼັງຈາກຢືນຢັນແລ້ວ ທ່ານຈະບໍ່ສາມາດແກ້ໄຂໂປຣເຈັກນີ້ໄດ້ອີກ.",
+    projectInReview: "ໂປຣເຈັກຢູ່ໃນການທົບທວນ",
+    projectInReviewDesc: "ໂປຣເຈັກນີ້ກຳລັງຢູ່ໃນການທົບທວນ ແລະ ຈະສຳເລັດໃນໄວໆນີ້.",
   },
   // Manage projects page translations
   manageProjects: {
@@ -1528,6 +1593,14 @@ const lo = {
     design: "ການອອກແບບ",
     research: "ການຄົ້ນຄວ້າ",
     translation: "ການແປພາສາ",
+    confirmCancelTitle: "ທ່ານແນ່ໃຈບໍ່ວ່າຈະຍົກເລີກໂປຣເຈັກນີ້?",
+    confirmCancelDesc:
+      "ການຍົກເລີກໂປຣເຈັກຈະເຮັດໃຫ້ບໍ່ສາມາດສົ່ງ ຫຼື ຮັບຂໍສະເໜີໄດ້ ແລະ ຜູ້ເຮັດວຽກອິດສະລະທີ່ສາມາດເຂົ້າເຖິງໂປຣເຈັກຂອງທ່ານຈະຖືກລົບອອກ.",
+    confirmDelete: "ຢືນຢັນ",
+    projectDeletedNoRefund:
+      "ໂປຣເຈັກຂອງທ່ານຖືກລົບອອກແລ້ວ. ການຍົກເລີກນີ້ບໍ່ໄດ້ຮັບການເງິນຄືນ.",
+    projectDeletedWithRefund:
+      "ໂປຣເຈັກຂອງທ່ານຖືກລົບອອກແລ້ວ. ການຍົກເລີກນີ້ຮັບການເງິນຄືນ.",
   },
   // Create project page translations
   createProject: {
@@ -1619,15 +1692,17 @@ const lo = {
     permissionDeniedMessage:
       "ທ່ານຕ້ອງມີສິການເຂົ້າໃຊ້ຂອງ ຜູ້ເຮັດວຽກອິດສະລະ ແລະ ຜູ້ວ່າຈ້າງ ເພື່ອສ້າງໂປຣເຈັກ",
     redirecting: "ກຳລັງກັບໄປຫນ້າຫຼັກ",
-    yourCredits: "ຄະແນນຂອງທ່ານ",
-    requiredCredits: "ຄະແນນທີ່ຕ້ອງມີ",
+    yourCredits: "ເງິນຂອງທ່ານ",
+    requiredCredits: "ເງິນທີ່ຕ້ອງມີ",
     projectBudget: "ງົບປະມານໂປຣເຈັກ",
-    remaining: "ທີ່ເຫຼືອ",
-    insufficientCredits: "ຄະແນນບໍ່ພຽງພໍ",
+    remaining: "ເງິນທີ່ເຫຼືອ",
+    insufficientCredits: "ເງິນບໍ່ພຽງພໍ",
     insufficientCreditsMessage:
-      "ທ່ານບໍ່ມີຄະແນນພຽງພໍເພື່ອສ້າງໂປຣເຈັກນີ້. ກະລຸນາເພີ່ມຄະແນນຂອງທ່ານ.",
-    buyCredits: "ຕື່ມຄະແນນ",
+      "ທ່ານບໍ່ມີເງິນພຽງພໍເພື່ອສ້າງໂປຣເຈັກນີ້. ກະລຸນາເພີ່ມເງິນຂອງທ່ານ.",
+    buyCredits: "ຕື່ມເງິນ",
     cancel: "ຍົກເລີກ",
+    replaceImage: "ແທນທີ່ຮູບພາບ",
+    removeImage: "ລຶບຮູບພາບ",
   },
   // Profile page translations
   profile: {
@@ -1786,8 +1861,8 @@ const lo = {
     loading: "ກຳລັງໂຫຼດຂໍສະເໜີ...",
     browseProjects: "ຊອກຫາໂປຣເຈັກ",
     tabs: {
-      submitted: "ຂໍສະເໜີທີ່ສົ່ງແລ້ວ",
-      received: "ຂໍສະເໜີທີ່ຮັບແລ້ວ",
+      submitted: "ຂໍສະເໜີທີ່ສົ່ງ",
+      received: "ຂໍສະເໜີທີ່ໄດ້ຮັບ",
     },
     filters: {
       title: "ກັ່ນຕອງຕາມສະຖານະ:",
@@ -1854,6 +1929,7 @@ const lo = {
       notFound: "ບໍ່ພົບຂໍສະເໜີ",
       notFoundMessage: "ຂໍສະເໜີທີ່ທ່ານກຳລັງຊອກຫາບໍ່ມີຢູ່ ຫຼື ຖືກລຶບແລ້ວ.",
       backToProposals: "ກັບໄປຂໍສະເໜີ",
+      due: "ວັນທີ",
     },
   },
   // Settings page translations
@@ -2016,7 +2092,7 @@ const lo = {
         items: [
           "ແພລດຟອມອາດຈະຄິດຄ່າບໍລິການສຳລັບການເຮັດທຸລະກຳ.",
           "ການຊຳລະເງິນທັງໝົດຕ້ອງເຮັດຜ່ານລະບົບການຊຳລະເງິນທີ່ກຳນົດຂອງແພລດຟອມ.",
-          "ການຄືນເງິນຂຶ້ນກັບນະໂຍບາຍການຄືນເງິນຂອງແພລດຟອມ ແລະ ສະຖານະການສຳເລັດໂປຣເຈັກ.",
+          "ການຄືນເງິນຂຶ້ນກັບນະໂຍບາຍການຄືນເງິນຂອງແພລດຟອມ ແລະ ການສຳເລັດໂປຣເຈັກ.",
         ],
       },
       intellectualProperty: {
@@ -2717,6 +2793,7 @@ const lo = {
     estimatedDuration: "ໄລຍະເວລາທີ່ຄາດວ່າຈະໃຊ້",
     dueDate: "ວັນກຳນົດ",
     submitting: "ກຳລັງສົ່ງ...",
+    milestoneDueDateLabel: "ວັນກຳນົດ Milestone",
   },
   pay: {
     title: "ການຈ່າຍເງິນສະມາຊິກ",
@@ -2790,16 +2867,96 @@ const lo = {
       id: "ເລກທຸລະກໍາ",
     },
 
+    stats: {
+      totalTopup: "ການເຕີມເງິນທັ້ງໝົດ",
+      escrowHeld: "ວາງເງິນມັດຈຳໂປຣເຈັກ",
+      refunded: "ການຄືນເງິນ",
+    },
+
     types: {
       subscription: "ສະມາຊິກ",
       topup: "ເຕີມເງິນ",
     },
 
     status: {
+      held: "ວາງເງິນມັດຈຳ",
+      released: "ຟຣີແລນຊ໌ຮັບໂປຣເຈັກ",
+      refunded: "ຄືນເງິນ",
       confirmed: "ຢືນຢັນແລ້ວ",
       pending: "ລໍຖ້າຢືນຢັນ",
       failed: "ລົ້ມເຫລວ",
     },
+  },
+  withdraw: {
+    title: "ຂໍຖອນເງິນ",
+    creditBalance: "ຍອດເງິນໃນບັນຊີ",
+    totalEarned: "ລາຍຮັບທັງໝົດ",
+    accountName: "ຊື່ເຕັມຂອງບັນຊີ",
+    accountNumber: "ເລກບັນຊີ / ເລກ PromptPay",
+    withdrawFrom: "ຖອນເງິນຈາກ",
+    options: {
+      credit: "ຍອດເງິນໃນບັນຊີ",
+      totalEarned: "ລາຍຮັບທັງໝົດ",
+      all: "ທັງສອງບັນຊີ",
+    },
+    amount: "ຈຳນວນເງິນ (LAK)",
+    submit: "ສົ່ງຄຳຂໍຖອນເງິນ",
+    processing: "ກຳລັງດຳເນີນການ...",
+    success: "✅ ສົ່ງຄຳຂໍຖອນເງິນສຳເລັດແລ້ວ!",
+    allButton: "ທັງໝົດ",
+    errors: {
+      invalidAmount: "⚠️ ກະລຸນາປ້ອນຈຳນວນເງິນໃຫ້ຖືກຕ້ອງ.",
+      insufficientCredit: "⚠️ ຍອດເງິນໃນບັນຊີບໍ່ພຽງພໍ.",
+      insufficientTotalEarned: "⚠️ ລາຍຮັບທັງໝົດບໍ່ພຽງພໍ.",
+      insufficientBalance: "⚠️ ຍອດເງິນທັງໝົດບໍ່ພຽງພໍ.",
+      failed: "ສົ່ງຄຳຂໍບໍ່ສຳເລັດ.",
+      unknown: "⚠️ ມີບັນຫາເກີດຂຶ້ນ, ກະລຸນາລອງໃໝ່.",
+    },
+    confirm: {
+      title: "ຢືນຢັນການຖອນເງິນ",
+      from: "ຈາກ",
+      amount: "ຈຳນວນເງິນ",
+      fee: "ຄ່າທຳນຽມ",
+      noFee: "ບໍ່ມີຄ່າທຳນຽມ (Freelancer Student)",
+      net: "ຈຳນວນເງິນທີ່ຈະໄດ້ຮັບ",
+      cancel: "ຍົກເລີກ",
+      confirm: "ຢືນຢັນການຖອນເງິນ",
+      breakdownPrefix: "ປະກອບມີ ",
+      breakdownMid: " ຈາກບັນຊີເຄຣດິດ + ",
+      breakdownSuffix: " ຈາກລາຍຮັບທັງໝົດ.",
+    },
+    summary: {
+      title: "ຍອດເງິນທີ່ມີຢູ່",
+      credit: "ຍອດເງິນໃນບັນຊີ",
+      earned: "ລາຍຮັບທັງໝົດ",
+    },
+    history: {
+      title: "ປະຫວັດການຖອນເງິນ",
+      empty: "ຍັງບໍ່ມີການຂໍຖອນເງິນ.",
+    },
+    status: {
+      pending: "ກຳລັງລໍຖ້າ",
+      approved: "ອະນຸມັດແລ້ວ",
+      rejected: "ປະຕິເສດ",
+    },
+    method: {
+      manual_bank_transfer: "ໂອນຜ່ານທະນາຄານ",
+      credit_balance: "ຍອດເງິນໃນບັນຊີ",
+      promptpay: "ໂອນຜ່ານ PromptPay",
+    },
+  },
+  rating: {
+    rateFreelancer: "ປະເມີນຜູ້ເຮັດວຽກຄົນນີ້",
+    rateClient: "ປະເມີນຜູ້ຈ້າງຄົນນີ້",
+    projectCompleted: "ໂປຣເຈັກສຳເລັດແລ້ວ",
+    subtitle: "ທ່ານຄິດເຫັນແນວໃດກັບການຮ່ວມງານກັບຜູ້ເຮັດວຽກອິກສະຫຼະຄົນນີ້?",
+    placeholder: "ໃຫ້ຄະແນນຜູ້ເຮັດວຽກ/ຜູ້ຈ້າງ ແລະ ຂໍ້ຄວາມຕິຊົມ...",
+    submit: "ສົ່ງການປະເມີນ",
+    thankYou: "ຂອບໃຈສໍາລັບການປະເມີນ!",
+    communication: "ສື່ສານ",
+    quality: "ປະສິດທິພາບ",
+    timeliness: "ຕົງຕໍ່ເວລາ",
+    value: "ຄຸ້ມຄ່າ",
   },
 };
 
