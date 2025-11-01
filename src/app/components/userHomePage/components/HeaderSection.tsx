@@ -70,32 +70,6 @@ export default function HeaderSection({ user, profile }: any) {
               value={userStats.projectsCompleted}
               color="text-success"
             />
-            {hasBoth ? (
-              <>
-                <Stat
-                  label={t("userHomePage.stats.earned")}
-                  value={formatEarnings(userStats.totalEarned)}
-                  color="text-success"
-                />
-                <Stat
-                  label={t("userHomePage.stats.spent")}
-                  value={formatEarnings(userStats.totalSpent)}
-                  color="text-error"
-                />
-              </>
-            ) : (
-              <Stat
-                label={
-                  isClient
-                    ? t("userHomePage.stats.spent")
-                    : t("userHomePage.stats.earned")
-                }
-                value={formatEarnings(
-                  isClient ? userStats.totalSpent : userStats.totalEarned
-                )}
-                color="text-secondary"
-              />
-            )}
           </div>
         </div>
       </div>
