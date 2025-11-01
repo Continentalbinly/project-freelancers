@@ -13,6 +13,7 @@ import NavigationButtons from "./components/NavigationButtons";
 
 export default function SignupPage() {
   const { t } = useTranslationContext();
+
   const [formData, setFormData] = useState<SignupCredentials>({
     email: "",
     password: "",
@@ -48,13 +49,14 @@ export default function SignupPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [uploading, setUploading] = useState(false);
 
+  // ✅ Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      // ✅ Compute occupation automatically
+      // ✅ Compute derived fields
       const mainRole = formData.userRoles[0] || "freelancer";
       const category =
         mainRole === "freelancer"
@@ -63,7 +65,7 @@ export default function SignupPage() {
 
       const occupation = category ? `${mainRole}_${category}` : mainRole;
 
-      // ✅ Initial billing
+      // ✅ Initial billing defaults
       const initialBillingData = {
         credit: 0,
         plan: "free",
@@ -74,17 +76,19 @@ export default function SignupPage() {
         totalSpentOnPlans: 0,
       };
 
-      // ✅ Sign up user and create profile
+      // ✅ Sign up user & create full profile in one step
       const result = await signupUser(
         formData.email,
         formData.password,
         formData.fullName,
-        mainRole, // ✅ role string, not array
+        mainRole, // single string
         formData.avatarUrl,
         {
-          userType: mainRole, // ✅ Fix: should be a string
+          userType: mainRole,
           userRoles: [mainRole],
-          occupation, // ✅ new field
+          occupation,
+          userCategory: formData.userCategory,
+          clientCategory: formData.clientCategory,
           dateOfBirth: formData.dateOfBirth,
           gender: formData.gender,
           phone: formData.phone,
@@ -107,21 +111,8 @@ export default function SignupPage() {
         }
       );
 
+      // ✅ Handle result
       if (result.success) {
-        const userId = result.user?.id || result.user?.uid;
-        if (userId && (formData.userCategory || formData.clientCategory)) {
-          // ✅ Send occupation + category to API
-          await fetch(`/api/profile/${userId}/update-category`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              userCategory: formData.userCategory,
-              clientCategory: formData.clientCategory,
-              occupation, // ✅ new
-            }),
-          });
-        }
-
         if (result.requiresVerification) {
           window.location.href = "/auth/verify-email";
         } else {
@@ -138,47 +129,43 @@ export default function SignupPage() {
     }
   };
 
-  // ✅ Validation
+  // ✅ Validation per step
   const isStepValid = (): boolean => {
     switch (currentStep) {
       case 1:
-        return !!(
-          formData.fullName &&
-          formData.email &&
-          formData.password &&
+        return (
+          !!formData.fullName &&
+          !!formData.email &&
+          !!formData.password &&
           formData.userRoles.length > 0
         );
       case 2:
-        const basicInfoValid =
+        const basicValid =
           formData.dateOfBirth && formData.gender && formData.phone;
-        if (!basicInfoValid) return false;
+        if (!basicValid) return false;
 
         if (formData.userRoles.includes("freelancer")) {
-          return !!(formData.userCategory && formData.userCategory.length > 0);
+          return !!formData.userCategory;
         }
         if (formData.userRoles.includes("client")) {
-          return !!(
-            formData.clientCategory && formData.clientCategory.length > 0
-          );
+          return !!formData.clientCategory;
         }
         return true;
       case 3:
-        return !!(formData.acceptTerms && formData.acceptPrivacyPolicy);
+        return formData.acceptTerms && formData.acceptPrivacyPolicy;
       default:
         return false;
     }
   };
 
-  const nextStep = () => {
-    if (currentStep < 3) setCurrentStep(currentStep + 1);
-  };
+  // ✅ Step controls
+  const nextStep = () => currentStep < 3 && setCurrentStep(currentStep + 1);
+  const prevStep = () => currentStep > 1 && setCurrentStep(currentStep - 1);
 
-  const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
-  };
-
+  // ✅ Render
   return (
     <div className="bg-white py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full max-w-4xl mx-auto">
+      {/* Header */}
       <div className="text-center mb-4 sm:mb-6 lg:mb-8">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-2">
           {t("auth.signup.title")}
@@ -186,10 +173,10 @@ export default function SignupPage() {
         <p className="text-text-secondary text-sm sm:text-base lg:text-lg">
           {t("auth.signup.subtitle")}
         </p>
-
         <ProgressSteps currentStep={currentStep} />
       </div>
 
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-4 sm:space-y-6 lg:space-y-8"
@@ -229,6 +216,7 @@ export default function SignupPage() {
         />
       </form>
 
+      {/* Footer */}
       <div className="mt-6 sm:mt-8 text-center">
         <p className="text-text-secondary">
           {t("auth.signup.alreadyHaveAccount")}{" "}
