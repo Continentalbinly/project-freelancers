@@ -91,7 +91,7 @@ function getFirebaseErrorMessage(code: string): string {
   return messages[code] || messages["auth/unknown"];
 }
 
-/** ✅ SIGNUP (unchanged except consistent structure) */
+/** ✅ SIGNUP — with token refresh and delay fix */
 export async function signupUser(
   email: string,
   password: string,
@@ -105,6 +105,7 @@ export async function signupUser(
   }
 
   try {
+    // ✅ Create account
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -112,16 +113,24 @@ export async function signupUser(
     );
     const user = userCredential.user;
 
+    // 🕒 Wait 0.5–1s to ensure Firebase has issued ID token
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // 🔄 Force-refresh a valid token (avoids expired or missing token issue)
+    const token = await user.getIdToken(true);
+
+    // ✅ Send verification email (optional)
     await sendEmailVerification(user, {
       url: `${window.location.origin}/verify-email?userId=${user.uid}`,
       handleCodeInApp: false,
     });
 
+    // ✅ Create Firestore profile (using Admin SDK on server)
     const response = await fetch("/api/auth", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${await user.getIdToken()}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         action: "create-profile",
@@ -135,7 +144,9 @@ export async function signupUser(
     });
 
     const data = await response.json();
+
     if (!data.success) {
+      // If Firestore failed, rollback the auth user to prevent orphan accounts
       await user.delete();
       throw new Error(data.error || "Failed to create user profile");
     }
