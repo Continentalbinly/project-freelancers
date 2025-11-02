@@ -4,9 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 // 🧩 Modular Components
-import HeaderSection from "./components/HeaderSection";
-import SearchSection from "./components/SearchSection";
-import QuickActions from "./components/QuickActions";
 import RecentProjects from "./components/RecentProjects";
 import ProfileSummary from "./components/Sidebar/ProfileSummary";
 import RecentActivity from "./components/Sidebar/RecentActivity";
@@ -37,8 +34,6 @@ export default function UserHomePage() {
 
   return (
     <div className="bg-background-secondary min-h-screen">
-      {/* Header */}
-      <HeaderSection profile={profile} user={user} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Search */}
@@ -47,7 +42,6 @@ export default function UserHomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            <QuickActions profile={profile} />
             <RecentProjects user={user} />
           </div>
 

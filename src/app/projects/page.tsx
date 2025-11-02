@@ -66,15 +66,6 @@ export default function ProjectsPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* 🌟 Hero Section */}
-      <section className="bg-gradient-to-br from-primary-light to-secondary-light py-10 text-center">
-        <h1 className="text-4xl font-bold text-text-primary mb-2">
-          {t("projects.hero.title")}
-        </h1>
-        <p className="text-lg text-text-secondary max-w-3xl mx-auto">
-          {t("projects.hero.subtitle")}
-        </p>
-      </section>
 
       {/* 🔍 Filters */}
       <ProjectsFilters

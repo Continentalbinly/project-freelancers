@@ -1,3 +1,4 @@
+import { sign } from "crypto";
 import { mark } from "framer-motion/client";
 import { redirect } from "next/dist/server/api-utils";
 
@@ -23,7 +24,10 @@ const en = {
       statusCompleted: "Completed",
       statusCancelled: "Cancelled",
     },
+    filters: "Filters",
+    hideFilters: "Hide filters",
     createdAt: "Created at",
+    signIn: "Sign In",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -59,6 +63,7 @@ const en = {
     home: "Home",
     projects: "Projects",
     proposals: "Proposals",
+    messages: "Messages",
     about: "About",
     freelancers: "Freelancers",
     clients: "Clients",

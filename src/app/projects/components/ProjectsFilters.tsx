@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Props {
   filters: any;
   setFilters: (f: any) => void;
   t: (key: string) => string;
-  onReset?: () => void; // ✅ optional callback from parent
+  onReset?: () => void;
 }
 
 interface Category {
@@ -27,11 +28,11 @@ export default function ProjectsFilters({
   const { currentLanguage } = useTranslationContext();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const update = (key: string, value: string) =>
     setFilters({ ...filters, [key]: value });
 
-  // Local reset (for fallback)
   const reset = () =>
     setFilters({
       search: "",
@@ -39,7 +40,7 @@ export default function ProjectsFilters({
       status: "all",
     });
 
-  // 🔹 Fetch categories from Firestore
+  // 🔹 Fetch categories
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -59,17 +60,51 @@ export default function ProjectsFilters({
   }, []);
 
   return (
-    <section className="sticky top-16 z-30 bg-white/80 backdrop-blur-md border-b border-border py-4 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
-          {/* 🔍 Search */}
+    <section className="sticky top-14 z-30 bg-white/90 backdrop-blur-md border-b border-border shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        {/* 💡 Mobile: simple search + filter button */}
+        <div className="flex items-center gap-2 sm:hidden">
           <div className="relative flex-1">
             <input
               type="text"
               placeholder={t("projects.search.placeholder")}
               value={filters.search}
               onChange={(e) => update("search", e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-white text-sm placeholder-gray-400 shadow-sm transition-all"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5 absolute left-2.5 top-2.5 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-4.35-4.35M16.65 16.65A7.5 7.5 0 1116.65 2a7.5 7.5 0 010 14.65z"
+              />
+            </svg>
+          </div>
+          <button
+            onClick={() => setMobileOpen((p) => !p)}
+            className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-primary hover:text-primary transition-all"
+          >
+            {mobileOpen ? t("common.hideFilters") : t("common.filters")}
+          </button>
+        </div>
+
+        {/* 🧩 Desktop Filters */}
+        <div className="hidden sm:flex flex-wrap items-center gap-3 mt-2">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[200px]">
+            <input
+              type="text"
+              placeholder={t("projects.search.placeholder")}
+              value={filters.search}
+              onChange={(e) => update("search", e.target.value)}
+              className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -87,51 +122,106 @@ export default function ProjectsFilters({
             </svg>
           </div>
 
-          {/* 🏷️ Category */}
-          <div className="w-full lg:w-48">
-            <select
-              value={filters.category}
-              onChange={(e) => update("category", e.target.value)}
-              disabled={loading}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
-            >
-              <option value="all">{t("projects.filters.allCategories")}</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {currentLanguage === "lo"
-                    ? cat.name_lo || cat.name_en
-                    : cat.name_en || cat.name_lo}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* 📊 Status */}
-          <div className="w-full lg:w-48">
-            <select
-              value={filters.status}
-              onChange={(e) => update("status", e.target.value)}
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
-            >
-              <option value="all">{t("projects.filters.allStatus")}</option>
-              <option value="open">{t("projects.statuses.open")}</option>
-              <option value="in_progress">
-                {t("projects.statuses.inProgress")}
+          {/* Category */}
+          <select
+            value={filters.category}
+            onChange={(e) => update("category", e.target.value)}
+            disabled={loading}
+            className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+          >
+            <option value="all">{t("projects.filters.allCategories")}</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {currentLanguage === "lo"
+                  ? cat.name_lo || cat.name_en
+                  : cat.name_en || cat.name_lo}
               </option>
-              <option value="completed">
-                {t("projects.statuses.completed")}
-              </option>
-            </select>
-          </div>
+            ))}
+          </select>
 
-          {/* ❌ Clear Filters */}
+          {/* Status */}
+          <select
+            value={filters.status}
+            onChange={(e) => update("status", e.target.value)}
+            className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+          >
+            <option value="all">{t("projects.filters.allStatus")}</option>
+            <option value="open">{t("projects.statuses.open")}</option>
+            <option value="in_progress">
+              {t("projects.statuses.inProgress")}
+            </option>
+            <option value="completed">
+              {t("projects.statuses.completed")}
+            </option>
+          </select>
+
+          {/* Reset */}
           <button
-            onClick={onReset || reset} // ✅ Use parent callback if provided
-            className="px-4 py-2 text-sm font-medium rounded-xl border border-gray-300 hover:border-primary hover:text-primary bg-white transition-all shadow-sm"
+            onClick={onReset || reset}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
           >
             {t("projects.search.clearFilters")}
           </button>
         </div>
+
+        {/* 📱 Mobile Dropdown Filters */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mt-3 sm:hidden"
+            >
+              {/* 🔹 Grid for Category + Status */}
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                {/* 🏷️ Category */}
+                <select
+                  value={filters.category}
+                  onChange={(e) => update("category", e.target.value)}
+                  disabled={loading}
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary text-sm shadow-sm"
+                >
+                  <option value="all">
+                    {t("projects.filters.allCategories")}
+                  </option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {currentLanguage === "lo"
+                        ? cat.name_lo || cat.name_en
+                        : cat.name_en || cat.name_lo}
+                    </option>
+                  ))}
+                </select>
+
+                {/* 📊 Status */}
+                <select
+                  value={filters.status}
+                  onChange={(e) => update("status", e.target.value)}
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary text-sm shadow-sm"
+                >
+                  <option value="all">{t("projects.filters.allStatus")}</option>
+                  <option value="open">{t("projects.statuses.open")}</option>
+                  <option value="in_progress">
+                    {t("projects.statuses.inProgress")}
+                  </option>
+                  <option value="completed">
+                    {t("projects.statuses.completed")}
+                  </option>
+                </select>
+              </div>
+
+              {/* ❌ Clear Filters button */}
+              <button
+                onClick={onReset || reset}
+                className="w-full px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
+              >
+                {t("projects.search.clearFilters")}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

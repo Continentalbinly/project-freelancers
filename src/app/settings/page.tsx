@@ -39,20 +39,8 @@ export default function SettingsPage() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
+    <div className="bg-gradient-to-br from-background to-background-secondary">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Header */}
-        <div className="mb-8 flex items-center gap-4">
-          <button suppressHydrationWarning
-            onClick={() => router.back()}
-            className="p-2 rounded-lg bg-white shadow-sm border border-border hover:shadow-md transition-all"
-          >
-            <ChevronLeftIcon className="w-5 h-5 text-text-primary" />
-          </button>
-          <h1 className="text-3xl font-bold text-text-primary">
-            {t("settings.title")}
-          </h1>
-        </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-border">
           <SettingsTabs activeTab={activeTab} onChange={setActiveTab} />

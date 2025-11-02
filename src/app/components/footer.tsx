@@ -1,122 +1,7 @@
 "use client";
-
-import {
-  languages,
-  supportedLanguages,
-  defaultLanguage,
-  Language,
-} from "@/lib/i18n/config";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslationContext } from "./LanguageProvider";
-
-function LanguageSwitcher() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const { currentLanguage, changeLanguage } = useTranslationContext();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleLanguageChange = (lang: Language) => {
-    changeLanguage(lang);
-    setIsOpen(false);
-  };
-
-  // Reorder languages to show Lao first
-  const orderedLanguages: Language[] = ["lo", "en"];
-
-  const getFlagImage = (lang: Language) => {
-    switch (lang) {
-      case "lo":
-        return "/images/assets/laos.png";
-      case "en":
-        return "/images/assets/usa.png";
-      default:
-        return "/images/assets/usa.png";
-    }
-  };
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        suppressHydrationWarning
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-background-secondary border border-border rounded-lg hover:bg-background transition-colors"
-      >
-        <img
-          src={getFlagImage(currentLanguage)}
-          alt={`${languages[currentLanguage].nativeName} flag`}
-          width={20}
-          height={15}
-          className="rounded-sm"
-        />
-        <span className="text-sm text-text-primary">
-          {languages[currentLanguage].nativeName}
-        </span>
-        <svg
-          className={`w-4 h-4 text-text-secondary transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-
-      {isOpen && (
-        <div className="absolute bottom-full left-0 mb-1 bg-white border border-border rounded-lg shadow-lg z-10 min-w-[120px]">
-          {orderedLanguages.map((lang) => (
-            <button
-              suppressHydrationWarning
-              key={lang}
-              onClick={() => handleLanguageChange(lang)}
-              className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-background-secondary transition-colors ${
-                currentLanguage === lang
-                  ? "bg-primary/10 text-primary"
-                  : "text-text-primary"
-              }`}
-            >
-              <img
-                src={getFlagImage(lang)}
-                alt={`${languages[lang].nativeName} flag`}
-                width={20}
-                height={15}
-                className="rounded-sm"
-              />
-              <span className="text-sm">{languages[lang].nativeName}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function Footer() {
   const { t } = useTranslationContext();
@@ -419,7 +304,7 @@ export default function Footer() {
             <div className="text-sm text-text-secondary">
               {t("footer.copyright")}
             </div>
-            <LanguageSwitcher />
+            {/* <LanguageSwitcher /> */}
           </div>
         </div>
       </div>
