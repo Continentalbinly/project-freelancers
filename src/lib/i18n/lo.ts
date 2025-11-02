@@ -1,4 +1,5 @@
 import { subtle } from "crypto";
+import { filter } from "framer-motion/client";
 import { redirect } from "next/dist/server/api-utils";
 
 const lo = {
@@ -24,6 +25,9 @@ const lo = {
       statusCancelled: "ຍົກເລີກແລ້ວ",
     },
     createdAt: "ສ້າງເມື່ອ",
+    filters: "ຕົວກອງ",
+    hideFilters: "ປິດຕົວກອງ",
+    signIn: "ເຂົ້າສູ່ລະບົບ",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -59,6 +63,7 @@ const lo = {
     home: "ໜ້າຫຼັກ",
     projects: "ໂປຣເຈັກ",
     proposals: "ຂໍ້ສະເໜີ",
+    messages: "ຂໍ້ຄວາມ",
     about: "ກ່ຽວກັບ",
     freelancers: "ຜູ້ເຮັດວຽກອິດສະລະ",
     clients: "ຜູ້ວ່າຈ້າງ",

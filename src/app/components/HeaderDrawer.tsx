@@ -1,11 +1,27 @@
 "use client";
-import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+
 import Link from "next/link";
-import Image from "next/image"; // ✅ import this
-import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X,
+  Users,
+  Info,
+  LogIn,
+  UserPlus,
+  Globe,
+  LogOut,
+  Settings,
+  User,
+  BanknoteArrowDown,
+  Briefcase,
+  ArrowLeftRight,
+} from "lucide-react";
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { logoutUser } from "@/service/auth-client";
+import LanguageSwitcher from "./LanguageSwitcher";
+import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
+import { useEffect, useState } from "react";
 
 export default function HeaderDrawer({
   isDrawerOpen,
@@ -13,167 +29,164 @@ export default function HeaderDrawer({
   t,
 }: any) {
   const { user, profile } = useAuth();
+  const [isMobile, setIsMobile] = useState(false);
 
   const handleLogout = async () => {
     await logoutUser();
     window.location.href = "/";
   };
 
-  return (
-    <Transition.Root show={isDrawerOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={setIsDrawerOpen}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
-        </Transition.Child>
+  // ✅ Detect screen width
+  useEffect(() => {
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
-        <div suppressHydrationWarning className="fixed inset-0 overflow-hidden">
-          <div className="absolute inset-0 flex justify-end">
-            <Transition.Child
-              as={Fragment}
-              enter="transform transition ease-in-out duration-300"
-              enterFrom="translate-x-full"
-              enterTo="translate-x-0"
-              leave="transform transition ease-in-out duration-200"
-              leaveFrom="translate-x-0"
-              leaveTo="translate-x-full"
-            >
-              <Dialog.Panel
-                suppressHydrationWarning
-                className="w-screen max-w-xs bg-white shadow-xl border-l border-border flex flex-col h-full"
+  const loggedInLinks = [
+    { href: "/withdraw", label: t("header.withdraw"), icon: BanknoteArrowDown },
+    {
+      href: "/transactions",
+      label: t("header.transactions"),
+      icon: ArrowLeftRight,
+    },
+  ];
+
+  const guestLinks = [
+    { href: "/freelancers", label: t("header.freelancers"), icon: Users },
+    { href: "/clients", label: t("header.clients"), icon: Briefcase },
+    { href: "/about", label: t("header.about"), icon: Info },
+  ];
+
+  const navLinks = user
+    ? isMobile
+      ? [...loggedInLinks]
+      : []
+    : [...guestLinks];
+
+  return (
+    <AnimatePresence>
+      {isDrawerOpen && (
+        <>
+          {/* Overlay */}
+          <motion.div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsDrawerOpen(false)}
+          />
+
+          {/* Drawer */}
+          <motion.aside
+            className="fixed right-0 top-0 bottom-0 w-72 bg-white z-50 shadow-xl flex flex-col"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.3 }}
+          >
+            {/* Header bar */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <Link
+                href="/"
+                onClick={() => setIsDrawerOpen(false)}
+                className="flex items-center space-x-2"
               >
-                {/* Header */}
-                <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-                  <div className="flex items-center space-x-2">
-                    <div className="rounded-lg flex items-center justify-center">
-                      <Link href="/" className="flex items-center space-x-2">
-                        <Image
-                          src="/favicon.svg"
-                          alt="UniJobs logo"
-                          width={80}
-                          height={80}
-                          className="rounded-md"
-                          priority
-                        />
-                      </Link>
+                <Image
+                  src="/favicon.svg"
+                  alt="UniJobs logo"
+                  width={48}
+                  height={48}
+                  className="rounded-md"
+                  priority
+                />
+              </Link>
+              <div className="flex items-center gap-3">
+                <LanguageSwitcher />
+                <button
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="p-2 rounded-md hover:bg-background-secondary transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* ✅ Scrollable content area (with safe bottom padding) */}
+            <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-2 pb-24">
+              {user ? (
+                <>
+                  {/* 👤 Profile Section */}
+                  <div className="flex items-center gap-3 px-4 py-2 border border-border rounded-lg mb-4">
+                    <Avatar {...getAvatarProps(profile, user)} size="sm" />
+                    <div>
+                      <div className="text-sm font-semibold text-text-primary">
+                        {profile?.fullName || user.email}
+                      </div>
+                      <div className="text-xs text-text-secondary">
+                        {profile?.userType?.join(", ") || "Member"}
+                      </div>
                     </div>
                   </div>
-                  <button
-                    suppressHydrationWarning
+
+                  {/* Links */}
+                  {navLinks.map(({ href, label, icon: Icon }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setIsDrawerOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="text-sm font-medium">{label}</span>
+                    </Link>
+                  ))}
+
+                  <Link
+                    href="/settings"
                     onClick={() => setIsDrawerOpen(false)}
-                    className="p-2 rounded-lg hover:bg-background-secondary"
+                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
                   >
-                    ✕
+                    <Settings className="w-5 h-5" />
+                    <span className="text-sm font-medium">
+                      {t("header.settings")}
+                    </span>
+                  </Link>
+
+                  <hr className="my-3 border-border" />
+
+                  {/* 🚪 Logout */}
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-2 w-full text-left rounded-lg text-error hover:bg-error/10 transition-all"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span className="text-sm font-semibold">
+                      {t("header.signOut")}
+                    </span>
                   </button>
-                </div>
-
-                {/* Drawer Content */}
-                <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
-                  {user ? (
-                    <>
-                      {/* Profile Summary */}
-                      <div
-                        suppressHydrationWarning
-                        className="flex items-center space-x-3 mb-6"
-                      >
-                        <Avatar {...getAvatarProps(profile, user)} size="md" />
-                        <div>
-                          <div className="font-semibold text-text-primary">
-                            {profile?.fullName || user.email}
-                          </div>
-                          <div className="text-xs text-text-secondary">
-                            {profile?.userType?.join(", ") || "Member"}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Authenticated Links */}
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="block px-2 py-2 rounded hover:bg-background-secondary text-text-primary font-medium"
-                      >
-                        {t("header.dashboard")}
-                      </Link>
-
-                      {/* ✅ New Transactions Link */}
-                      <Link
-                        href="/transactions"
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="block px-2 py-2 rounded hover:bg-background-secondary text-text-primary font-medium items-center gap-2"
-                      >
-                        {t("header.transactions")}
-                      </Link>
-
-                      <Link
-                        href="/profile"
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="block px-2 py-2 rounded hover:bg-background-secondary text-text-primary font-medium"
-                      >
-                        {t("header.profile")}
-                      </Link>
-                      <Link
-                        href="/settings"
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="block px-2 py-2 rounded hover:bg-background-secondary text-text-primary font-medium"
-                      >
-                        {t("header.settings")}
-                      </Link>
-
-                      <hr className="my-2 border-border" />
-
-                      {/* Logout */}
-                      <button
-                        suppressHydrationWarning
-                        onClick={handleLogout}
-                        className="block cursor-pointer w-full text-left px-2 py-2 rounded hover:bg-background-secondary text-error font-medium"
-                      >
-                        {t("header.signOut")}
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      {/* Non-authenticated */}
-                      {["home", "projects", "about"].map((link) => (
-                        <Link
-                          key={link}
-                          href={`/${link === "home" ? "" : link}`}
-                          onClick={() => setIsDrawerOpen(false)}
-                          className="block px-2 py-2 rounded hover:bg-background-secondary text-text-primary font-medium"
-                        >
-                          {t(`header.${link}`)}
-                        </Link>
-                      ))}
-                      <hr className="my-2 border-border" />
-                      <Link
-                        href="/auth/login"
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="block px-2 py-2 rounded text-primary font-medium"
-                      >
-                        {t("header.signIn")}
-                      </Link>
-                      <Link
-                        href="/auth/signup"
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="block px-2 py-2 bg-primary text-white rounded font-medium text-center"
-                      >
-                        {t("header.signUp")}
-                      </Link>
-                    </>
-                  )}
-                </nav>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition.Root>
+                </>
+              ) : (
+                <>
+                  {/* Guest Links */}
+                  {navLinks.map(({ href, label, icon: Icon }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setIsDrawerOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="text-sm font-medium">{label}</span>
+                    </Link>
+                  ))}
+                </>
+              )}
+            </nav>
+          </motion.aside>
+        </>
+      )}
+    </AnimatePresence>
   );
 }

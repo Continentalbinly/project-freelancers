@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image"; // ✅ import this
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-// import HeaderSearch from "./HeaderSearch";
 import HeaderNav from "./HeaderNav";
 import HeaderUserMenu from "./HeaderUserMenu";
 import HeaderDrawer from "./HeaderDrawer";
@@ -18,11 +17,10 @@ export default function Header() {
 
   return (
     <>
-      {/* <HeaderSearch /> */}
       <header className="bg-white border-b border-border sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* ✅ Logo replaced */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Left: Logo */}
+          <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/favicon.svg"
@@ -33,11 +31,15 @@ export default function Header() {
                 priority
               />
             </Link>
+          </div>
 
-            {/* Desktop Navigation */}
+          {/* Center: Navigation (absolutely centered) */}
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
             <HeaderNav pathname={pathname} t={t} user={user} />
+          </div>
 
-            {/* Right Section */}
+          {/* Right: User Menu / Language / Auth */}
+          <div className="flex items-center ml-auto">
             <HeaderUserMenu
               user={user}
               setIsDrawerOpen={setIsDrawerOpen}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatLAK } from "@/service/currencyUtils";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function HeaderUserMenu({ user, setIsDrawerOpen, t }: any) {
   const { profile } = useAuth();
@@ -55,6 +56,7 @@ export default function HeaderUserMenu({ user, setIsDrawerOpen, t }: any) {
             <Link href="/auth/signup" className="btn btn-primary text-sm">
               {t("header.signUp")}
             </Link>
+            <LanguageSwitcher />
           </div>
 
           <button
