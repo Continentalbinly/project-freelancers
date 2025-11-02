@@ -6,7 +6,8 @@ import {
   sendEmailVerification,
   signOut,
 } from "firebase/auth";
-import { auth, isFirebaseConfigured } from "./firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth, db, isFirebaseConfigured } from "./firebase"; // ✅ include db here
 import { AuthResponse } from "../types/auth";
 
 /** ✅ LOGIN — handles Firebase + backend fetch + consistent error codes */
@@ -30,6 +31,22 @@ export async function loginUser(
       password
     );
     const user = userCredential.user;
+
+    // 🔄 Reload user to ensure latest emailVerified info
+    await user.reload();
+
+    // ✅ Sync Firestore if verified
+    if (user.emailVerified && db) {
+      const ref = doc(db, "profiles", user.uid);
+      const snap = await getDoc(ref);
+      if (snap.exists() && snap.data().emailVerified === false) {
+        await updateDoc(ref, {
+          emailVerified: true,
+          updatedAt: new Date(),
+        });
+        console.log("✅ Firestore emailVerified updated to true");
+      }
+    }
 
     // 🧩 Fetch user profile from backend
     const response = await fetch("/api/auth", {
@@ -55,13 +72,9 @@ export async function loginUser(
       user: { id: user.uid, email: user.email!, ...data.data },
     };
   } catch (err: any) {
-    // ✅ Properly catch *and swallow* FirebaseError so React doesn't throw
     const code =
       err?.code || extractFirebaseCode(err?.message) || "auth/unknown";
-
-    // Don’t console.error the full Firebase object — it throws the stack
     console.warn("[Login] Firebase Auth error:", code);
-
     const friendly = getFirebaseErrorMessage(code);
     return { success: false, error: friendly, errorCode: code };
   }
@@ -85,7 +98,6 @@ function getFirebaseErrorMessage(code: string): string {
     "auth/network-request-failed":
       "Network error. Please check your connection.",
     "auth/config-error": "Authentication system not configured properly.",
-    // ✅ 👇 friendlier fallback instead of "unexpected error"
     "auth/unknown": "Email or password is incorrect. Please try again.",
   };
   return messages[code] || messages["auth/unknown"];
@@ -113,19 +125,19 @@ export async function signupUser(
     );
     const user = userCredential.user;
 
-    // 🕒 Wait 0.5–1s to ensure Firebase has issued ID token
+    // 🕒 Wait to ensure Firebase has issued ID token
     await new Promise((resolve) => setTimeout(resolve, 800));
 
-    // 🔄 Force-refresh a valid token (avoids expired or missing token issue)
+    // 🔄 Force-refresh a valid token
     const token = await user.getIdToken(true);
 
-    // ✅ Send verification email (optional)
+    // ✅ Send verification email
     await sendEmailVerification(user, {
-      url: `${window.location.origin}/verify-email?userId=${user.uid}`,
+      url: `${window.location.origin}/auth/verify-email?userId=${user.uid}`,
       handleCodeInApp: false,
     });
 
-    // ✅ Create Firestore profile (using Admin SDK on server)
+    // ✅ Create Firestore profile (server-side)
     const response = await fetch("/api/auth", {
       method: "POST",
       headers: {
@@ -146,8 +158,7 @@ export async function signupUser(
     const data = await response.json();
 
     if (!data.success) {
-      // If Firestore failed, rollback the auth user to prevent orphan accounts
-      await user.delete();
+      await user.delete(); // rollback orphan auth user
       throw new Error(data.error || "Failed to create user profile");
     }
 

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signupUser } from "@/service/auth-client";
 import { SignupCredentials } from "@/types/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import ProgressSteps from "./components/ProgressSteps";
 import Step1BasicInfo from "./components/Step1BasicInfo";
@@ -13,7 +15,10 @@ import NavigationButtons from "./components/NavigationButtons";
 
 export default function SignupPage() {
   const { t } = useTranslationContext();
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
+  // ✅ Define all hooks *first*
   const [formData, setFormData] = useState<SignupCredentials>({
     email: "",
     password: "",
@@ -36,8 +41,8 @@ export default function SignupPage() {
     department: "",
     position: "",
     yearsOfExperience: 0,
-    userCategory: "student",
-    clientCategory: "teacher",
+    userCategory: "", // ✅ empty
+    clientCategory: "", // ✅ empty
     occupation: "",
     acceptTerms: false,
     acceptPrivacyPolicy: false,
@@ -49,23 +54,29 @@ export default function SignupPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [uploading, setUploading] = useState(false);
 
-  // ✅ Handle form submit
+  // ✅ Redirect effect (safe hook order)
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/");
+    }
+  }, [user, authLoading, router]);
+
+  // ✅ Loading / Redirect UI (after all hooks are defined)
+  const showRedirecting = authLoading || user;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      // ✅ Compute derived fields
       const mainRole = formData.userRoles[0] || "freelancer";
       const category =
         mainRole === "freelancer"
           ? formData.userCategory
           : formData.clientCategory;
-
       const occupation = category ? `${mainRole}_${category}` : mainRole;
 
-      // ✅ Initial billing defaults
       const initialBillingData = {
         credit: 0,
         plan: "free",
@@ -76,12 +87,11 @@ export default function SignupPage() {
         totalSpentOnPlans: 0,
       };
 
-      // ✅ Sign up user & create full profile in one step
       const result = await signupUser(
         formData.email,
         formData.password,
         formData.fullName,
-        mainRole, // single string
+        mainRole,
         formData.avatarUrl,
         {
           userType: mainRole,
@@ -111,13 +121,8 @@ export default function SignupPage() {
         }
       );
 
-      // ✅ Handle result
       if (result.success) {
-        if (result.requiresVerification) {
-          window.location.href = "/auth/verify-email";
-        } else {
-          window.location.href = "/";
-        }
+        router.push(result.requiresVerification ? "/auth/verify-email" : "/");
       } else {
         setError(result.error || t("auth.signup.errors.signupFailed"));
       }
@@ -129,7 +134,6 @@ export default function SignupPage() {
     }
   };
 
-  // ✅ Validation per step
   const isStepValid = (): boolean => {
     switch (currentStep) {
       case 1:
@@ -143,13 +147,10 @@ export default function SignupPage() {
         const basicValid =
           formData.dateOfBirth && formData.gender && formData.phone;
         if (!basicValid) return false;
-
-        if (formData.userRoles.includes("freelancer")) {
+        if (formData.userRoles.includes("freelancer"))
           return !!formData.userCategory;
-        }
-        if (formData.userRoles.includes("client")) {
+        if (formData.userRoles.includes("client"))
           return !!formData.clientCategory;
-        }
         return true;
       case 3:
         return formData.acceptTerms && formData.acceptPrivacyPolicy;
@@ -158,14 +159,26 @@ export default function SignupPage() {
     }
   };
 
-  // ✅ Step controls
   const nextStep = () => currentStep < 3 && setCurrentStep(currentStep + 1);
   const prevStep = () => currentStep > 1 && setCurrentStep(currentStep - 1);
 
-  // ✅ Render
+  // ✅ render redirecting state AFTER all hooks
+  if (showRedirecting) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3"></div>
+          <p className="text-text-secondary">
+            {t("common.loading") || "Redirecting..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Regular render
   return (
     <div className="bg-white py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full max-w-4xl mx-auto">
-      {/* Header */}
       <div className="text-center mb-4 sm:mb-6 lg:mb-8">
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-2">
           {t("auth.signup.title")}
@@ -176,13 +189,12 @@ export default function SignupPage() {
         <ProgressSteps currentStep={currentStep} />
       </div>
 
-      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-4 sm:space-y-6 lg:space-y-8"
       >
         {error && (
-          <div className="bg-error/10 border border-error/20 text-error px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg text-sm sm:text-base">
+          <div className="bg-error/10 border border-error/20 text-error px-3 sm:px-4 py-3 rounded-lg text-sm sm:text-base">
             {error}
           </div>
         )}
@@ -216,7 +228,6 @@ export default function SignupPage() {
         />
       </form>
 
-      {/* Footer */}
       <div className="mt-6 sm:mt-8 text-center">
         <p className="text-text-secondary">
           {t("auth.signup.alreadyHaveAccount")}{" "}

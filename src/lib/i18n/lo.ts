@@ -1,4 +1,5 @@
 import { subtle } from "crypto";
+import { redirect } from "next/dist/server/api-utils";
 
 const lo = {
   language: "ພາສາລາວ",
@@ -475,6 +476,7 @@ const lo = {
             ],
           },
         },
+        redirecting: "ກຳລັງປ່ຽນໜ້າ...",
       },
       step2: {
         title: "ຂໍ້ມູນສ່ວນຕົວ",
@@ -625,6 +627,7 @@ const lo = {
       title: "ກວດສອບອີເມວຂອງທ່ານ",
       subtitle: "ພວກເຮົາໄດ້ສົ່ງລິ້ງຢືນຢັນໄປຫາ:",
       whatsNextTitle: "ຕໍ່ໄປເປັນຫຍັງ?",
+      checking: "ກວດສອບ...",
       steps: {
         checkInbox: "ກວດສອບກ່ອງອີເມວຂອງທ່ານ (ລວມທັງສະແປມ)",
         clickLink: "ຄລິກທີ່ລິ້ງຢືນຢັນໃນອີເມວ",

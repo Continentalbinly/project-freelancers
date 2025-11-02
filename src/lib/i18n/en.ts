@@ -1,4 +1,5 @@
 import { mark } from "framer-motion/client";
+import { redirect } from "next/dist/server/api-utils";
 
 const en = {
   language: "English",
@@ -476,6 +477,7 @@ const en = {
             ],
           },
         },
+        redirecting: "Redirecting...",
       },
       step2: {
         title: "Personal Information",
@@ -649,6 +651,7 @@ const en = {
       title: "Check your email",
       subtitle: "We've sent a verification link to",
       whatsNextTitle: "What's next?",
+      checking: "Checking...",
       steps: {
         checkInbox: "Check your email inbox (and spam folder)",
         clickLink: "Click the verification link in the email",
@@ -2996,8 +2999,7 @@ const en = {
     rateClient: "Rate Client",
     ratingLabel: "Rating",
     subtitle: "How was your experience working together?",
-    placeholder:
-      "Leave a comment about your experience (optional)...",
+    placeholder: "Leave a comment about your experience (optional)...",
     submit: "Submit Rating",
     thankYou: "Thank you for your feedback!",
     communication: "Communication",

@@ -2,27 +2,63 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { auth } from "@/service/firebase";
+import { useRouter } from "next/navigation";
+import { auth, db } from "@/service/firebase";
 import { sendEmailVerification, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function VerifyEmailPage() {
   const { t } = useTranslationContext();
-  const [email, setEmail] = useState("");
+  const router = useRouter();
+
+  const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [checking, setChecking] = useState(true);
 
+  // ✅ Detect user and sync Firestore if verified
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) setEmail(user.email || "");
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
+
+      setEmail(user.email || "");
+      await user.reload(); // refresh latest status
+
+      if (user.emailVerified) {
+        try {
+          // ✅ Update Firestore if still false
+          const ref = doc(db, "profiles", user.uid);
+          const snap = await getDoc(ref);
+          if (snap.exists() && snap.data().emailVerified === false) {
+            await updateDoc(ref, {
+              emailVerified: true,
+              updatedAt: new Date(),
+            });
+            console.log("✅ Firestore synced → emailVerified true");
+          }
+        } catch (err) {
+          console.warn("⚠️ Firestore sync failed:", err);
+        }
+
+        router.push("/"); // redirect home
+      } else {
+        setChecking(false);
+      }
     });
+
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   const handleResendVerification = async () => {
     if (!auth.currentUser) {
-      setError(t("auth.verifyEmail.errors.noUser"));
+      setError(
+        t("auth.verifyEmail.errors.noUser") || "No signed-in user found."
+      );
       return;
     }
 
@@ -35,20 +71,42 @@ export default function VerifyEmailPage() {
         url: `${window.location.origin}/auth/login`,
         handleCodeInApp: false,
       });
-      setMessage(t("auth.verifyEmail.success.sent"));
+      setMessage(
+        t("auth.verifyEmail.success.sent") ||
+          "Verification email sent successfully."
+      );
     } catch (err: any) {
-      setError(err.message || t("auth.verifyEmail.errors.failedToSend"));
+      console.error("❌ sendEmailVerification error:", err);
+      setError(
+        err.message ||
+          t("auth.verifyEmail.errors.failedToSend") ||
+          "Failed to send verification email."
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  if (checking) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-b-2 border-primary rounded-full mx-auto mb-3" />
+          <p className="text-text-secondary">
+            {t("auth.verifyEmail.checking") || "Checking your email status..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ UI for unverified users
   return (
     <div className="bg-white py-6 px-5 sm:py-8 sm:px-8 shadow-lg rounded-lg border border-border w-full max-w-md mx-auto">
       <div className="text-center mb-6 sm:mb-8">
-        <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-4 flex-shrink-0">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
-            className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-primary"
+            className="w-7 h-7 sm:w-8 sm:h-8 text-primary"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -61,15 +119,19 @@ export default function VerifyEmailPage() {
             />
           </svg>
         </div>
+
         <h2 className="text-xl sm:text-2xl font-bold text-text-primary">
-          {t("auth.verifyEmail.title")}
+          {t("auth.verifyEmail.title") || "Verify your email"}
         </h2>
         <p className="text-text-secondary mt-2 text-sm sm:text-base">
-          {t("auth.verifyEmail.subtitle")}
+          {t("auth.verifyEmail.subtitle") ||
+            "Please verify your email to activate your account."}
         </p>
-        <p className="text-primary font-medium text-sm sm:text-base truncate mt-1">
-          {email}
-        </p>
+        {email && (
+          <p className="text-primary font-medium text-sm sm:text-base truncate mt-1">
+            {email}
+          </p>
+        )}
       </div>
 
       <div className="space-y-5">
@@ -86,42 +148,54 @@ export default function VerifyEmailPage() {
 
         <div className="bg-primary-light/10 p-4 rounded-md">
           <h3 className="font-medium text-primary mb-2 text-sm sm:text-base">
-            {t("auth.verifyEmail.whatsNextTitle")}
+            {t("auth.verifyEmail.whatsNextTitle") || "What happens next?"}
           </h3>
           <ul className="text-xs sm:text-sm text-text-secondary space-y-1">
-            <li>• {t("auth.verifyEmail.steps.checkInbox")}</li>
-            <li>• {t("auth.verifyEmail.steps.clickLink")}</li>
-            <li>• {t("auth.verifyEmail.steps.returnToLogin")}</li>
+            <li>
+              •{" "}
+              {t("auth.verifyEmail.steps.checkInbox") ||
+                "Check your inbox or spam folder."}
+            </li>
+            <li>
+              •{" "}
+              {t("auth.verifyEmail.steps.clickLink") ||
+                "Click the verification link we sent."}
+            </li>
+            <li>
+              •{" "}
+              {t("auth.verifyEmail.steps.returnToLogin") ||
+                "After verifying, you can return and sign in."}
+            </li>
           </ul>
         </div>
 
         <div className="space-y-3 sm:space-y-4">
           <button
-            suppressHydrationWarning
             onClick={handleResendVerification}
             disabled={loading}
             className="w-full btn btn-outline py-2 sm:py-3 text-sm sm:text-base"
           >
             {loading
-              ? t("auth.verifyEmail.buttons.sending")
-              : t("auth.verifyEmail.buttons.resend")}
+              ? t("auth.verifyEmail.buttons.sending") || "Sending..."
+              : t("auth.verifyEmail.buttons.resend") ||
+                "Resend Verification Email"}
           </button>
 
           <Link
             href="/"
             className="w-full inline-block text-center btn btn-secondary py-2 sm:py-3 text-sm sm:text-base"
           >
-            {t("auth.verifyEmail.buttons.goHome")}
+            {t("auth.verifyEmail.buttons.goHome") || "Go Home"}
           </Link>
 
           <div className="text-center">
             <p className="text-text-secondary text-sm sm:text-base">
-              {t("auth.verifyEmail.alreadyVerified")}{" "}
+              {t("auth.verifyEmail.alreadyVerified") || "Already verified?"}{" "}
               <Link
                 href="/auth/login"
                 className="text-primary hover:text-primary-hover font-medium"
               >
-                {t("auth.verifyEmail.signIn")}
+                {t("auth.verifyEmail.signIn") || "Sign in"}
               </Link>
             </p>
           </div>
