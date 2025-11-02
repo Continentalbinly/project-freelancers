@@ -35,9 +35,9 @@ export interface SignupCredentials {
   bio?: string;
   hourlyRate?: number;
   // User category (student, worker, or freelancer)
-  userCategory?: "student" | "worker" | "freelancer";
+  userCategory?: "" | "student" | "worker" | "freelancer";
   // Client category (teacher, worker, or freelancer)
-  clientCategory?: "teacher" | "worker" | "freelancer";
+  clientCategory?: "" | "teacher" | "worker" | "freelancer";
   // Teacher-specific fields
   institution?: string;
   department?: string;
