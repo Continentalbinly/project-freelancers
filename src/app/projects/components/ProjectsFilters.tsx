@@ -60,8 +60,12 @@ export default function ProjectsFilters({
   }, []);
 
   return (
-    <section className="sticky top-14 z-30 bg-white/90 backdrop-blur-md border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 py-3">
+    <section
+      className="sticky top-16 z-30 bg-white/90 backdrop-blur-md border-b border-border 
+                 shadow-sm transition-all duration-300 ease-in-out"
+    >
+      {/* ✅ Balanced vertical padding for perfect centering */}
+      <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3 md:py-3.5 flex flex-col justify-center">
         {/* 💡 Mobile: simple search + filter button */}
         <div className="flex items-center gap-2 sm:hidden">
           <div className="relative flex-1">
@@ -96,9 +100,9 @@ export default function ProjectsFilters({
         </div>
 
         {/* 🧩 Desktop Filters */}
-        <div className="hidden sm:flex flex-wrap items-center gap-3 mt-2">
+        <div className="hidden sm:flex flex-wrap items-center justify-between gap-3 mt-2">
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px]">
+          <div className="relative flex-1 min-w-[220px] max-w-md">
             <input
               type="text"
               placeholder={t("projects.search.placeholder")}
@@ -122,46 +126,49 @@ export default function ProjectsFilters({
             </svg>
           </div>
 
-          {/* Category */}
-          <select
-            value={filters.category}
-            onChange={(e) => update("category", e.target.value)}
-            disabled={loading}
-            className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
-          >
-            <option value="all">{t("projects.filters.allCategories")}</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {currentLanguage === "lo"
-                  ? cat.name_lo || cat.name_en
-                  : cat.name_en || cat.name_lo}
+          {/* Filters group (center-aligned vertically) */}
+          <div className="flex items-center gap-3">
+            {/* Category */}
+            <select
+              value={filters.category}
+              onChange={(e) => update("category", e.target.value)}
+              disabled={loading}
+              className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+            >
+              <option value="all">{t("projects.filters.allCategories")}</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {currentLanguage === "lo"
+                    ? cat.name_lo || cat.name_en
+                    : cat.name_en || cat.name_lo}
+                </option>
+              ))}
+            </select>
+
+            {/* Status */}
+            <select
+              value={filters.status}
+              onChange={(e) => update("status", e.target.value)}
+              className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+            >
+              <option value="all">{t("projects.filters.allStatus")}</option>
+              <option value="open">{t("projects.statuses.open")}</option>
+              <option value="in_progress">
+                {t("projects.statuses.inProgress")}
               </option>
-            ))}
-          </select>
+              <option value="completed">
+                {t("projects.statuses.completed")}
+              </option>
+            </select>
 
-          {/* Status */}
-          <select
-            value={filters.status}
-            onChange={(e) => update("status", e.target.value)}
-            className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
-          >
-            <option value="all">{t("projects.filters.allStatus")}</option>
-            <option value="open">{t("projects.statuses.open")}</option>
-            <option value="in_progress">
-              {t("projects.statuses.inProgress")}
-            </option>
-            <option value="completed">
-              {t("projects.statuses.completed")}
-            </option>
-          </select>
-
-          {/* Reset */}
-          <button
-            onClick={onReset || reset}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
-          >
-            {t("projects.search.clearFilters")}
-          </button>
+            {/* Reset */}
+            <button
+              onClick={onReset || reset}
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
+            >
+              {t("projects.search.clearFilters")}
+            </button>
+          </div>
         </div>
 
         {/* 📱 Mobile Dropdown Filters */}
@@ -174,7 +181,6 @@ export default function ProjectsFilters({
               transition={{ duration: 0.25 }}
               className="mt-3 sm:hidden"
             >
-              {/* 🔹 Grid for Category + Status */}
               <div className="grid grid-cols-2 gap-2 mb-3">
                 {/* 🏷️ Category */}
                 <select

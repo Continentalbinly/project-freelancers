@@ -10,6 +10,7 @@ import {
   PlusSquare,
   LogIn,
   LayoutDashboard,
+  ArrowLeftRight,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -32,7 +33,7 @@ export default function MobileNavBar() {
     { href: "/", label: t("header.home"), icon: Home },
     { href: "/dashboard", label: t("header.dashboard"), icon: LayoutDashboard },
     { href: "/proposals", label: t("header.proposals"), icon: PlusSquare },
-    { href: "/messages", label: t("header.messages"), icon: MessageCircle },
+    { href: "/transactions", label: t("header.transactions"), icon: ArrowLeftRight },
     { href: "/profile", label: t("header.profile"), icon: User },
   ];
 

@@ -19,8 +19,8 @@ export default function HeaderNav({ pathname, t, user }: any) {
           <Link href="/proposals" className={linkClasses("/proposals")}>
             {t("header.proposals")}
           </Link>
-          <Link href="/messages" className={linkClasses("/messages")}>
-            {t("header.messages")}
+          <Link href="/transactions" className={linkClasses("/transactions")}>
+            {t("header.transactions")}
           </Link>
         </>
       ) : (

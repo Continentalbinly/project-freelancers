@@ -141,6 +141,9 @@ export default function ProjectCard({
                     ? ` • ⭐ ${owner.rating.toFixed(1)}`
                     : ` • ${t("common.noRating")}`}
                 </span>
+                <span className="text-xs text-text-secondary">
+                  {owner.totalRatings ? ` • (${owner.totalRatings})` : ""}
+                </span>
               </div>
             </div>
           )}
@@ -158,16 +161,26 @@ export default function ProjectCard({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-text-secondary">
-              {t("projects.projectCard.budget")}
+              {t("projects.projectCard.budget")}:
             </span>
             <span className="font-medium text-text-primary">
               {formatBudget(project.budget, project.budgetType)}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-text-secondary">{t("common.createdAt")}</span>
+            <span className="text-text-secondary">
+              {t("common.createdAt")}:
+            </span>
             <span className="font-medium text-text-primary">
               {timeAgo(project.createdAt, currentLanguage)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary">
+              {t("projects.projectCard.views")}:
+            </span>
+            <span className="font-medium text-text-primary">
+              {project.views || 0}
             </span>
           </div>
         </div>

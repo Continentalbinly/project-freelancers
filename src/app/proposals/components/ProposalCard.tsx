@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/service/firebase";
 import Avatar from "@/app/utils/avatarHandler";
@@ -9,6 +10,8 @@ import { timeAgo } from "@/service/timeUtils";
 import { formatEarnings } from "@/service/currencyUtils";
 import { StarIcon, BriefcaseIcon } from "@heroicons/react/24/solid";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { useAuth } from "@/contexts/AuthContext";
+import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
 
 interface ProposalCardProps {
   proposal: any;
@@ -22,10 +25,22 @@ export default function ProposalCard({
   t,
 }: ProposalCardProps) {
   const { currentLanguage } = useTranslationContext();
+  const { user } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState<string>("");
+  const [displayName, setDisplayName] = useState<string>("Unknown User");
   const [rating, setRating] = useState<number | null>(null);
   const [totalProjects, setTotalProjects] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const router = useRouter();
+
+  // ✅ Detect screen size (mobile vs desktop)
+  useEffect(() => {
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
   // 🔍 Fetch avatar + profile details
   useEffect(() => {
@@ -37,12 +52,9 @@ export default function ProposalCard({
             : proposal.freelancerId;
 
         if (!profileId) return;
-
-        const profileRef = doc(db, "profiles", profileId);
-        const profileSnap = await getDoc(profileRef);
-
-        if (profileSnap.exists()) {
-          const data = profileSnap.data();
+        const snap = await getDoc(doc(db, "profiles", profileId));
+        if (snap.exists()) {
+          const data = snap.data();
           setAvatarUrl(data.avatarUrl || null);
           setDisplayName(data.fullName || "Unknown User");
           if (activeTab === "received") {
@@ -51,22 +63,21 @@ export default function ProposalCard({
           }
         }
       } catch (err) {
-        console.error("⚠️ Error loading profile avatar:", err);
+        console.error("⚠️ Error fetching profile:", err);
       }
     };
 
-    // If proposal already has embedded avatar, skip fetch
     if (
       (activeTab === "submitted" && proposal.client?.avatar) ||
       (activeTab === "received" && proposal.freelancer?.avatar)
     ) {
-      const user =
+      const userData =
         activeTab === "submitted" ? proposal.client : proposal.freelancer;
-      setAvatarUrl(user?.avatar || null);
-      setDisplayName(user?.fullName || "Unknown User");
+      setAvatarUrl(userData?.avatar || null);
+      setDisplayName(userData?.fullName || "Unknown User");
       if (activeTab === "received") {
-        setRating(user?.rating || null);
-        setTotalProjects(user?.totalProjects || null);
+        setRating(userData?.rating || null);
+        setTotalProjects(userData?.totalProjects || null);
       }
     } else {
       fetchProfileAvatar();
@@ -82,8 +93,6 @@ export default function ProposalCard({
         return "text-error bg-error/10 border-error/30";
       case "pending":
         return "text-warning bg-warning/10 border-warning/30";
-      case "withdrawn":
-        return "text-text-secondary bg-background-secondary border-border";
       default:
         return "text-text-secondary bg-background-secondary border-border";
     }
@@ -104,11 +113,38 @@ export default function ProposalCard({
     }
   };
 
+  // ✅ Handle “Start Chat”
+  const handleStartChat = async (e: React.MouseEvent) => {
+    const chatUrl = `/messages?project=${proposal.projectId}`;
+
+    if (!isMobile) {
+      // 💻 Desktop / Tablet → open inline chat in new tab
+      e.preventDefault();
+      window.open(chatUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    // 📱 Mobile → directly open [id] route
+    e.preventDefault();
+    if (!user) return;
+
+    try {
+      setLoadingChat(true);
+      const room = await createOrOpenChatRoom(proposal.projectId, user.uid);
+      if (room?.id) {
+        router.push(`/messages/${room.id}`); // ✅ goes straight to [id]
+      }
+    } catch (err) {
+      console.error("❌ Error opening chat:", err);
+    } finally {
+      setLoadingChat(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-border p-4 sm:p-6 transition-all hover:shadow-md">
       {/* === Header === */}
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-6 gap-4">
-        {/* Left: Avatar + Info */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
           <Avatar
             src={avatarUrl || undefined}
@@ -116,7 +152,6 @@ export default function ProposalCard({
             name={displayName}
             size="xl"
           />
-
           <div className="w-full sm:flex-1 text-center sm:text-left">
             <h3 className="text-lg sm:text-xl font-bold text-text-primary mb-1 line-clamp-2">
               {proposal.project?.title || "Untitled Project"}
@@ -146,7 +181,7 @@ export default function ProposalCard({
           </div>
         </div>
 
-        {/* Right: Status + Budget */}
+        {/* Status + Budget */}
         <div className="flex flex-col items-center lg:items-end gap-3">
           <span
             className={`px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border ${getStatusColor(
@@ -166,9 +201,9 @@ export default function ProposalCard({
         </div>
       </div>
 
-      {/* === Details Grid === */}
+      {/* === Details === */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        {/* User (Client or Freelancer) */}
+        {/* User */}
         <div className="bg-background-secondary rounded-xl p-3">
           <h4 className="font-semibold text-text-primary mb-1 text-sm flex items-center gap-1">
             <span className="w-1 h-3 bg-primary rounded-full"></span>
@@ -176,10 +211,7 @@ export default function ProposalCard({
               ? t("proposals.proposalCard.client")
               : t("proposals.proposalCard.freelancer")}
           </h4>
-          <p className="text-xs text-text-secondary">
-            {displayName || "Unknown"}
-          </p>
-
+          <p className="text-xs text-text-secondary">{displayName}</p>
           {activeTab === "received" && (
             <div className="flex items-center gap-2 mt-1">
               {rating ? (
@@ -239,17 +271,6 @@ export default function ProposalCard({
         </div>
       </div>
 
-      {/* === Cover Letter === */}
-      <div className="mb-6 p-3 bg-gradient-to-r from-background-secondary to-background rounded-lg border border-gray-100">
-        <h4 className="font-semibold text-text-primary mb-2 text-sm flex items-center gap-1">
-          <span className="w-1 h-3 bg-primary rounded-full"></span>
-          {t("proposals.proposalCard.coverLetter")}
-        </h4>
-        <p className="text-xs text-text-secondary line-clamp-3 leading-relaxed">
-          {proposal.coverLetter || "-"}
-        </p>
-      </div>
-
       {/* === Actions === */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-4 border-t border-border gap-3">
         <Link
@@ -277,9 +298,14 @@ export default function ProposalCard({
           {proposal.status === "accepted" && (
             <Link
               href={`/messages?project=${proposal.projectId}`}
-              className="btn btn-primary text-xs sm:text-sm shadow hover:shadow-md transition-all"
+              onClick={handleStartChat}
+              className={`btn btn-primary text-xs sm:text-sm shadow hover:shadow-md transition-all ${
+                loadingChat ? "opacity-70 pointer-events-none" : ""
+              }`}
             >
-              {t("proposals.proposalCard.startChat")}
+              {loadingChat
+                ? t("proposals.proposalCard.openingChat") || "Opening..."
+                : t("proposals.proposalCard.startChat")}
             </Link>
           )}
         </div>

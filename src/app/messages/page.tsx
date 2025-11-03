@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { db } from "@/service/firebase";
@@ -18,10 +18,13 @@ import {
 import ChatList from "./components/ChatList";
 import ChatRoom from "./components/ChatRoom";
 import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
+import { ArrowLeftIcon } from "lucide-react";
 
 export default function MessagesPage() {
   const { user } = useAuth();
   const { t } = useTranslationContext();
+  const router = useRouter();
+
   const [chatRooms, setChatRooms] = useState<any[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
   const [profileCache, setProfileCache] = useState<
@@ -32,7 +35,7 @@ export default function MessagesPage() {
   const params = useSearchParams();
   const projectId = params.get("project");
 
-  // 🔹 Load all chat rooms for the user
+  // Load chat rooms
   useEffect(() => {
     if (!user) return;
     setLoading(true);
@@ -50,34 +53,33 @@ export default function MessagesPage() {
     return () => unsub();
   }, [user]);
 
-  // 🔹 Auto-open chat room when `?project=` param exists
+  // Auto-open if project param exists
   useEffect(() => {
     if (!user || !projectId) return;
-
     (async () => {
       const room = await createOrOpenChatRoom(projectId, user.uid);
       if (room) setSelectedRoom(room);
     })();
   }, [user, projectId]);
 
-  // 🔹 Fetch missing profile data
+  // Fetch profile cache
   useEffect(() => {
     if (!user) return;
-    const missingIds: string[] = [];
-    chatRooms.forEach((room) => {
-      const otherId = room.participants?.find((id: string) => id !== user.uid);
-      if (otherId && !profileCache[otherId]) missingIds.push(otherId);
+    const missing: string[] = [];
+    chatRooms.forEach((r) => {
+      const other = r.participants?.find((id: string) => id !== user.uid);
+      if (other && !profileCache[other]) missing.push(other);
     });
 
-    missingIds.forEach(async (uid) => {
+    missing.forEach(async (uid) => {
       const snap = await getDoc(doc(db, "profiles", uid));
       if (snap.exists()) {
-        const data = snap.data();
-        setProfileCache((prev) => ({
-          ...prev,
+        const d = snap.data();
+        setProfileCache((p) => ({
+          ...p,
           [uid]: {
-            fullName: data.fullName || "Unknown User",
-            avatarUrl: data.avatarUrl || "",
+            fullName: d.fullName || "Unknown",
+            avatarUrl: d.avatarUrl || "",
           },
         }));
       }
@@ -87,18 +89,39 @@ export default function MessagesPage() {
   if (!user)
     return (
       <div className="min-h-screen flex items-center justify-center text-text-secondary">
-        Please sign in to view your messages.
+        {t("common.loading") || "Loading..."}
       </div>
     );
 
   return (
     <div className="h-full w-full flex flex-col lg:flex-row bg-background overflow-hidden">
+      {/* 🔹 Custom Header for /messages page (mobile only) */}
+      <div className="lg:hidden sticky top-0 z-20 h-16 flex items-center justify-between px-4 border-b border-border bg-white shadow-sm">
+        <button
+          onClick={() => router.back()}
+          className="p-2 rounded-full hover:bg-background-secondary transition"
+        >
+          <ArrowLeftIcon className="w-5 h-5 text-text-secondary" />
+        </button>
+        <h2 className="text-base font-semibold text-text-primary">
+          {t("dashboard.messagesPage.title")}
+        </h2>
+        <div className="w-5" /> {/* Placeholder for alignment */}
+      </div>
       <ChatList
         chatRooms={chatRooms}
         loading={loading}
         profileCache={profileCache}
         selectedRoom={selectedRoom}
-        onSelect={setSelectedRoom}
+        onSelect={(room: any) => {
+          if (window.innerWidth < 1024) {
+            // 📱 Mobile → go to dedicated page
+            router.push(`/messages/${room.id}`);
+          } else {
+            // 💻 Desktop → open inline
+            setSelectedRoom(room);
+          }
+        }}
       />
       <ChatRoom chatRoom={selectedRoom} onBack={() => setSelectedRoom(null)} />
     </div>
