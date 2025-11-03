@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Header from "./header";
-import Footer from "./footer";
+import Footer from "./footer/footer";
 import MobileNavBar from "./MobileNavBar";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -16,6 +16,7 @@ export default function LayoutWrapper({
   const { user, loading } = useAuth();
 
   const isMessagesPage = pathname?.startsWith("/messages");
+  const isSingleMessagePage = /^\/messages\/[^/]+$/.test(pathname || "");
   const isAuthPage = pathname?.startsWith("/auth");
   const isPrivateRoute =
     pathname?.startsWith("/dashboard") ||
@@ -32,18 +33,15 @@ export default function LayoutWrapper({
 
   return (
     <>
-      <Header />
+      {!isSingleMessagePage && !isMessagesPage && <Header />}
       <main className="flex-1 pb-14 md:pb-0">{children}</main>
-
-      {/* ✅ Desktop Footer (public pages only) */}
       {!loading &&
         !user &&
         !isPrivateRoute &&
         !isMessagesPage &&
-        !isAuthPage && <Footer />}
-
-      {/* ✅ Mobile Bottom Navigation (always for mobile) */}
-      {!isMessagesPage && <MobileNavBar />}
+        !isAuthPage &&
+        !isSingleMessagePage && <Footer />}
+      {!isMessagesPage && !isSingleMessagePage && <MobileNavBar />}
     </>
   );
 }

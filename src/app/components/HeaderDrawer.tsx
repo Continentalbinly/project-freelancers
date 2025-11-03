@@ -6,15 +6,10 @@ import {
   X,
   Users,
   Info,
-  LogIn,
-  UserPlus,
-  Globe,
   LogOut,
   Settings,
   User,
-  BanknoteArrowDown,
   Briefcase,
-  ArrowLeftRight,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
@@ -45,12 +40,9 @@ export default function HeaderDrawer({
   }, []);
 
   const loggedInLinks = [
-    { href: "/withdraw", label: t("header.withdraw"), icon: BanknoteArrowDown },
-    {
-      href: "/transactions",
-      label: t("header.transactions"),
-      icon: ArrowLeftRight,
-    },
+    ...(!isMobile
+      ? [{ href: "/profile", label: t("header.profile"), icon: User }]
+      : []),
   ];
 
   const guestLinks = [
@@ -59,11 +51,7 @@ export default function HeaderDrawer({
     { href: "/about", label: t("header.about"), icon: Info },
   ];
 
-  const navLinks = user
-    ? isMobile
-      ? [...loggedInLinks]
-      : []
-    : [...guestLinks];
+  const navLinks = user ? loggedInLinks : guestLinks;
 
   return (
     <AnimatePresence>
@@ -117,16 +105,35 @@ export default function HeaderDrawer({
             <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-2 pb-24">
               {user ? (
                 <>
-                  {/* 👤 Profile Section */}
-                  <div className="flex items-center gap-3 px-4 py-2 border border-border rounded-lg mb-4">
-                    <Avatar {...getAvatarProps(profile, user)} size="sm" />
-                    <div>
-                      <div className="text-sm font-semibold text-text-primary">
-                        {profile?.fullName || user.email}
+                  {/* 👤 Profile Section + Credit + TopUp */}
+                  <div className="flex flex-col gap-3 px-4 py-3 border border-border rounded-lg mb-4 bg-background-secondary/40">
+                    <div className="flex items-center gap-3">
+                      <Avatar {...getAvatarProps(profile, user)} size="sm" />
+                      <div>
+                        <div className="text-sm font-semibold text-text-primary">
+                          {profile?.fullName || user.email}
+                        </div>
+                        <div className="text-xs text-text-secondary">
+                          {profile?.userType?.join(", ") || "Member"}
+                        </div>
                       </div>
-                      <div className="text-xs text-text-secondary">
-                        {profile?.userType?.join(", ") || "Member"}
-                      </div>
+                    </div>
+
+                    {/* 💰 Credit + Top Up button */}
+                    <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-border">
+                      <span className="text-sm text-text-secondary">
+                        {t("header.balance")}:{" "}
+                        <span className="text-primary font-semibold">
+                          ₭ {profile?.credit?.toLocaleString() || "0"}
+                        </span>
+                      </span>
+                      <Link
+                        href="/topup"
+                        onClick={() => setIsDrawerOpen(false)}
+                        className="text-sm font-medium text-primary hover:underline"
+                      >
+                        {t("header.topUp")}
+                      </Link>
                     </div>
                   </div>
 
@@ -159,7 +166,7 @@ export default function HeaderDrawer({
                   {/* 🚪 Logout */}
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-2 w-full text-left rounded-lg text-error hover:bg-error/10 transition-all"
+                    className="flex cursor-pointer items-center gap-3 px-4 py-2 w-full text-left rounded-lg text-error hover:bg-error/10 transition-all"
                   >
                     <LogOut className="w-5 h-5" />
                     <span className="text-sm font-semibold">

@@ -106,6 +106,7 @@ const en = {
     topUp: "Top-Up",
     transactions: "Transactions",
     withdraw: "Withdraw",
+    balance: "Balance",
   },
   // Footer translations
   footer: {
@@ -1842,6 +1843,7 @@ const en = {
       accept: "Accept",
       reject: "Reject",
       startChat: "Start Chat",
+      openingChat: "Opening Chat...",
       moreSamples: "more",
     },
     detail: {

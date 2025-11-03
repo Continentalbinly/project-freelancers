@@ -106,6 +106,7 @@ const lo = {
     topUp: "ເຕີມເງິນ",
     transactions: "ທຸລະກຳ",
     withdraw: "ຖອນເງິນ",
+    balance: "ຍອດເງິນ",
   },
   // Add more keys as needed
   // Footer translations
@@ -1911,6 +1912,7 @@ const lo = {
       accept: "ຮັບ",
       reject: "ປະຕິເສດ",
       startChat: "ເລີ່ມສົນທະນາ",
+      openingChat: "ກຳລັງເປີດແຊັດ...",
       moreSamples: "ອີກ",
     },
     detail: {

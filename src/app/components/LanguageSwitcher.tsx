@@ -57,15 +57,13 @@ export default function LanguageSwitcher() {
       {/* 🌐 Circle flag button */}
       <button
         onClick={() => setIsOpen((p) => !p)}
-        className="w-9 h-9 rounded-full border border-border bg-white shadow-sm hover:shadow-md transition-all flex items-center justify-center overflow-hidden"
+        className="w-9 h-9 rounded-full overflow-hidden border border-border shadow-sm hover:shadow-md transition-all flex items-center justify-center p-0 bg-transparent"
       >
-        <div className="w-full h-full flex items-center justify-center rounded-full overflow-hidden">
-          <img
-            src={getFlagImage(currentLanguage)}
-            alt={`${languages[currentLanguage].nativeName} flag`}
-            className="object-cover object-center w-full h-full"
-          />
-        </div>
+        <img
+          src={getFlagImage(currentLanguage)}
+          alt={`${languages[currentLanguage].nativeName} flag`}
+          className="w-full h-full object-cover"
+        />
       </button>
 
       {/* Dropdown */}
