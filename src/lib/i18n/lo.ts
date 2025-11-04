@@ -28,6 +28,8 @@ const lo = {
     filters: "ຕົວກອງ",
     hideFilters: "ປິດຕົວກອງ",
     signIn: "ເຂົ້າສູ່ລະບົບ",
+    edit: "ແກ້ໄຂ",
+    save: "ບັນທຶກ",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -2886,6 +2888,10 @@ const lo = {
     types: {
       subscription: "ສະມາຊິກ",
       topup: "ເຕີມເງິນ",
+      escrowHold: "ວາງເງິນມັດຈຳ",
+      escrowRelease: "ຟຣີແລນຊ໌ຮັບໂປຣເຈັກ",
+      escrowRefund: "ຄືນເງິນມັດຈຳ",
+      withdrawRequest: "ຂໍຖອນເງິນ",
     },
 
     status: {

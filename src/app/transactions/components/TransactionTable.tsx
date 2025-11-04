@@ -12,7 +12,7 @@ interface Props {
 export default function TransactionTable({ transactions, loading, t }: Props) {
   if (loading)
     return (
-      <p className="text-center text-text-secondary animate-pulse">
+      <p className="text-center text-text-secondary animate-pulse py-10">
         {t("transactions.loading")}
       </p>
     );
@@ -25,37 +25,47 @@ export default function TransactionTable({ transactions, loading, t }: Props) {
     );
 
   return (
-    <div className="overflow-x-auto border border-border rounded-xl shadow-sm bg-white">
-      <table className="min-w-full text-sm divide-y divide-border">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
-              {t("transactions.columns.type")}
-            </th>
-            <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
-              {t("transactions.columns.amount")}
-            </th>
-            <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
-              {t("transactions.columns.method")}
-            </th>
-            <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
-              {t("transactions.columns.status")}
-            </th>
-            <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
-              {t("transactions.columns.date")}
-            </th>
-            <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
-              {t("transactions.columns.id")}
-            </th>
-          </tr>
-        </thead>
+    <div className="w-full space-y-4">
+      {/* === Desktop Table === */}
+      <div className="hidden md:block overflow-x-auto border border-border rounded-xl shadow-sm bg-white">
+        <table className="min-w-full text-sm divide-y divide-border">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
+                {t("transactions.columns.type")}
+              </th>
+              <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
+                {t("transactions.columns.amount")}
+              </th>
+              <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
+                {t("transactions.columns.method")}
+              </th>
+              <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
+                {t("transactions.columns.status")}
+              </th>
+              <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
+                {t("transactions.columns.date")}
+              </th>
+              <th className="px-5 py-3 text-left font-semibold text-text-secondary uppercase tracking-wider">
+                {t("transactions.columns.id")}
+              </th>
+            </tr>
+          </thead>
 
-        <tbody className="divide-y divide-border">
-          {transactions.map((tx) => (
-            <TransactionRow key={tx.id} tx={tx} t={t} />
-          ))}
-        </tbody>
-      </table>
+          <tbody className="divide-y divide-border">
+            {transactions.map((tx) => (
+              <TransactionRow key={tx.id} tx={tx} t={t} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* === Mobile Cards === */}
+      <div className="block md:hidden space-y-4">
+        {transactions.map((tx) => (
+          <TransactionRow key={tx.id} tx={tx} t={t} isCard />
+        ))}
+      </div>
     </div>
   );
 }

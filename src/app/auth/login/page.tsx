@@ -81,116 +81,118 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-white py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full">
-      <div className="text-center mb-4 sm:mb-6">
-        <Link href="/" className="flex justify-center mb-3">
-          <Image
-            src="/favicon.svg"
-            alt="UniJobs logo"
-            width={120}
-            height={120}
-            className="rounded-md"
-            priority
-          />
-        </Link>
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-text-primary">
-          {t("auth.login.title")}
-        </h2>
-        <p className="text-text-secondary mt-2 text-sm sm:text-base">
-          {t("auth.login.subtitle")}
-        </p>
-      </div>
-
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-3 sm:space-y-4 lg:space-y-6"
-      >
-        {errorKey && (
-          <div className="bg-error/10 border border-error/20 text-error px-3 sm:px-4 py-2 sm:py-3 rounded-md text-sm sm:text-base">
-            {t(`auth.login.error.${errorKey}`)}
-          </div>
-        )}
-
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-text-primary mb-2"
-          >
-            {t("auth.login.email")}
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            placeholder={t("auth.login.emailPlaceholder")}
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-text-primary mb-2"
-          >
-            {t("auth.login.password")}
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            placeholder={t("auth.login.passwordPlaceholder")}
-          />
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-          <div className="flex items-center">
-            <input
-              id="remember-me"
-              name="remember-me"
-              type="checkbox"
-              className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+    <div className="h-auto flex items-center justify-center bg-background">
+      <div className="py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full">
+        <div className="text-center mb-4 sm:mb-6">
+          <Link href="/" className="flex justify-center mb-3">
+            <Image
+              src="/favicon.svg"
+              alt="UniJobs logo"
+              width={120}
+              height={120}
+              className="rounded-md"
+              priority
             />
-            <label
-              htmlFor="remember-me"
-              className="ml-2 block text-sm text-text-secondary"
-            >
-              {t("auth.login.rememberMe")}
-            </label>
-          </div>
-          <Link
-            href="/auth/forgot-password"
-            className="text-sm text-primary hover:text-primary-hover"
-          >
-            {t("auth.login.forgotPassword")}
           </Link>
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-text-primary">
+            {t("auth.login.title")}
+          </h2>
+          <p className="text-text-secondary mt-2 text-sm sm:text-base">
+            {t("auth.login.subtitle")}
+          </p>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full btn btn-primary py-2 sm:py-3 text-sm sm:text-base font-medium"
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3 sm:space-y-4 lg:space-y-6"
         >
-          {loading ? t("auth.login.signingIn") : t("auth.login.signIn")}
-        </button>
-      </form>
+          {errorKey && (
+            <div className="bg-error/10 border border-error/20 text-error px-3 sm:px-4 py-2 sm:py-3 rounded-md text-sm sm:text-base">
+              {t(`auth.login.error.${errorKey}`)}
+            </div>
+          )}
 
-      <div className="mt-4 sm:mt-6 text-center">
-        <p className="text-text-secondary text-sm sm:text-base">
-          {t("auth.login.noAccount")}{" "}
-          <Link
-            href="/auth/signup"
-            className="text-primary hover:text-primary-hover font-medium"
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-text-primary mb-2"
+            >
+              {t("auth.login.email")}
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder={t("auth.login.emailPlaceholder")}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-text-primary mb-2"
+            >
+              {t("auth.login.password")}
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder={t("auth.login.passwordPlaceholder")}
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+              />
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-text-secondary"
+              >
+                {t("auth.login.rememberMe")}
+              </label>
+            </div>
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-primary hover:text-primary-hover"
+            >
+              {t("auth.login.forgotPassword")}
+            </Link>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn btn-primary py-2 sm:py-3 text-sm sm:text-base font-medium"
           >
-            {t("auth.login.signUp")}
-          </Link>
-        </p>
+            {loading ? t("auth.login.signingIn") : t("auth.login.signIn")}
+          </button>
+        </form>
+
+        <div className="mt-4 sm:mt-6 text-center">
+          <p className="text-text-secondary text-sm sm:text-base">
+            {t("auth.login.noAccount")}{" "}
+            <Link
+              href="/auth/signup"
+              className="text-primary hover:text-primary-hover font-medium"
+            >
+              {t("auth.login.signUp")}
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

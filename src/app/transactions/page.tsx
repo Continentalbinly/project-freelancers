@@ -63,17 +63,6 @@ export default function TransactionsPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Header */}
-      <section className="border-b border-border bg-gradient-to-br from-primary/5 to-secondary/5">
-        <div className="max-w-7xl mx-auto px-4 py-8 text-center">
-          <h1 className="text-3xl font-bold text-text-primary">
-            {t("transactions.title")}
-          </h1>
-          <p className="text-text-secondary mt-1">
-            {t("transactions.subtitle")}
-          </p>
-        </div>
-      </section>
 
       {/* Stats Summary */}
       <TransactionStats transactions={transactions} loading={loading} t={t} />
