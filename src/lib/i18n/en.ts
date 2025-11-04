@@ -28,6 +28,8 @@ const en = {
     hideFilters: "Hide filters",
     createdAt: "Created at",
     signIn: "Sign In",
+    edit: "Edit",
+    save: "Save",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -2932,6 +2934,10 @@ const en = {
     types: {
       subscription: "Subscription",
       topup: "Top-up",
+      escrowHold: "Escrow Hold",
+      escrowRelease: "Escrow Release",
+      escrowRefund: "Escrow Refund",
+      withdrawRequest: "Withdraw Request",
     },
     status: {
       held: "Held",

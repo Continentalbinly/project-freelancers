@@ -67,7 +67,7 @@ export default function ProjectCard({
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "open":
-        return t("common.status.statusopen") || "Open";
+        return t("common.status.statusOpen") || "Open";
       case "in_progress":
         return t("common.status.statusInProgress") || "In Progress";
       case "in_review":

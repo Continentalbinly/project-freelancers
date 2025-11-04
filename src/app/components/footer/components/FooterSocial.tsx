@@ -30,7 +30,7 @@ export default function FooterSocial() {
 
   return (
     <div className="flex space-x-4">
-      {socials.map((s, i) => (
+      {/* {socials.map((s, i) => (
         <a
           key={i}
           href={s.href}
@@ -38,7 +38,7 @@ export default function FooterSocial() {
         >
           {s.icon}
         </a>
-      ))}
+      ))} */}
     </div>
   );
 }
