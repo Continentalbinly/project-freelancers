@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
-import GlobalStatus from "../../components/GlobalStatus";
+import GlobalStatus from "../../../../components/GlobalStatus";
 import CategoriesHeader from "./components/CategoriesHeader";
 import CategoriesForm from "./components/CategoriesForm";
 import CategoriesTable from "./components/CategoriesTable";

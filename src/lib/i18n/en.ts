@@ -30,6 +30,9 @@ const en = {
     signIn: "Sign In",
     edit: "Edit",
     save: "Save",
+    modal: {
+      success: "Success",
+    },
   },
   // Cookie consent translations
   cookieConsent: {
@@ -109,6 +112,7 @@ const en = {
     transactions: "Transactions",
     withdraw: "Withdraw",
     balance: "Balance",
+    adminPanel: "Admin Panel",
   },
   // Footer translations
   footer: {
@@ -1885,6 +1889,9 @@ const en = {
     notifications: "Notifications",
     privacy: "Privacy & Security",
     account: "Account",
+    notificationDesc: "Manage how you receive alerts, messages, and updates.",
+    privacyDesc: "Control who can see your information and activity.",
+    accountDesc: "Update your profile details or change your password.",
     notificationPreferences: {
       title: "Notification Preferences",
       emailNotifications: {
@@ -2642,6 +2649,8 @@ const en = {
       updating: "Updating...",
       cancel: "Cancel",
       thisWindowWillCloseAutomatically: "This window will close automatically.",
+      success: "Success",
+      failed: "Failed",
     },
   },
   editProject: {

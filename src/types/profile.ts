@@ -7,7 +7,7 @@ export interface Profile {
   avatarUrl?: string;
   credit: number;
   userType: ("freelancer" | "client" | "admin")[];
-  userRoles?: ("freelancer" | "client")[];
+  userRoles?: ("freelancer" | "client" | "admin")[];
 
   // NEW 🪙 Billing & Subscription
   plan?: "free" | "pro" | "enterprise";

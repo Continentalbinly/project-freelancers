@@ -49,13 +49,10 @@ export default function NotificationsTab() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold mb-4">
-        {t("settings.notificationPreferences.title")}
-      </h3>
       {items.map((item) => (
         <div
           key={item.field}
-          className="flex items-center justify-between p-4 bg-background-secondary rounded-lg"
+          className="flex items-center justify-between p-4 rounded-lg"
         >
           <div>
             <h4 className="font-medium">{item.title}</h4>

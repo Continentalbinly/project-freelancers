@@ -10,6 +10,7 @@ import {
   Settings,
   User,
   Briefcase,
+  Shield,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +31,15 @@ export default function HeaderDrawer({
     await logoutUser();
     window.location.href = "/";
   };
+
+  /** 🧩 Role check — true if user has "admin" in userRoles */
+  const isAdmin =
+    (Array.isArray(profile?.userRoles) &&
+      profile.userRoles
+        .map((r: string) => r.toLowerCase())
+        .includes("admin")) ||
+    (Array.isArray(profile?.userType) &&
+      profile.userType.map((r: string) => r.toLowerCase()).includes("admin"));
 
   // ✅ Detect screen width
   useEffect(() => {
@@ -135,6 +145,20 @@ export default function HeaderDrawer({
                         {t("header.topUp")}
                       </Link>
                     </div>
+
+                    {/* Admin Panel */}
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsDrawerOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
+                      >
+                        <Shield className="w-5 h-5" />
+                        <span className="text-sm font-medium">
+                          {t("header.adminPanel")}
+                        </span>
+                      </Link>
+                    )}
                   </div>
 
                   {/* Links */}
