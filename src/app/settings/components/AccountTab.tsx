@@ -19,11 +19,7 @@ export default function AccountTab() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold mb-6">
-        {t("settings.accountSettings.title")}
-      </h3>
-
-      <div className="p-4 bg-background-secondary rounded-lg">
+      <div className="p-4 rounded-lg">
         <h4 className="font-medium mb-2">Email</h4>
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm font-mono">{user?.email}</span>
@@ -40,7 +36,7 @@ export default function AccountTab() {
         {!user?.emailVerified && <EmailVerificationButton />}
       </div>
 
-      <div className="p-4 bg-background-secondary rounded-lg">
+      <div className="p-4 rounded-lg">
         <div className="flex items-center gap-2 mb-4">
           <LockClosedIcon className="w-5 h-5 text-primary" />
           <h4 className="font-medium">

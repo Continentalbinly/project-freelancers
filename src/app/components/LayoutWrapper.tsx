@@ -15,6 +15,7 @@ export default function LayoutWrapper({
   const pathname = usePathname();
   const { user, loading } = useAuth();
 
+  // 🎯 Route flags
   const isMessagesPage = pathname?.startsWith("/messages");
   const isSingleMessagePage = /^\/messages\/[^/]+$/.test(pathname || "");
   const isAuthPage = pathname?.startsWith("/auth");
@@ -24,6 +25,10 @@ export default function LayoutWrapper({
     pathname?.startsWith("/proposals") ||
     pathname?.startsWith("/profile");
 
+  // 🛡️ NEW: hide global header/footer for admin pages
+  const isAdminPage = pathname?.startsWith("/admin");
+
+  // 🧭 Disable scroll lock for message view
   useEffect(() => {
     document.body.style.overflow = isMessagesPage ? "hidden" : "auto";
     return () => {
@@ -33,15 +38,25 @@ export default function LayoutWrapper({
 
   return (
     <>
-      {!isSingleMessagePage && !isMessagesPage && <Header />}
+      {/* 🌐 Global Header (hidden for admin pages) */}
+      {!isSingleMessagePage && !isMessagesPage && !isAdminPage && <Header />}
+
+      {/* 🧩 Page Content */}
       <main className="flex-1 pb-14 md:pb-0">{children}</main>
+
+      {/* 🌍 Global Footer (hidden for admin pages & restricted routes) */}
       {!loading &&
         !user &&
         !isPrivateRoute &&
         !isMessagesPage &&
         !isAuthPage &&
-        !isSingleMessagePage && <Footer />}
-      {!isMessagesPage && !isSingleMessagePage && <MobileNavBar />}
+        !isSingleMessagePage &&
+        !isAdminPage && <Footer />}
+
+      {/* 📱 Mobile Navigation (hidden for messages + admin) */}
+      {!isMessagesPage && !isSingleMessagePage && !isAdminPage && (
+        <MobileNavBar />
+      )}
     </>
   );
 }

@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/service/firebase";
-import { sendEmailVerification, onAuthStateChanged } from "firebase/auth";
+import {
+  sendEmailVerification,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
@@ -54,8 +58,10 @@ export default function VerifyEmailPage() {
     return () => unsubscribe();
   }, [router]);
 
+  // ✅ Resend Verification Email (now includes displayName)
   const handleResendVerification = async () => {
-    if (!auth.currentUser) {
+    const user = auth.currentUser;
+    if (!user) {
       setError(
         t("auth.verifyEmail.errors.noUser") || "No signed-in user found."
       );
@@ -67,10 +73,23 @@ export default function VerifyEmailPage() {
     setMessage("");
 
     try {
-      await sendEmailVerification(auth.currentUser, {
+      // 🧩 Ensure Firebase Auth has displayName for %DISPLAY_NAME%
+      const ref = doc(db, "profiles", user.uid);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.fullName && !user.displayName) {
+          await updateProfile(user, { displayName: data.fullName });
+          console.log(`✅ displayName set to: ${data.fullName}`);
+        }
+      }
+
+      // 📧 Send verification email with correct displayName
+      await sendEmailVerification(user, {
         url: `${window.location.origin}/auth/login`,
         handleCodeInApp: false,
       });
+
       setMessage(
         t("auth.verifyEmail.success.sent") ||
           "Verification email sent successfully."

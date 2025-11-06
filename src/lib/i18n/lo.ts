@@ -1,5 +1,6 @@
 import { subtle } from "crypto";
 import { filter } from "framer-motion/client";
+import { admin } from "googleapis/build/src/apis/admin";
 import { redirect } from "next/dist/server/api-utils";
 
 const lo = {
@@ -30,6 +31,9 @@ const lo = {
     signIn: "ເຂົ້າສູ່ລະບົບ",
     edit: "ແກ້ໄຂ",
     save: "ບັນທຶກ",
+    modal: {
+      success: "ສຳເລັດ",
+    },
   },
   // Cookie consent translations
   cookieConsent: {
@@ -109,6 +113,7 @@ const lo = {
     transactions: "ທຸລະກຳ",
     withdraw: "ຖອນເງິນ",
     balance: "ຍອດເງິນ",
+    adminPanel: "ຜູ້ດູແລລະບົບ",
   },
   // Add more keys as needed
   // Footer translations
@@ -1953,6 +1958,9 @@ const lo = {
     notifications: "ການແຈ້ງເຕືອນ",
     privacy: "ຄວາມເປັນສ່ວນຕົວ & ຄວາມປອດໄພ",
     account: "ບັນຊີ",
+    notificationDesc: "ຈັດການວິທີຮັບການແຈ້ງເຕືອນ ແລະ ຂໍ້ຄວາມອັບເດດ.",
+    privacyDesc: "ຄວບຄຸມຜູ້ທີ່ສາມາດເຫັນຂໍ້ມູນ ແລະ ກິດຈະກຳຂອງທ່ານ.",
+    accountDesc: "ປັບປຸງຂໍ້ມູນສ່ວນຕົວ ຫຼື ປ່ຽນລະຫັດຜ່ານ.",
     notificationPreferences: {
       title: "ການຕັ້ງຄ່າການແຈ້ງເຕືອນ",
       emailNotifications: {
@@ -2702,6 +2710,8 @@ const lo = {
       updating: "ກຳລັງປັບປຸງ...",
       cancel: "ຍົກເລີກ",
       thisWindowWillCloseAutomatically: "ໜ້າຕ່າງຈະປິດເອງອັດຕະໂນມັດ",
+      success: "ສຳເລັດ",
+      failed: "ຜິດພາດ",
     },
   },
   editProject: {

@@ -44,10 +44,6 @@ export default function PrivacyTab() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold mb-4">
-        {t("settings.privacySecurity.title")}
-      </h3>
-
       {items.map((item) => {
         const fieldValue =
           (profile?.[item.field as keyof Profile] as boolean) ?? false;
@@ -55,14 +51,15 @@ export default function PrivacyTab() {
         return (
           <div
             key={item.field}
-            className="flex items-center justify-between p-4 bg-background-secondary rounded-lg"
+            className="flex items-center justify-between p-4 rounded-lg"
           >
             <div>
               <h4 className="font-medium text-text-primary">{item.title}</h4>
               <p className="text-sm text-text-secondary">{item.desc}</p>
             </div>
 
-            <button suppressHydrationWarning
+            <button
+              suppressHydrationWarning
               onClick={() => toggle(item.field, fieldValue)}
               className={`w-12 h-6 rounded-full relative transition-colors ${
                 fieldValue ? "bg-primary" : "bg-gray-300"

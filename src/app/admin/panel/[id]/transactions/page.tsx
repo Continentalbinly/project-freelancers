@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   collection,
@@ -16,9 +17,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/service/firebase";
-import TransactionHeader from "./components/TransactionHeader";
+import TransactionTabs from "./components/TransactionTabs";
 import TransactionTable from "./components/TransactionTable";
-import GlobalStatus from "../../components/GlobalStatus";
+import GlobalStatus from "../../../../components/GlobalStatus";
+import TransactionHeader from "./components/TransactionHeader";
 
 export interface Transaction {
   id: string;
@@ -39,6 +41,8 @@ export interface Transaction {
   previousTotal?: number;
   newCredit?: number;
   newTotal?: number;
+  approvedBy?: string;
+  rejectedBy?: string;
 }
 
 export interface UserProfile {
@@ -48,6 +52,12 @@ export interface UserProfile {
 
 export default function AdminTransactionsPage() {
   const { user } = useAuth();
+  const router = useRouter();
+  const params = useParams();
+  const searchParams = useSearchParams();
+
+  const statusParam = searchParams.get("status") || "pending";
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [userProfiles, setUserProfiles] = useState<Record<string, UserProfile>>(
     {}
@@ -68,14 +78,23 @@ export default function AdminTransactionsPage() {
     checkRole();
   }, [user]);
 
-  // 🔹 Fetch transactions (real-time)
+  // 🔹 Fetch transactions (real-time) based on statusParam
   useEffect(() => {
     if (!isAdmin) return;
-    const q = query(
-      collection(db, "transactions"),
-      where("status", "==", "pending"),
-      orderBy("createdAt", "desc")
-    );
+    if (!["pending", "confirmed", "rejected", "all"].includes(statusParam)) {
+      router.replace(`/admin/panel/${params.id}/transactions?status=pending`);
+      return;
+    }
+
+    const baseQuery = collection(db, "transactions");
+    const q =
+      statusParam === "all"
+        ? query(baseQuery, orderBy("createdAt", "desc"))
+        : query(
+            baseQuery,
+            where("status", "==", statusParam),
+            orderBy("createdAt", "desc")
+          );
 
     const unsub = onSnapshot(q, async (snap) => {
       const txs = snap.docs.map(
@@ -83,7 +102,7 @@ export default function AdminTransactionsPage() {
       );
       setTransactions(txs);
 
-      // Fetch related profiles
+      // Fetch user profiles for each transaction
       const users: Record<string, UserProfile> = {};
       for (const tx of txs) {
         if (!users[tx.userId]) {
@@ -99,7 +118,7 @@ export default function AdminTransactionsPage() {
     });
 
     return () => unsub();
-  }, [isAdmin]);
+  }, [isAdmin, statusParam, params.id, router]);
 
   // ✅ Approve Transaction
   async function handleApprove(tx: Transaction) {
@@ -129,36 +148,29 @@ export default function AdminTransactionsPage() {
         credit: increment(tx.amount),
         updatedAt: serverTimestamp(),
       });
-    } else if (tx.type === "withdraw_request") {
-      // Withdraw is already deducted on request — just mark as confirmed
-      console.log("✅ Withdraw confirmed, no credit change required.");
     }
 
     alert("✅ Transaction approved successfully!");
   }
 
-  // ❌ Reject Transaction (with precise rollback)
+  // ❌ Reject Transaction (with rollback)
   async function handleReject(tx: Transaction) {
     if (!confirm("Reject this transaction?")) return;
 
     const txRef = doc(db, "transactions", tx.id);
     const userRef = doc(db, "profiles", tx.userId);
 
-    // Mark transaction rejected
     await updateDoc(txRef, {
       status: "rejected",
       rejectedBy: user?.uid || "admin",
       updatedAt: serverTimestamp(),
     });
 
-    // 🪙 Refund logic only for withdraws
     if (tx.type === "withdraw_request") {
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
         const data = userSnap.data();
         const updateData: any = { updatedAt: serverTimestamp() };
-
-        // ✅ Use accurate rollback if available
         if (
           typeof tx.previousCredit === "number" &&
           typeof tx.previousTotal === "number"
@@ -166,21 +178,10 @@ export default function AdminTransactionsPage() {
           updateData.credit = tx.previousCredit;
           updateData.totalEarned = tx.previousTotal;
         } else {
-          // 🧭 Backward compatibility fallback
-          const source = tx.source || "credit";
-          if (source === "credit") {
-            updateData.credit = increment(tx.amount);
-          } else if (source === "totalEarned") {
-            updateData.totalEarned = increment(tx.amount);
-          } else if (source === "all") {
-            // Refund proportionally or to credit if no split data
-            updateData.credit = increment(tx.amount);
-          }
+          updateData.credit = increment(tx.amount);
         }
-
         await updateDoc(userRef, updateData);
 
-        // ✅ Log refund transaction for audit trail
         await addDoc(collection(db, "transactions"), {
           userId: tx.userId,
           type: "refund",
@@ -189,14 +190,6 @@ export default function AdminTransactionsPage() {
           currency: tx.currency || "LAK",
           amount: tx.amount,
           description: `Refund for rejected withdrawal ${tx.transactionId}`,
-          restoredCredit:
-            typeof tx.previousCredit === "number"
-              ? tx.previousCredit
-              : data.credit || 0,
-          restoredTotalEarned:
-            typeof tx.previousTotal === "number"
-              ? tx.previousTotal
-              : data.totalEarned || 0,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
@@ -221,6 +214,7 @@ export default function AdminTransactionsPage() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <TransactionHeader />
+      <TransactionTabs currentStatus={statusParam} />
       <TransactionTable
         transactions={transactions}
         userProfiles={userProfiles}
