@@ -35,7 +35,7 @@ export default function Header() {
 
           {/* Center: Navigation (absolutely centered) */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
-            <HeaderNav pathname={pathname} t={t} user={user} />
+            <HeaderNav pathname={pathname} />
           </div>
 
           {/* Right: User Menu / Language / Auth */}
