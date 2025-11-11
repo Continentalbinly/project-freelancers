@@ -38,6 +38,7 @@ const lo = {
     accept: "ອະນຸມັດ",
     reject: "ປະຕິເສດ",
     ProjectNotFound: "ບໍ່ພົບໂປຣເຈັກ.",
+    back2home: "ກັບໄປໜ້າຫຼັກ"
   },
   // Cookie consent translations
   cookieConsent: {
@@ -1580,6 +1581,7 @@ const lo = {
     projectInReview: "ໂປຣເຈັກຢູ່ໃນການທົບທວນ",
     projectInReviewDesc: "ໂປຣເຈັກນີ້ກຳລັງຢູ່ໃນການທົບທວນ ແລະ ຈະສຳເລັດໃນໄວໆນີ້.",
     projectSamples: "ຕົວຢ່າງປະກອບ",
+    onlyFreelancerMessage: "ມີແຕ່ຟຣີແລນຊ໌ເທົ່ານັ້ນທີ່ສາມາດສົ່ງຂໍ້ສະເໜີໄດ້"
   },
   // Manage projects page translations
   manageProjects: {

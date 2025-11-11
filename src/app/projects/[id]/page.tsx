@@ -161,7 +161,7 @@ export default function ProjectDetailPage() {
           <div className="flex flex-col space-y-6 lg:sticky lg:top-[100px] self-start">
             <ProjectSidebar project={project} t={t} />
             <ProjectActions project={project} user={user} t={t} />
-            <CompletionStatus
+            {/* <CompletionStatus
               project={project}
               t={t}
               formatDate={(d: Date) =>
@@ -173,7 +173,7 @@ export default function ProjectDetailPage() {
                   minute: "2-digit",
                 }).format(d)
               }
-            />
+            /> */}
           </div>
         </div>
       </div>

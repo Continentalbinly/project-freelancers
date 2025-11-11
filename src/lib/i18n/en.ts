@@ -37,6 +37,7 @@ const en = {
     accept: "Accept",
     reject: "Reject",
     ProjectNotFound: "Project not found.",
+    back2home: "Back to Home"
   },
   // Cookie consent translations
   cookieConsent: {
@@ -1511,6 +1512,7 @@ const en = {
     projectInReviewDesc:
       "The project is currently under review by the client. Please wait for their confirmation.",
     projectSamples: "Samples",
+    onlyFreelancerMessage: "Only freelancers can submit proposals",
   },
   // Manage projects page translations
   manageProjects: {
