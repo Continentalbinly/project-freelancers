@@ -64,9 +64,7 @@ export default function WorkSamples({
       };
 
       setWorkSamples([...workSamples, newSample]);
-      console.log("✅ Uploaded to Cloudinary:", data.secure_url);
     } catch (err) {
-      console.error("❌ Cloudinary upload error:", err);
       setUploadError("Failed to upload image. Please try again.");
     } finally {
       setUploading(false);

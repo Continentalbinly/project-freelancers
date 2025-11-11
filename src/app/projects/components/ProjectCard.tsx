@@ -19,7 +19,7 @@ export default function ProjectCard({
   const { currentLanguage } = useTranslationContext();
   const [owner, setOwner] = useState<any>(null);
 
-  // 🔹 Fetch project owner (client) profile
+  /* 🔹 Fetch project owner profile */
   useEffect(() => {
     async function fetchOwner() {
       if (!project.clientId) return;
@@ -46,7 +46,7 @@ export default function ProjectCard({
         : project.category.name_en || project.category.name_lo
       : project.category;
 
-  // 🎨 Status badge helpers
+  /* 🎨 Status helpers */
   const getStatusColor = (status: string) => {
     switch (status) {
       case "open":
@@ -81,24 +81,35 @@ export default function ProjectCard({
     }
   };
 
+  /* 🖱️ Handle click anywhere on card */
+  const handleCardClick = async () => {
+    try {
+      await incrementProjectViews(project.id);
+      window.location.href = `/projects/${project.id}`;
+    } catch (err) {
+      console.error("❌ Failed to increment views:", err);
+      window.location.href = `/projects/${project.id}`;
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-border overflow-hidden flex flex-col hover:shadow-md transition-all duration-300">
+    <div
+      onClick={handleCardClick}
+      className="bg-white rounded-xl shadow-sm border border-border overflow-hidden flex flex-col hover:shadow-md hover:scale-[1.01] transition-all duration-300 cursor-pointer relative group"
+    >
       {/* 🖼️ Image */}
-      <div
-        className="relative h-40 sm:h-44 md:h-48 cursor-pointer overflow-hidden group"
-        onClick={async () => {
-          await incrementProjectViews(project.id);
-          window.location.href = `/projects/${project.id}`;
-        }}
-      >
+      <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
         <ProjectImage
           src={project.imageUrl || "/images/default-project.jpg"}
           alt={project.title || "Project image"}
           size="full"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        {/* ❤️ Favorite */}
-        <div className="absolute top-2 right-2">
+        {/* ❤️ Favorite (stops click bubbling) */}
+        <div
+          className="absolute top-2 right-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           <FavoriteButton projectId={project.id} size="sm" />
         </div>
       </div>
@@ -111,7 +122,6 @@ export default function ProjectCard({
             <h3 className="font-semibold text-base sm:text-lg text-text-primary leading-snug line-clamp-2">
               {project.title}
             </h3>
-            {/* 🟢 Status Badge */}
             {project.status && (
               <span
                 className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${getStatusColor(
@@ -128,7 +138,7 @@ export default function ProjectCard({
             {project.description}
           </p>
 
-          {/* 👤 Project Owner */}
+          {/* 👤 Owner */}
           {owner && (
             <div className="flex items-center gap-2 mb-3">
               <Avatar {...getAvatarProps(owner)} size="sm" />
@@ -149,7 +159,7 @@ export default function ProjectCard({
           )}
         </div>
 
-        {/* 📊 Category & Budget */}
+        {/* 📊 Info */}
         <div className="text-xs sm:text-sm mt-1 space-y-0.5">
           <div className="flex justify-between items-center">
             <span className="text-text-secondary">
@@ -185,13 +195,20 @@ export default function ProjectCard({
           </div>
         </div>
 
-        {/* 🔗 View Details */}
-        <Link
-          href={`/projects/${project.id}`}
-          className="mt-3 inline-block text-center text-xs sm:text-sm font-medium px-3 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-all"
-        >
-          {t("projects.projectCard.viewDetails")}
-        </Link>
+        {/* 🔗 View Details Button (stops click bubbling) */}
+        <div onClick={(e) => e.stopPropagation()}>
+          <Link
+            href={`/projects/${project.id}`}
+            onClick={async (e) => {
+              e.preventDefault();
+              await incrementProjectViews(project.id);
+              window.location.href = `/projects/${project.id}`;
+            }}
+            className="mt-3 inline-block text-center text-xs sm:text-sm font-medium px-3 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-all w-full"
+          >
+            {t("projects.projectCard.viewDetails")}
+          </Link>
+        </div>
       </div>
     </div>
   );

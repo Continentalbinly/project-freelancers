@@ -11,6 +11,8 @@ import {
   User,
   Briefcase,
   Shield,
+  LayoutDashboard,
+  FolderOpen,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
@@ -173,6 +175,27 @@ export default function HeaderDrawer({
                       <span className="text-sm font-medium">{label}</span>
                     </Link>
                   ))}
+                  <Link
+                    href="/projects/manage"
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
+                  >
+                    <FolderOpen className="w-5 h-5" />
+                    <span className="text-sm font-medium">
+                      {t("header.projectManage")}
+                    </span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
+                  >
+                    <LayoutDashboard className="w-5 h-5" />
+                    <span className="text-sm font-medium">
+                      {t("header.dashboard")}
+                    </span>
+                  </Link>
 
                   <Link
                     href="/settings"

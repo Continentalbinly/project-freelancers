@@ -25,6 +25,7 @@ import {
 import { db } from "@/service/firebase";
 import { Project } from "@/types/project";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { Briefcase } from "lucide-react";
 
 interface Props {
   project: Project;
@@ -131,10 +132,8 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
           }
 
           refundDone = true;
-          console.log(`✅ Refunded ${refundAmount} LAK to client.`);
         }
       } else {
-        console.log("⚠️ No escrow_hold transaction found — skipping refund.");
       }
 
       // 🗑 Delete related proposals
@@ -263,7 +262,7 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
                   href={`/projects/${project.id}/proposals`}
                   className="flex items-center gap-2 text-sm text-success font-medium"
                 >
-                  <PencilIcon className="w-4 h-4" />
+                  <Briefcase className="w-4 h-4" />
                   {t("manageProjects.viewProposals")} (
                   {project.proposalsCount || 0})
                 </Link>

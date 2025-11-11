@@ -59,7 +59,7 @@ export function timeAgo(input: any, lang: "en" | "lo" = "en"): string {
       hour: "ຊົ່ວໂມງ",
       minute: "ນາທີ",
       ago: "ກ່ອນ",
-      justNow: "ດຽວນີ້",
+      justNow: "ເມື່ອບໍ່ດົນນີ້",
     },
   };
 

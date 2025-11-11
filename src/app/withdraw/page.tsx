@@ -22,10 +22,7 @@ export default function WithdrawPage() {
     return <GlobalStatus type="loading" message="Checking access..." />;
 
   return (
-    <div className="max-w-3xl mx-auto py-8 space-y-8">
-      <h1 className="text-2xl font-bold text-text-primary text-center">
-        Withdraw Funds
-      </h1>
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       <WithdrawSummary profile={profile} />
       <WithdrawForm user={user} profile={profile} />
       <WithdrawHistory userId={user?.uid || ""} />

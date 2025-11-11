@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import LandingPage from "./components/LandingPage";
+import LandingPage from "./components/landing/LandingPage";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import ProjectsPage from "./projects/page";
 

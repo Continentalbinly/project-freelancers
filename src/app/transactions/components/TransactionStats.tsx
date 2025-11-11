@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   ArrowDownCircle,
-  ArrowUpCircle,
   Wallet,
   RefreshCcw,
 } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/service/firebase";
 import type { Transaction } from "../page";
 
 interface Props {
@@ -15,6 +17,37 @@ interface Props {
 }
 
 export default function TransactionStats({ transactions, loading, t }: Props) {
+  const [activeEscrows, setActiveEscrows] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    const filterActiveEscrows = async () => {
+      const escrowTx = transactions.filter(
+        (tx) => tx.type === "escrow_hold" && tx.status === "held"
+      );
+
+      const validEscrows: Transaction[] = [];
+
+      for (const tx of escrowTx) {
+        try {
+          if (!tx.projectId) continue;
+          const projectRef = doc(db, "projects", tx.projectId);
+          const snap = await getDoc(projectRef);
+          const data = snap.data();
+
+          if (data && data.status !== "completed" && data.status !== "cancelled") {
+            validEscrows.push(tx);
+          }
+        } catch (err) {
+          console.error("Error checking project status:", err);
+        }
+      }
+
+      setActiveEscrows(validEscrows);
+    };
+
+    if (transactions.length > 0) filterActiveEscrows();
+  }, [transactions]);
+
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8 text-center animate-pulse text-text-secondary">
@@ -26,15 +59,12 @@ export default function TransactionStats({ transactions, loading, t }: Props) {
   const topups = transactions.filter(
     (tx) => tx.type === "topup" && tx.status === "confirmed"
   );
-  const escrows = transactions.filter(
-    (tx) => tx.type === "escrow_hold" && tx.status === "held"
-  );
   const refunds = transactions.filter(
     (tx) => tx.type === "escrow_refund" && tx.status === "completed"
   );
 
   const totalTopup = topups.reduce((sum, t) => sum + (t.amount || 0), 0);
-  const totalHeld = escrows.reduce((sum, t) => sum + (t.amount || 0), 0);
+  const totalHeld = activeEscrows.reduce((sum, t) => sum + (t.amount || 0), 0);
   const totalRefunded = refunds.reduce((sum, t) => sum + (t.amount || 0), 0);
 
   const format = (amt: number) =>
@@ -46,7 +76,7 @@ export default function TransactionStats({ transactions, loading, t }: Props) {
 
   return (
     <section className="py-8">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 px-4">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 px-4">
         {/* Total Top-up */}
         <div className="bg-white border border-border rounded-xl p-5 shadow-sm flex flex-col items-center text-center">
           <Wallet className="w-8 h-8 text-primary mb-2" />
@@ -58,11 +88,12 @@ export default function TransactionStats({ transactions, loading, t }: Props) {
           </h3>
         </div>
 
-        {/* Escrow Held */}
+        {/* Escrow Held (Active Only) */}
         <div className="bg-white border border-border rounded-xl p-5 shadow-sm flex flex-col items-center text-center">
           <ArrowDownCircle className="w-8 h-8 text-amber-500 mb-2" />
           <p className="text-sm text-text-secondary">
-            {t("transactions.stats.escrowHeld")}
+            {t("transactions.stats.escrowHeld")}{" "}
+            <span className="text-xs text-gray-400">(Active Only)</span>
           </p>
           <h3 className="text-2xl font-bold text-text-primary">
             {format(totalHeld)}

@@ -43,10 +43,8 @@ export default function VerifyEmailPage() {
               emailVerified: true,
               updatedAt: new Date(),
             });
-            console.log("✅ Firestore synced → emailVerified true");
           }
         } catch (err) {
-          console.warn("⚠️ Firestore sync failed:", err);
         }
 
         router.push("/"); // redirect home
@@ -80,7 +78,6 @@ export default function VerifyEmailPage() {
         const data = snap.data();
         if (data.fullName && !user.displayName) {
           await updateProfile(user, { displayName: data.fullName });
-          console.log(`✅ displayName set to: ${data.fullName}`);
         }
       }
 
@@ -95,7 +92,6 @@ export default function VerifyEmailPage() {
           "Verification email sent successfully."
       );
     } catch (err: any) {
-      console.error("❌ sendEmailVerification error:", err);
       setError(
         err.message ||
           t("auth.verifyEmail.errors.failedToSend") ||

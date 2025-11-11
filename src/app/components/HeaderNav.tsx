@@ -1,12 +1,33 @@
-import Link from "next/link";
+"use client";
 
-export default function HeaderNav({ pathname, t, user }: any) {
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTranslationContext } from "@/app/components/LanguageProvider";
+
+export default function HeaderNav({ pathname }: { pathname: string }) {
+  const { user, loading } = useAuth();
+  const { t } = useTranslationContext();
+
   const linkClasses = (path: string) =>
     `text-sm font-medium transition-colors ${
       pathname === path
         ? "text-primary border-b-2 border-primary"
         : "text-text-primary hover:text-primary"
     }`;
+
+  // 🌀 While auth is loading — show skeleton shimmer
+  if (loading) {
+    return (
+      <nav className="hidden md:flex items-center space-x-8 animate-pulse">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-16 h-4 bg-background-tertiary rounded-md"
+          ></div>
+        ))}
+      </nav>
+    );
+  }
 
   return (
     <nav className="hidden md:flex items-center space-x-8">
@@ -16,6 +37,9 @@ export default function HeaderNav({ pathname, t, user }: any) {
 
       {user ? (
         <>
+          <Link href="/my-projects" className={linkClasses("/my-projects")}>
+            {t("header.myProjects")}
+          </Link>
           <Link href="/proposals" className={linkClasses("/proposals")}>
             {t("header.proposals")}
           </Link>

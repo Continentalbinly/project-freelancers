@@ -35,12 +35,9 @@ export default function Step6Review({ formData, previewUrl, t }: Props) {
       ? formData.category.name_lo || formData.category.name_en
       : formData.category || t("createProject.noneSpecified");
 
-  const formattedBudget = formData.budget
-    ? formatLAK(Number(formData.budget))
-    : t("createProject.noneSpecified");
-
   return (
     <div className="space-y-6">
+      {/* Title */}
       <div>
         <h2 className="text-xl font-semibold text-text-primary mb-1">
           {t("createProject.reviewSubmit")}
@@ -50,11 +47,11 @@ export default function Step6Review({ formData, previewUrl, t }: Props) {
         </p>
       </div>
 
-      {/* 💰 Credit + Budget Overview */}
-      <div className="bg-gray-50 p-6 rounded-lg border space-y-3 text-sm">
+      {/* 💰 Credit Overview */}
+      <div className="bg-gray-50 p-6 rounded-lg border border-border shadow-sm space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="font-medium text-text-primary">
-            {t("createProject.yourCredits") || "Your Credits"}:
+            {t("createProject.yourCredits")}
           </span>
           <span className="font-semibold text-green-600">
             {formatLAK(credits || 0)}
@@ -62,17 +59,15 @@ export default function Step6Review({ formData, previewUrl, t }: Props) {
         </div>
         <div className="flex justify-between">
           <span className="font-medium text-text-primary">
-            {t("createProject.requiredCredits") || "Required"}:
+            {t("createProject.requiredCredits")}
           </span>
           <span className="font-semibold text-text-primary">
-            {formData.budget
-              ? formatLAK(Number(formData.budget))
-              : t("createProject.noneSpecified")}
+            {formData.budget ? formatLAK(Number(formData.budget)) : "N/A"}
           </span>
         </div>
         <div className="flex justify-between">
           <span className="font-medium text-text-primary">
-            {t("createProject.remaining") || "Remaining"}:
+            {t("createProject.remaining")}
           </span>
           <span
             className={`font-semibold ${
@@ -86,16 +81,10 @@ export default function Step6Review({ formData, previewUrl, t }: Props) {
               : t("common.loading")}
           </span>
         </div>
-
-        {credits !== null && credits < Number(formData.budget) && (
-          <p className="text-sm text-red-500 mt-2">
-            ⚠️ ຄະແນນຂອງທ່ານບໍ່ພໍສໍາລັບງົບປະມານໂປຣເຈັກນີ້.
-          </p>
-        )}
       </div>
 
       {/* 🧾 Summary */}
-      <div className="bg-gray-50 p-6 rounded-lg border space-y-3 text-sm">
+      <div className="bg-gray-50 p-6 rounded-lg border border-border shadow-sm space-y-3 text-sm">
         <p>
           <b>{t("createProject.projectTitle")}:</b> {formData.title}
         </p>
@@ -112,6 +101,29 @@ export default function Step6Review({ formData, previewUrl, t }: Props) {
         <p>
           <b>{t("createProject.projectVisibility")}:</b> {formData.visibility}
         </p>
+
+        {/* 🔁 Edit Quota */}
+        <p>
+          <b>{t("createProject.editQuota") || "Edit Quota"}:</b>{" "}
+          {formData.editQuota ?? 3}
+        </p>
+
+        {/* 🖼️ Sample Images */}
+        {formData.sampleImages?.length > 0 && (
+          <div className="mt-3">
+            <b>{t("createProject.sampleImages") || "Sample Images"}:</b>
+            <div className="flex flex-wrap gap-3 justify-center mt-2">
+              {formData.sampleImages.map((url: string) => (
+                <img
+                  key={url}
+                  src={url}
+                  alt="sample"
+                  className="w-24 h-24 object-cover rounded-md border"
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {previewUrl && (

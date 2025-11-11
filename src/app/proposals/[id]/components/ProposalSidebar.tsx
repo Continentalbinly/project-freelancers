@@ -187,7 +187,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("accept")}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center"
+              className="w-full cursor-pointer bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center"
             >
               {loadingAction && confirmAction === "accept" ? (
                 <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2"></span>
@@ -200,7 +200,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("reject")}
-              className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center"
+              className="w-full cursor-pointer bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center"
             >
               {loadingAction && confirmAction === "reject" ? (
                 <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2"></span>

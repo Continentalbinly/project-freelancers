@@ -17,6 +17,7 @@ const en = {
     noRating: "No ratings yet",
     noNotes: "No notes",
     confirm: "Confirm",
+    draftLoaded: "Loading Draft...",
     status: {
       statusOpen: "Open",
       statusInProgress: "In Progress",
@@ -33,6 +34,9 @@ const en = {
     modal: {
       success: "Success",
     },
+    accept: "Accept",
+    reject: "Reject",
+    ProjectNotFound: "Project not found.",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -113,6 +117,9 @@ const en = {
     withdraw: "Withdraw",
     balance: "Balance",
     adminPanel: "Admin Panel",
+    myProjects: "My Projects",
+    account: "Account",
+    projectManage: "Manage Projects",
   },
   // Footer translations
   footer: {
@@ -1503,6 +1510,7 @@ const en = {
     projectInReview: "Project In Review",
     projectInReviewDesc:
       "The project is currently under review by the client. Please wait for their confirmation.",
+    projectSamples: "Samples",
   },
   // Manage projects page translations
   manageProjects: {
@@ -1555,6 +1563,7 @@ const en = {
     projects: "Projects",
     createProject: "Create Project",
     creating: "Creating...",
+    uploading: "Uploading",
     createNewProject: "Create a New Project",
     step: "Step",
     of: "of",
@@ -1599,7 +1608,7 @@ const en = {
     skillPlaceholder: "Add a skill (e.g., React, Python, Design)",
     add: "Add",
     deadline: "Deadline (Optional)",
-    projectMedia: "Project Media",
+    projectMedia: "Banner and Samples",
     mediaDesc:
       "Add an image to make your project more attractive to freelancers.",
     projectImage: "Project Image (Optional)",
@@ -1649,6 +1658,16 @@ const en = {
     cancel: "Cancel",
     replaceImage: "Replace Image",
     removeImage: "Remove Image",
+    editQuota: "Edit Quota *",
+    editQuotaDesc:
+      "Number of times the client can request revisions (Maximum 3).",
+    bannerImage: "Main Banner Image",
+    sampleImages: "Sample Reference Images",
+    sampleImagesDesc:
+      "Add supporting images to help freelancers understand your goal.",
+    addSampleImage: "Add Sample Image",
+    clearDraft: "Clear Draft",
+    contactSupport: "Contact Support",
   },
   // Profile page translations
   profile: {
@@ -1879,6 +1898,8 @@ const en = {
       backToProposals: "Back to Proposals",
       due: "Due Date",
     },
+    confirmAcceptTitle: "Confirm Proposal",
+    confirmAcceptDesc: "Are you sure to confirm accept this proposal?",
   },
   // Settings page translations
   settings: {
@@ -2538,11 +2559,23 @@ const en = {
   // Landing Page translations
   landingPage: {
     hero: {
-      title: "Where Students Earn & Learn",
+      title:
+        "UniJobs - The platform where everyone can earn anytime, anywhere.",
       subtitle:
-        "Join the largest academic freelancing community. Earn money while gaining real-world experience, building your portfolio, and growing your skills.",
+        "Join the freelance student community. Create your portfolio and develop your skills. (Especially designed for students.)",
       startEarning: "Start Earning Today",
       learnHow: "Learn How It Works",
+      searchPlaceholder: "Search for jobs, projects, or skills...",
+      searchButton: "Search",
+    },
+    categories: {
+      title: "Popular Categories",
+      programming: "Programming",
+      design: "Design",
+      business: "Business",
+      media: "Media",
+      translation: "Translation",
+      "voice & audio": "Voice & Audio",
     },
     howItWorks: {
       title: "How It Works",
@@ -2566,11 +2599,11 @@ const en = {
     features: {
       title: "Why Choose UniJobs?",
       subtitle:
-        "Join thousands of students who are already earning while learning",
+        "Join a community of thousands waiting to hire and collaborate through freelance opportunities.",
       earnWhileLearn: {
-        title: "Earn While You Learn",
+        title: "Earn Income Anytime, Anywhere",
         description:
-          "Find opportunities that align with your studies and earn money to support your education",
+          "Discover opportunities that match your projects and build income while improving your skills.",
       },
       buildPortfolio: {
         title: "Build Your Portfolio",
@@ -2947,6 +2980,8 @@ const en = {
       escrowRelease: "Escrow Release",
       escrowRefund: "Escrow Refund",
       withdrawRequest: "Withdraw Request",
+      refund: "Refund",
+      escrowAdd: "Escrow Add",
     },
     status: {
       held: "Held",
@@ -3028,6 +3063,76 @@ const en = {
     quality: "Quality of Work",
     timeliness: "Timeliness",
     value: "Value for Money",
+  },
+  myProjects: {
+    title: "My Project Handler",
+    stepper: {
+      step1: {
+        title: "Project Not Started",
+        desc: "Waiting for the freelancer to begin work.",
+        button: "Start Project",
+      },
+      step2: {
+        title: "Project In Progress",
+        desc: "Upload multiple preview images or samples for the client to review before completion.",
+        uploadBtn: "Upload Previews",
+        uploading: "Uploading...",
+        uploadFirst: "Please upload at least one preview before submitting.",
+        notePlaceholder: "Add a note or description for the client...",
+        submitBtn: "Submit for Review",
+        submitting: "Submitting...",
+        clientWaitingTitle: "Waiting for Freelancer Submission",
+        clientWaitingDesc:
+          "The freelancer is currently working on this project. You’ll be notified when they submit previews for review.",
+        previewSectionTitle: "Sample Previews",
+        finalSectionTitle: "Final / Original Files",
+        finalSectionDesc:
+          "Upload your final or source files (any type) once the project is approved.",
+        saveOriginalsBtn: "Save Originals",
+        noPreviewUploaded: "No previews uploaded yet.",
+        uploadSuccess: "Final files uploaded successfully!",
+        uploadPreviewRequired: "Please upload at least one preview sample.",
+        uploadOriginalRequired: "Please upload at least one original file.",
+        uploadPreviewAndOriginal:
+          "Please upload both a sample preview and an original file before submitting.",
+      },
+      step3: {
+        title: "Client Review",
+        desc: "Review submitted previews from the freelancer and approve or request changes.",
+        noSubmissions: "No submissions found yet.",
+        approve: "Approve and Complete",
+        requestChanges: "Request Changes",
+        quotaRemaining: "left",
+        noQuota: "No edit quota remaining — approval only.",
+        confirmApprove: "Confirm Approval",
+        confirmApproveDesc:
+          "Are you sure you want to mark this project as completed?",
+        selectReason: "Type of Request",
+        reasonPlaceholder: "Select reason",
+        waitingFreelancer: "Waiting for freelancer to respond to your request.",
+        pendingChangeRequests: "Pending Change Requests",
+        pendingChangeRequestsDesc:
+          "You can review and decide whether to accept or reject the client's requested changes.",
+        noChangeRequests: "No pending change requests at the moment.",
+        confirmAcceptTitle: "Accept Change Request?",
+        confirmAcceptDesc:
+          "Confirm that you will make the requested changes. The project will move back to 'In Progress'.",
+        rejectRequestTitle: "Reject Change Request",
+        rejectReason: "Reason for rejecting",
+        rejectReasonPlaceholder: "Describe why you reject this request...",
+      },
+      step4: {
+        title: "Project Completed",
+        descFreelancer:
+          "Your project is completed and files have been delivered successfully.",
+      },
+      finalDelivery: {
+        title: "Final Deliverables",
+        descClient:
+          "Your project has been marked as completed. You can download the final deliverables below.",
+        noFiles: "No files available for download.",
+      },
+    },
   },
 };
 

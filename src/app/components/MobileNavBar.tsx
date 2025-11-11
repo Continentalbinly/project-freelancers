@@ -5,22 +5,20 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   Folder,
-  MessageCircle,
-  User,
-  PlusSquare,
   LogIn,
-  LayoutDashboard,
+  Backpack,
+  PlusSquare,
   ArrowLeftRight,
+  User,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function MobileNavBar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { t } = useTranslationContext();
 
-  // highlight helper
   const isActive = (href: string) => pathname === href;
 
   const guestLinks = [
@@ -31,16 +29,36 @@ export default function MobileNavBar() {
 
   const userLinks = [
     { href: "/", label: t("header.home"), icon: Home },
-    { href: "/dashboard", label: t("header.dashboard"), icon: LayoutDashboard },
+    { href: "/my-projects", label: t("header.myProjects"), icon: Backpack },
     { href: "/proposals", label: t("header.proposals"), icon: PlusSquare },
-    { href: "/transactions", label: t("header.transactions"), icon: ArrowLeftRight },
+    {
+      href: "/transactions",
+      label: t("header.transactions"),
+      icon: ArrowLeftRight,
+    },
     { href: "/profile", label: t("header.profile"), icon: User },
   ];
 
   const navLinks = user ? userLinks : guestLinks;
 
+  // 🌀 While auth is loading — show loading placeholders
+  if (loading) {
+    return (
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border shadow-sm md:hidden animate-pulse">
+        <ul className="flex justify-around items-center h-14">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <li key={i} className="flex flex-col items-center gap-1">
+              <div className="w-5 h-5 bg-background-tertiary rounded-full"></div>
+              <div className="w-10 h-2 bg-background-tertiary rounded"></div>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    );
+  }
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border shadow-sm md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border shadow-sm md:hidden">
       <ul className="flex justify-around items-center h-14">
         {navLinks.map(({ href, label, icon: Icon }) => (
           <li key={href}>

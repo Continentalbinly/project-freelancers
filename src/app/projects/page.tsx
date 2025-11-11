@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -12,7 +12,6 @@ export default function ProjectsPage() {
   const { t } = useTranslationContext();
   const { user } = useAuth();
   const {
-    projects,
     filteredProjects,
     loading,
     filters,
@@ -23,28 +22,21 @@ export default function ProjectsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // 🧠 Prevent reapplying URL filters multiple times
-  const initialized = useRef(false);
-
+  // ✅ Watch URL changes — reactively sync filters
   useEffect(() => {
-    if (loading || initialized.current) return;
-
     const urlSearch = searchParams.get("search") || "";
     const urlCategory = searchParams.get("category") || "all";
     const urlStatus = searchParams.get("status") || "all";
 
-    // ✅ apply only on first mount
-    setFilters({
+    setFilters((prev: any) => ({
+      ...prev,
       search: urlSearch,
       category: urlCategory,
       status: urlStatus,
-      budgetType: "all",
-    });
+    }));
+  }, [searchParams, setFilters]);
 
-    initialized.current = true;
-  }, [loading, searchParams, setFilters]);
-
-  // ✅ Clear query params when resetting filters
+  // 🔄 Reset filters and clear query params
   const handleReset = () => {
     setFilters({
       search: "",
@@ -52,7 +44,7 @@ export default function ProjectsPage() {
       status: "all",
       budgetType: "all",
     });
-    router.replace("/projects"); // clear ?query=... in URL
+    router.replace("/projects");
   };
 
   if (loading) {
@@ -65,17 +57,14 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="bg-background min-h-screen">
-
-      {/* 🔍 Filters */}
+    <div className="bg-background">
       <ProjectsFilters
         filters={filters}
         setFilters={setFilters}
         t={t}
-        onReset={handleReset} // 👈 pass custom reset
+        onReset={handleReset}
       />
 
-      {/* 📋 Projects Grid */}
       <section className="py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center mb-6">

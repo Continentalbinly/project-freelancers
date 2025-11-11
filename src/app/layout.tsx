@@ -24,9 +24,9 @@ const notoSansLao = Noto_Sans_Lao({
 
 // ✅ Add favicon and manifest info
 export const metadata: Metadata = {
-  title: "UniJobs - Where Students Earn & Learn",
+  title: "UniJobs - Earn Anywhere Anytimes ",
   description:
-    "Join the largest academic freelancing community where students earn money while gaining real-world experience. Connect with opportunities, build skills, and grow your career.",
+    "Join the largest academic freelancing community where everyone can earn anywhere anytimes. Connect with opportunities, build skills, and grow your career.",
   keywords: [
     "freelance",
     "students",

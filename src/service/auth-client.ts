@@ -44,7 +44,6 @@ export async function loginUser(
           emailVerified: true,
           updatedAt: new Date(),
         });
-        console.log("✅ Firestore emailVerified updated to true");
       }
     }
 

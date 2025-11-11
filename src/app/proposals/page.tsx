@@ -130,9 +130,6 @@ export default function ProposalsPage() {
               {t("proposals.subtitle")}
             </p>
           </div>
-          <Link href="/projects" className="btn btn-primary btn-sm">
-            {t("proposals.browseProjects")}
-          </Link>
         </div>
 
         <ProposalsTabs activeTab={activeTab} onChange={setActiveTab} t={t} />

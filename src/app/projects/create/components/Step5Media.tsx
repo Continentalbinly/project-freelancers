@@ -27,30 +27,17 @@ export default function Step5Media({
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState("");
+  const [uploadingSample, setUploadingSample] = useState(false);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
-    setUploadError("");
-
-    // 🔥 Auto-upload to Cloudinary
-    await uploadToCloudinary(file);
-  };
-
-  const uploadToCloudinary = async (file: File) => {
+  // 🔹 Upload to Cloudinary (shared)
+  const uploadToCloudinary = async (file: File, type: "banner" | "sample") => {
     try {
       setUploading(true);
       setUploadProgress(10);
 
       const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
       const preset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-      if (!cloudName || !preset) {
-        throw new Error("❌ Missing Cloudinary config. Check .env.local");
-      }
+      if (!cloudName || !preset) throw new Error("Missing Cloudinary config");
 
       const body = new FormData();
       body.append("file", file);
@@ -58,24 +45,23 @@ export default function Step5Media({
 
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: "POST",
-          body,
-        }
+        { method: "POST", body }
       );
-
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || "Upload failed");
 
-      if (!res.ok) {
-        console.error("❌ Cloudinary error response:", data);
-        throw new Error(data.error?.message || "Upload failed");
+      if (type === "banner") {
+        setFormData((prev) => ({ ...prev, imageUrl: data.secure_url }));
+        setPreviewUrl(data.secure_url);
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          sampleImages: [...(prev.sampleImages || []), data.secure_url],
+        }));
       }
 
       setUploadProgress(100);
-      setFormData((prev) => ({ ...prev, imageUrl: data.secure_url }));
-      console.log("✅ Uploaded successfully:", data.secure_url);
     } catch (err: any) {
-      console.error("❌ Cloudinary upload error:", err);
       setUploadError(err.message || "Upload failed");
     } finally {
       setUploading(false);
@@ -83,78 +69,137 @@ export default function Step5Media({
     }
   };
 
-  const handleReplace = () => {
-    setSelectedFile(null);
-    setPreviewUrl("");
-    setFormData((prev) => ({ ...prev, imageUrl: "" }));
-    fileInputRef.current?.click();
+  // 🔹 Banner select
+  const handleBannerSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    await uploadToCloudinary(file, "banner");
+  };
+
+  // 🔹 Sample image upload
+  const handleSampleSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingSample(true);
+    await uploadToCloudinary(file, "sample");
+    setUploadingSample(false);
+  };
+
+  // 🔹 Remove sample
+  const removeSample = (url: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      sampleImages: prev.sampleImages?.filter((img) => img !== url),
+    }));
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 text-center">
+    <div className="space-y-6 text-center">
       <h2 className="text-xl font-semibold text-text-primary mb-1">
         {t("createProject.projectMedia")}
       </h2>
-      <p className="text-text-secondary text-sm">
+      <p className="text-text-secondary text-sm mb-4">
         {t("createProject.mediaDesc")}
       </p>
 
-      {/* Preview section */}
-      {previewUrl ? (
-        <div className="flex flex-col items-center">
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="w-64 h-auto rounded-lg border shadow-sm"
-          />
+      {/* ✅ Banner Image */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-text-primary">
+          {t("createProject.bannerImage") || "Main Banner Image"}
+        </h3>
 
-          {uploading && (
-            <div className="w-64 mt-4">
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  className="bg-primary h-2.5 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-text-secondary mt-2">
-                {t("createProject.uploading")} ({uploadProgress}%)
-              </p>
-            </div>
-          )}
-
-          {uploadError && (
-            <p className="text-xs text-error mt-2">{uploadError}</p>
-          )}
-
-          {!uploading && (
+        {previewUrl ? (
+          <div className="flex flex-col items-center">
+            <img
+              src={previewUrl}
+              alt="Banner preview"
+              className="w-64 h-auto rounded-lg border shadow-sm"
+            />
+            {!uploading && (
+              <button
+                onClick={() => {
+                  setPreviewUrl("");
+                  setFormData((prev) => ({ ...prev, imageUrl: "" }));
+                  fileInputRef.current?.click();
+                }}
+                className="btn btn-outline mt-3 text-sm"
+              >
+                {t("createProject.replaceImage")}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="border-dashed border-2 p-6 rounded-lg bg-gray-50">
+            <p className="text-text-secondary">
+              {t("createProject.noImageSelected")}
+            </p>
+            <input
+              type="file"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleBannerSelect}
+              accept="image/*"
+            />
             <button
-              onClick={handleReplace}
-              className="btn btn-outline mt-4 text-xs sm:text-sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="btn btn-outline mt-4"
             >
-              {t("createProject.replaceImage")}
+              {t("createProject.chooseImage")}
             </button>
-          )}
+          </div>
+        )}
+      </div>
+
+      {/* ✅ Sample Reference Images */}
+      <div className="space-y-4">
+        <h3 className="font-medium text-text-primary">
+          {t("createProject.sampleImages") || "Sample Reference Images"}
+        </h3>
+        <p className="text-sm text-text-secondary mb-2">
+          {t("createProject.sampleImagesDesc") ||
+            "Upload extra images that help freelancers understand your goal."}
+        </p>
+
+        {/* sample preview */}
+        <div className="flex flex-wrap justify-center gap-4">
+          {formData.sampleImages?.map((url) => (
+            <div key={url} className="relative w-28 h-28">
+              <img
+                src={url}
+                alt="sample"
+                className="w-28 h-28 object-cover rounded-lg border"
+              />
+              <button
+                onClick={() => removeSample(url)}
+                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs"
+              >
+                ×
+              </button>
+            </div>
+          ))}
         </div>
-      ) : (
-        <div className="border-dashed border-2 p-6 rounded-lg bg-gray-50">
-          <p className="text-text-secondary">
-            {t("createProject.noImageSelected")}
-          </p>
+
+        {/* sample uploader */}
+        <div className="mt-3">
           <input
             type="file"
+            id="sampleUpload"
             className="hidden"
-            ref={fileInputRef}
-            onChange={handleFileSelect}
             accept="image/*"
+            onChange={handleSampleSelect}
           />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="btn btn-outline mt-4"
+          <label
+            htmlFor="sampleUpload"
+            className={`btn btn-outline ${uploadingSample ? "opacity-60" : ""}`}
           >
-            {t("createProject.chooseImage")}
-          </button>
+            {uploadingSample
+              ? t("createProject.uploading") || "Uploading..."
+              : t("createProject.addSampleImage") || "Add Sample Image"}
+          </label>
         </div>
-      )}
+      </div>
     </div>
   );
 }
