@@ -25,6 +25,10 @@ export interface Transaction {
   status: string;
   plan?: string;
   paymentMethod?: string;
+  projectId?: string; 
+  userId?: string; 
+  currency?: string;
+  description?: string;
   createdAt?: Timestamp;
 }
 
@@ -63,13 +67,12 @@ export default function TransactionsPage() {
 
   return (
     <div className="bg-background min-h-screen">
-
       {/* Stats Summary */}
       <TransactionStats transactions={transactions} loading={loading} t={t} />
 
       {/* Table */}
-      <section className="py-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <TransactionTable
             transactions={transactions}
             loading={loading}

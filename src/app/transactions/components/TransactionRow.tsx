@@ -7,6 +7,7 @@ import {
   Banknote,
   RefreshCcw,
   BanknoteArrowDown,
+  BanknoteArrowUp,
 } from "lucide-react";
 import type { Transaction } from "../page";
 import Money from "./Money";
@@ -56,6 +57,20 @@ export default function TransactionRow({
           <>
             <CreditCard className="w-4 h-4 text-primary" />
             {t("transactions.types.subscription")}
+          </>
+        );
+      case "refund":
+        return (
+          <>
+            <RefreshCcw className="w-4 h-4 text-red-600" />
+            {t("transactions.types.refund")}
+          </>
+        );
+      case "escrow_add":
+        return (
+          <>
+            <BanknoteArrowUp className="w-4 h-4 text-green-600" />
+            {t("transactions.types.escrowAdd")}
           </>
         );
       default:

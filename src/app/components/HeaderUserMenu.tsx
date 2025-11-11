@@ -2,13 +2,12 @@
 import Link from "next/link";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { useAuth } from "@/contexts/AuthContext";
-import { formatLAK } from "@/service/currencyUtils";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import LanguageSwitcher from "./LanguageSwitcher";
 
-export default function HeaderUserMenu({ user, setIsDrawerOpen, t }: any) {
-  const { profile } = useAuth();
+export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
+  const { user, profile, loading } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
 
   // ✅ Detect device width (mobile < 768px)
@@ -22,16 +21,26 @@ export default function HeaderUserMenu({ user, setIsDrawerOpen, t }: any) {
   // ✅ Handle message click differently by device
   const handleMessagesClick = (e: React.MouseEvent) => {
     if (!isMobile) {
-      e.preventDefault(); // stop normal navigation
-      window.open("/messages", "_blank", "noopener,noreferrer"); // open in new tab
+      e.preventDefault();
+      window.open("/messages", "_blank", "noopener,noreferrer");
     }
   };
+
+  // 🌀 Show shimmer skeleton while auth is loading
+  if (loading) {
+    return (
+      <div className="flex items-center space-x-4 animate-pulse">
+        <div className="w-5 h-5 bg-background-tertiary rounded-lg" />
+        <div className="w-8 h-8 bg-background-tertiary rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center space-x-4">
       {user ? (
         <>
-          {/* 💬 Messages icon — opens new tab on desktop, same page on mobile */}
+          {/* 💬 Messages icon — open in new tab on desktop */}
           <Link
             href="/messages"
             onClick={handleMessagesClick}
@@ -41,11 +50,11 @@ export default function HeaderUserMenu({ user, setIsDrawerOpen, t }: any) {
             <MessageCircle className="w-5 h-5 text-text-primary hover:text-primary transition-colors" />
           </Link>
 
-          {/* 🧑‍💻 Avatar button (drawer toggle) */}
+          {/* 🧑‍💻 Avatar button — opens drawer */}
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors"
             title={t("header.account")}
           >
             <Avatar {...getAvatarProps(profile, user)} size="md" />
@@ -53,7 +62,7 @@ export default function HeaderUserMenu({ user, setIsDrawerOpen, t }: any) {
         </>
       ) : (
         <>
-          {/* 👤 Guest links */}
+          {/* 👤 Guest links — Desktop */}
           <div className="hidden md:flex items-center space-x-3">
             <Link
               href="/auth/login"
@@ -61,17 +70,21 @@ export default function HeaderUserMenu({ user, setIsDrawerOpen, t }: any) {
             >
               {t("header.signIn")}
             </Link>
-            <Link href="/auth/signup" className="btn btn-primary text-sm">
+            <Link
+              href="/auth/signup"
+              className="btn btn-primary text-sm px-4 py-1.5"
+            >
               {t("header.signUp")}
             </Link>
             <LanguageSwitcher />
           </div>
 
-          {/* 📱 Mobile menu button */}
+          {/* 📱 Mobile drawer toggle */}
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="md:hidden p-2 rounded-lg hover:bg-background-secondary"
+            className="md:hidden p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            title={t("header.menu")}
           >
             <svg
               className="w-7 h-7 text-text-primary"

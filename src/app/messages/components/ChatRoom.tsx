@@ -19,31 +19,24 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import Avatar from "@/app/utils/avatarHandler";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import MessageInput from "./MessageInput";
+import Link from "next/link";
+import {
+  getProjectStatusLabel,
+  projectStatusLabels,
+} from "../utils/statusUtils";
 
 export default function ChatRoom({ chatRoom, onBack }: any) {
   const { user } = useAuth();
-  const { t } = useTranslationContext();
+  const { currentLanguage, t } = useTranslationContext();
+
   const [messages, setMessages] = useState<any[]>([]);
   const [receiver, setReceiver] = useState<any>(null);
+  const [projectStatus, setProjectStatus] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
-  // 🔹 Auth safety guard
-  if (!user) {
-    return (
-      <main className="flex-1 flex items-center justify-center text-text-secondary">
-        <div className="text-center">
-          <p>
-            {t("dashboard.messagesPage.signInFirst") ||
-              "Please sign in to use chat."}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  // 🔹 Load messages
+  /** ------------------- 🔹 LOAD MESSAGES ------------------- */
   useEffect(() => {
-    if (!chatRoom) return;
+    if (!chatRoom?.id) return;
     const q = query(
       collection(db, "chatMessages"),
       where("chatRoomId", "==", chatRoom.id),
@@ -53,13 +46,13 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
       setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
     );
     return () => unsub();
-  }, [chatRoom]);
+  }, [chatRoom?.id]);
 
-  // 🔹 Load receiver info
+  /** ------------------- 🔹 LOAD RECEIVER PROFILE ------------------- */
   useEffect(() => {
     if (!chatRoom || !user) return;
     const receiverId = chatRoom.participants?.find(
-      (id: string) => id !== user?.uid
+      (id: string) => id !== user.uid
     );
     if (!receiverId) return;
     getDoc(doc(db, "profiles", receiverId)).then((snap) => {
@@ -67,22 +60,32 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
     });
   }, [chatRoom, user]);
 
-  // 🔹 Auto scroll
+  /** ------------------- 🔹 AUTO SCROLL ------------------- */
   useEffect(() => {
     if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 🔹 Send message
+  /** ------------------- 🔹 TRACK PROJECT STATUS ------------------- */
+  useEffect(() => {
+    if (!chatRoom?.projectId) return;
+    const unsub = onSnapshot(
+      doc(db, "projects", chatRoom.projectId),
+      (snap) => {
+        if (snap.exists()) setProjectStatus(snap.data().status);
+      }
+    );
+    return () => unsub();
+  }, [chatRoom?.projectId]);
+
+  /** ------------------- 🔹 SEND MESSAGE ------------------- */
   const handleSend = async (text: string) => {
-    if (!user || !chatRoom) return;
+    if (!user || !chatRoom || projectStatus === "completed") return;
     try {
       await addDoc(collection(db, "chatMessages"), {
         chatRoomId: chatRoom.id,
         message: text,
-        senderId: user?.uid,
-        receiverId: chatRoom.participants.find(
-          (id: string) => id !== user?.uid
-        ),
+        senderId: user.uid,
+        receiverId: chatRoom.participants.find((id: string) => id !== user.uid),
         timestamp: serverTimestamp(),
       });
       await updateDoc(doc(db, "chatRooms", chatRoom.id), {
@@ -90,10 +93,30 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
         lastMessageTime: serverTimestamp(),
       });
     } catch (err) {
-      console.error("Error sending message:", err);
+      console.error("❌ Error sending message:", err);
     }
   };
 
+  /** ------------------- 🔹 STATUS UTILS ------------------- */
+  const statusLabel = getProjectStatusLabel(
+    projectStatus || "open",
+    currentLanguage as "en" | "lo"
+  );
+  const statusColor =
+    projectStatusLabels[projectStatus || "open"]?.color ||
+    "bg-gray-100 text-gray-600";
+
+  /** ------------------- 🔹 AUTH CHECK ------------------- */
+  if (!user)
+    return (
+      <main className="flex-1 flex items-center justify-center text-text-secondary">
+        <div className="text-center">
+          <p>{t("dashboard.messagesPage.signInFirst")}</p>
+        </div>
+      </main>
+    );
+
+  /** ------------------- 🔹 CHAT NOT SELECTED ------------------- */
   if (!chatRoom)
     return (
       <main className="flex-1 flex items-center justify-center text-text-secondary">
@@ -108,6 +131,7 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
       </main>
     );
 
+  /** ------------------- 💬 MAIN CHAT UI ------------------- */
   return (
     <main className="flex flex-col flex-1">
       {/* Header */}
@@ -128,15 +152,36 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
             {receiver?.fullName || "User"}
           </span>
           <span className="text-xs text-text-secondary">
-            {chatRoom.projectTitle || "Direct Chat"}
+            {chatRoom?.projectTitle || "Direct Chat"}
           </span>
         </div>
       </div>
 
+      {/* 🟢 Project status bar */}
+      {chatRoom?.projectId && (
+        <div className="bg-background-secondary border-b border-border px-4 py-2 flex items-center justify-between">
+          <span
+            className={`text-xs font-medium px-3 py-1 rounded-full ${statusColor}`}
+          >
+            {statusLabel}
+          </span>
+
+          {/* Go to progress button */}
+          {projectStatus !== "completed" && (
+            <Link
+              href={`/my-projects/${chatRoom.projectId}/progress`}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              {currentLanguage === "lo" ? "ເບິ່ງຄວາມຄືບໜ້າ" : "View Progress"}
+            </Link>
+          )}
+        </div>
+      )}
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto bg-background-secondary px-4 py-4">
         {messages.map((m) => {
-          const isMe = m.senderId === user?.uid;
+          const isMe = m.senderId === user.uid;
           return (
             <div
               key={m.id}
@@ -164,11 +209,19 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
         <div ref={endRef} />
       </div>
 
-      {/* ✅ Message Input Component */}
-      <MessageInput
-        onSend={handleSend}
-        placeholder={t("dashboard.messagesPage.typeMessage")}
-      />
+      {/* Input / Disabled */}
+      {projectStatus === "completed" ? (
+        <div className="text-center py-3 text-sm text-gray-500 border-t border-border bg-white">
+          {currentLanguage === "lo"
+            ? "ໂຄງການນີ້ສຳເລັດແລ້ວ — ບໍ່ສາມາດສົ່ງຂໍ້ຄວາມໄດ້."
+            : "This project is completed — messaging is disabled."}
+        </div>
+      ) : (
+        <MessageInput
+          onSend={handleSend}
+          placeholder={t("dashboard.messagesPage.typeMessage")}
+        />
+      )}
     </main>
   );
 }

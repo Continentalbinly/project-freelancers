@@ -18,6 +18,7 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import ProjectHeader from "./components/ProjectHeader";
 import ProjectDescription from "./components/ProjectDescription";
 import ProjectSkills from "./components/ProjectSkills";
+import ProjectSamples from "./components/ProjectSamples";
 import ProjectAttachments from "./components/ProjectAttachments";
 import ProjectParticipants from "./components/ProjectParticipants";
 import ProjectSidebar from "./components/ProjectSidebar";
@@ -65,7 +66,7 @@ export default function ProjectDetailPage() {
 
       setProject(projectWithMeta);
 
-      // 🧠 2. Fetch client profile from "profiles" collection
+      // 🧠 2. Fetch client profile
       if (projectData.clientId) {
         const clientRef = doc(db, "profiles", projectData.clientId);
         const clientSnap = await getDoc(clientRef);
@@ -74,7 +75,7 @@ export default function ProjectDetailPage() {
         }
       }
 
-      // 🧠 3. Fetch freelancer profile (if accepted)
+      // 🧠 3. Fetch freelancer profile
       if (projectData.acceptedFreelancerId) {
         const freelancerRef = doc(
           db,
@@ -99,8 +100,11 @@ export default function ProjectDetailPage() {
   // 🕒 Loading
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-text-secondary">{t("projectDetail.loading")}</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
+        <p className="mt-4 text-text-secondary text-sm sm:text-base">
+          {t("common.loading")}
+        </p>
       </div>
     );
   }
@@ -137,6 +141,10 @@ export default function ProjectDetailPage() {
             <ProjectHeader project={project} user={user} t={t} />
             <ProjectDescription description={project.description} t={t} />
             <ProjectSkills skills={project.skillsRequired} t={t} />
+
+            {/* 🎨 New section */}
+            <ProjectSamples sampleImages={project.sampleImages || []} t={t} />
+
             <ProjectAttachments attachments={project.attachments} t={t} />
           </div>
 
@@ -153,7 +161,7 @@ export default function ProjectDetailPage() {
           <div className="flex flex-col space-y-6 lg:sticky lg:top-[100px] self-start">
             <ProjectSidebar project={project} t={t} />
             <ProjectActions project={project} user={user} t={t} />
-            <CompletionStatus
+            {/* <CompletionStatus
               project={project}
               t={t}
               formatDate={(d: Date) =>
@@ -165,7 +173,7 @@ export default function ProjectDetailPage() {
                   minute: "2-digit",
                 }).format(d)
               }
-            />
+            /> */}
           </div>
         </div>
       </div>

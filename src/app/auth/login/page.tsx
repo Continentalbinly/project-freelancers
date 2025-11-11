@@ -69,13 +69,9 @@ export default function LoginPage() {
 
   if (user) {
     return (
-      <div className="bg-white py-6 sm:py-8 px-4 sm:px-6 shadow-lg rounded-lg border border-border">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-text-secondary">
-            {t("auth.login.redirecting")}
-          </p>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
+        <p className="mt-4 text-text-secondary">{t("common.loading")}</p>
       </div>
     );
   }

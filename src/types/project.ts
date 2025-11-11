@@ -38,4 +38,12 @@ export interface Project {
     userId?: string;
     userType?: string;
   };
+
+  progress?: {
+    step: string; // e.g. “Design Phase”, “Submit Draft”, etc.
+    completed?: boolean; // Freelancer toggles
+    approved?: boolean; // Client approves
+    imageUrl?: string; // Optional proof or submission
+    notes?: string; // Optional text
+  }[];
 }
