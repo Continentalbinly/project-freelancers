@@ -73,6 +73,20 @@ export default function TransactionRow({
             {t("transactions.types.escrowAdd")}
           </>
         );
+      case "escrow_payment":
+        return (
+          <>
+            <BanknoteArrowUp className="w-4 h-4 text-red-600" />
+            {t("transactions.types.escrowPayment")}
+          </>
+        );
+      case "escrow_release":
+        return (
+          <>
+            <BanknoteArrowDown className="w-4 h-4 text-green-600" />
+            {t("transactions.types.escrow_release")}
+          </>
+        );
       default:
         return (
           <>
