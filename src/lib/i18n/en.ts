@@ -37,7 +37,10 @@ const en = {
     accept: "Accept",
     reject: "Reject",
     ProjectNotFound: "Project not found.",
-    back2home: "Back to Home"
+    back2home: "Back to Home",
+    submit: "Submit",
+    submiting: "Submiting",
+    placeholderRatingReview: "Leave a short review (optional)",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -2984,6 +2987,8 @@ const en = {
       withdrawRequest: "Withdraw Request",
       refund: "Refund",
       escrowAdd: "Escrow Add",
+      escrowPayment: "Escrow Payment",
+      escrow_release: "Project Completed Received Money",
     },
     status: {
       held: "Held",
@@ -3065,10 +3070,13 @@ const en = {
     quality: "Quality of Work",
     timeliness: "Timeliness",
     value: "Value for Money",
+    alreadySubmitted: "You have already submitted your rating.",
   },
   myProjects: {
     title: "My Project Handler",
     stepper: {
+      rateClient: "Rate your client",
+      rateFreelancer: "Rate your freelancer",
       step1: {
         title: "Project Not Started",
         desc: "Waiting for the freelancer to begin work.",

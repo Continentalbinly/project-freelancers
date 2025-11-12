@@ -119,6 +119,7 @@ export default function LoginPage() {
               id="email"
               name="email"
               type="email"
+              suppressHydrationWarning
               required
               value={formData.email}
               onChange={handleChange}
@@ -138,6 +139,7 @@ export default function LoginPage() {
               id="password"
               name="password"
               type="password"
+              suppressHydrationWarning
               required
               value={formData.password}
               onChange={handleChange}
@@ -149,6 +151,7 @@ export default function LoginPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
             <div className="flex items-center">
               <input
+                suppressHydrationWarning
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
@@ -170,6 +173,7 @@ export default function LoginPage() {
           </div>
 
           <button
+            suppressHydrationWarning
             type="submit"
             disabled={loading}
             className="w-full btn btn-primary py-2 sm:py-3 text-sm sm:text-base font-medium"

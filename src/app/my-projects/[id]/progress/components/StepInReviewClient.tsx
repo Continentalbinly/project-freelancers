@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/service/firebase";
-import type { UserRole } from "./utils";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import { X } from "lucide-react";
 
