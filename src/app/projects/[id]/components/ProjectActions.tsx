@@ -1,18 +1,25 @@
 "use client";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext"; // ✅ add this
 
-export default function ProjectActions({ project, user, t }: any) {
+export default function ProjectActions({ project, t }: any) {
+  const { user, profile } = useAuth(); // ✅ get profile from context
   const isOwner = user?.uid === project.clientId;
 
-  /** 🧩 Only allow if userType includes 'freelancer' */
+  /** 🧩 Check freelancer role/type/category/occupation from profile */
   const isFreelancer =
-    Array.isArray(user?.userType) && user.userType.includes("freelancer");
+    (Array.isArray(profile?.userType) &&
+      profile.userType.includes("freelancer")) ||
+    (Array.isArray(profile?.userRoles) &&
+      profile.userRoles.includes("freelancer")) ||
+    profile?.userCategory === "freelancer";
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-border p-6">
       <h3 className="text-lg font-semibold text-text-primary mb-4">
         {t("projectDetail.actions")}
       </h3>
+
       <div className="space-y-3">
         {/* ✅ Submit Proposal — only freelancer and not owner */}
         {user && project.status === "open" && !isOwner && isFreelancer && (
