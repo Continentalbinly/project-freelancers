@@ -8,6 +8,8 @@ export interface Profile {
   credit: number;
   userType: ("freelancer" | "client" | "admin")[];
   userRoles?: ("freelancer" | "client" | "admin")[];
+  userCategory?: string;
+  occupation?: string;
 
   // NEW 🪙 Billing & Subscription
   plan?: "free" | "pro" | "enterprise";
