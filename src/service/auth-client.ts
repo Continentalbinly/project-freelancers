@@ -6,7 +6,13 @@ import {
   sendEmailVerification,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "./firebase"; // ✅ include db here
 import { AuthResponse } from "../types/auth";
 
@@ -116,7 +122,7 @@ export async function signupUser(
   }
 
   try {
-    // ✅ Create account
+    // ✅ 1. Create account in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -124,46 +130,87 @@ export async function signupUser(
     );
     const user = userCredential.user;
 
-    // 🕒 Wait to ensure Firebase has issued ID token
+    // 🕒 Small delay for token sync
     await new Promise((resolve) => setTimeout(resolve, 800));
 
-    // 🔄 Force-refresh a valid token
+    // 🔄 Force-refresh ID token
     const token = await user.getIdToken(true);
 
-    // ✅ Send verification email
+    // ✅ 2. Send verification email
     await sendEmailVerification(user, {
       url: `${window.location.origin}/auth/verify-email?userId=${user.uid}`,
       handleCodeInApp: false,
     });
 
-    // ✅ Create Firestore profile (server-side)
-    const response = await fetch("/api/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        action: "create-profile",
-        userId: user.uid,
-        email: user.email,
-        fullName,
-        userType,
-        avatarUrl,
-        ...additionalData,
-      }),
-    });
+    // ✅ 3. Try to create Firestore profile via API (server-side)
+    let profileCreated = false;
+    try {
+      const response = await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: "create-profile",
+          userId: user.uid,
+          email: user.email,
+          fullName,
+          userType,
+          avatarUrl,
+          ...additionalData,
+        }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
+      if (data.success) {
+        profileCreated = true;
+      } else {
+        console.warn("⚠️ /api/auth profile creation failed:", data.error);
+      }
+    } catch (apiErr) {
+      console.warn(
+        "⚠️ API call failed, using local Firestore fallback:",
+        apiErr
+      );
+    }
 
-    if (!data.success) {
-      await user.delete(); // rollback orphan auth user
-      throw new Error(data.error || "Failed to create user profile");
+    // ✅ 4. Fallback — Direct Firestore creation if API failed
+    if (!profileCreated) {
+      try {
+        const userRef = doc(db, "profiles", user.uid);
+        const existing = await getDoc(userRef);
+
+        if (!existing.exists()) {
+          await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            fullName: fullName || email.split("@")[0],
+            avatarUrl: avatarUrl || "",
+            userType: Array.isArray(userType) ? userType : [userType],
+            userRoles: Array.isArray(userType) ? userType : [userType],
+            credit: 0,
+            plan: "free",
+            planStatus: "inactive",
+            planStartDate: null,
+            planEndDate: null,
+            isActive: true,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            ...additionalData,
+          });
+          console.log("✅ Fallback: Firestore profile created for", email);
+        }
+      } catch (localErr) {
+        console.error("❌ Failed to create Firestore profile:", localErr);
+        await user.delete(); // rollback orphan auth
+        throw new Error("Failed to create profile in Firestore");
+      }
     }
 
     return {
       success: true,
-      user: { id: user.uid, email: user.email!, ...data.data },
+      user: { id: user.uid, email: user.email! },
       requiresVerification: true,
     };
   } catch (error: any) {

@@ -13,6 +13,7 @@ import {
   Shield,
   LayoutDashboard,
   FolderOpen,
+  BanknoteArrowDown,
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
@@ -64,6 +65,21 @@ export default function HeaderDrawer({
   ];
 
   const navLinks = user ? loggedInLinks : guestLinks;
+
+  /** ✅ Role Detection for Access Control (client/admin only) */
+  const roles = Array.isArray(profile?.userRoles)
+    ? profile.userRoles.map((r: string) => r.toLowerCase())
+    : [];
+  const types = Array.isArray(profile?.userType)
+    ? profile.userType.map((r: string) => r.toLowerCase())
+    : [];
+  const category = (profile?.userCategory || "").toLowerCase();
+
+  const isClient =
+    roles.includes("client") ||
+    types.includes("client") ||
+    category.includes("client");
+  const canManageProjects = isClient || isAdmin;
 
   return (
     <AnimatePresence>
@@ -176,15 +192,27 @@ export default function HeaderDrawer({
                     </Link>
                   ))}
                   <Link
-                    href="/projects/manage"
+                    href="/withdraw"
                     onClick={() => setIsDrawerOpen(false)}
                     className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
                   >
-                    <FolderOpen className="w-5 h-5" />
+                    <BanknoteArrowDown className="w-5 h-5" />
                     <span className="text-sm font-medium">
-                      {t("header.projectManage")}
+                      {t("header.withdraw")}
                     </span>
                   </Link>
+                  {canManageProjects && (
+                    <Link
+                      href="/projects/manage"
+                      onClick={() => setIsDrawerOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
+                    >
+                      <FolderOpen className="w-5 h-5" />
+                      <span className="text-sm font-medium">
+                        {t("header.projectManage")}
+                      </span>
+                    </Link>
+                  )}
 
                   <Link
                     href="/dashboard"

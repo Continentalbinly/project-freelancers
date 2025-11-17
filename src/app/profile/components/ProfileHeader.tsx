@@ -15,6 +15,7 @@ export default function ProfileHeader({
   setEditField,
   setEditValue,
   t,
+  setLocalProfile, // ✅ Add this optional local updater (passed from parent)
 }: any) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
@@ -67,9 +68,14 @@ export default function ProfileHeader({
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${
+            process.env.NEXT_PUBLIC_UPLOAD_KEY || "my_secure_upload_token"
+          }`,
+        },
       });
-      const result = await res.json();
 
+      const result = await res.json();
       if (!result.success) {
         alert(t("profile.profileImage.uploadFailed"));
         return;
@@ -84,6 +90,14 @@ export default function ProfileHeader({
         updatedAt: new Date(),
       });
 
+      // ✅ Local update for instant refresh
+      setLocalProfile?.((prev: any) => ({
+        ...prev,
+        avatarUrl: result.data.url,
+      }));
+
+      await refreshProfile?.();
+
       if (prevUrl && prevUrl !== result.data.url) {
         await fetch("/api/delete-avatar", {
           method: "POST",
@@ -92,7 +106,6 @@ export default function ProfileHeader({
         });
       }
 
-      await refreshProfile?.();
       removeSelectedFile();
       alert(t("profile.profileImage.updateSuccess"));
     } catch (err) {
@@ -103,13 +116,25 @@ export default function ProfileHeader({
     }
   };
 
+  /** ✏️ Open Edit Modal for name change */
+  const handleEditName = () => {
+    setIsEditing(true);
+    setEditField("fullName");
+    setEditValue(profile?.fullName || "");
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-8">
       <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
         {/* === Avatar + Upload === */}
         <div className="flex flex-col items-center w-full sm:w-auto text-center">
           <div className="relative mb-3">
-            <Avatar {...getAvatarProps(profile, user)} size="2xl" />
+            {/* ✅ add key to force re-render */}
+            <Avatar
+              key={profile?.avatarUrl}
+              {...getAvatarProps(profile, user)}
+              size="2xl"
+            />
           </div>
 
           {/* Upload section */}
@@ -171,11 +196,7 @@ export default function ProfileHeader({
             </div>
 
             <button
-              onClick={() => {
-                setIsEditing(true);
-                setEditField("fullName");
-                setEditValue(profile?.fullName || "");
-              }}
+              onClick={handleEditName}
               className="inline-flex items-center gap-1 px-3 py-2 text-sm rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition"
             >
               <PencilIcon className="w-4 h-4" />

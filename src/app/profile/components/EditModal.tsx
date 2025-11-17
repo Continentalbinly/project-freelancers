@@ -1,15 +1,73 @@
 "use client";
 
+import { useState } from "react";
+import { db } from "@/service/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { toast } from "react-toastify"; // ✅ import toast
+
 export default function EditModal({
   editField,
   editValue,
   setEditValue,
   setIsEditing,
+  setLocalProfile,
   user,
-  profile,
   refreshProfile,
   t,
 }: any) {
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!user || !editField) return;
+    setSaving(true);
+
+    try {
+      const userRef = doc(db, "profiles", user.uid);
+      await updateDoc(userRef, {
+        [editField]: editValue,
+        updatedAt: new Date(),
+      });
+
+      // ✅ Instant UI update
+      setLocalProfile?.((prev: any) => ({
+        ...prev,
+        [editField]: editValue,
+      }));
+
+      await refreshProfile?.();
+      setIsEditing(false);
+
+      // 🎉 Toastify Success
+      toast.success(
+        t("common.updateSuccess") || "Profile updated successfully!",
+        {
+          position: "top-right",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
+      );
+    } catch (err) {
+      console.error("❌ Failed to update:", err);
+
+      // ❌ Toastify Error
+      toast.error(t("common.updateFailed") || "Failed to update profile.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
@@ -26,18 +84,19 @@ export default function EditModal({
 
         <div className="flex gap-2">
           <button
-            onClick={() => {
-              setIsEditing(false);
-            }}
+            onClick={handleSave}
+            disabled={saving}
             className="btn btn-primary flex-1"
           >
-            {t("profile.editModal.save")}
+            {saving
+              ? t("profile.editModal.saving") || "Saving..."
+              : t("profile.editModal.save") || "Save"}
           </button>
           <button
             onClick={() => setIsEditing(false)}
             className="btn btn-outline flex-1"
           >
-            {t("profile.editModal.cancel")}
+            {t("profile.editModal.cancel") || "Cancel"}
           </button>
         </div>
       </div>
