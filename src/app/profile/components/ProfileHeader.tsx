@@ -69,9 +69,7 @@ export default function ProfileHeader({
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `Bearer ${
-            process.env.NEXT_PUBLIC_UPLOAD_KEY || "my_secure_upload_token"
-          }`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`,
         },
       });
 
