@@ -44,6 +44,9 @@ export default function ProfileImageUpload({
 
       const response = await fetch("/api/upload", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`,
+        },
         body: formData,
       });
 
