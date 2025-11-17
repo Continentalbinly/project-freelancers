@@ -23,8 +23,15 @@ export default function ProfilePage() {
   const [editField, setEditField] = useState("");
   const [editValue, setEditValue] = useState("");
 
+  /** ✅ Local profile copy for instant UI updates */
+  const [localProfile, setLocalProfile] = useState(profile);
+
+  useEffect(() => {
+    setLocalProfile(profile);
+  }, [profile]);
+
   // ✅ Fetch user projects & proposals
-  const { userProjects, loadingData, refetchData } = useProfileData(user);
+  const { userProjects, loadingData } = useProfileData(user);
 
   // ✅ Redirect to login if not authenticated
   useEffect(() => {
@@ -73,7 +80,8 @@ export default function ProfilePage() {
         {/* === Profile Header === */}
         <ProfileHeader
           user={user}
-          profile={profile}
+          profile={localProfile} // ✅ use local copy
+          setLocalProfile={setLocalProfile} // ✅ allow instant updates
           refreshProfile={refreshProfile}
           setIsEditing={setIsEditing}
           setEditField={setEditField}
@@ -106,7 +114,7 @@ export default function ProfilePage() {
               <OverviewTab
                 t={t}
                 userProjects={userProjects}
-                profile={profile}
+                profile={localProfile}
                 user={user}
                 loadingData={loadingData}
               />
@@ -123,7 +131,7 @@ export default function ProfilePage() {
             {activeTab === "skills" && (
               <SkillsTab
                 t={t}
-                profile={profile}
+                profile={localProfile}
                 user={user}
                 refreshProfile={refreshProfile}
               />
@@ -141,7 +149,8 @@ export default function ProfilePage() {
             setEditField={setEditField}
             editValue={editValue}
             setEditValue={setEditValue}
-            profile={profile}
+            profile={localProfile}
+            setLocalProfile={setLocalProfile} // ✅ add this
             user={user}
             refreshProfile={refreshProfile}
           />

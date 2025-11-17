@@ -5,6 +5,8 @@ import CookieConsent from "./components/CookieConsent";
 import LanguageProvider from "./components/LanguageProvider";
 import LayoutWrapper from "./components/LayoutWrapper";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,6 +66,17 @@ export default function RootLayout({
           <LanguageProvider>
             <LayoutWrapper>{children}</LayoutWrapper>
             <CookieConsent />
+            <ToastContainer
+              position="top-right"
+              autoClose={2500}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
           </LanguageProvider>
         </AuthProvider>
       </body>

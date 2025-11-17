@@ -41,7 +41,9 @@ const lo = {
     back2home: "ກັບໄປໜ້າຫຼັກ",
     submit: "ສົ່ງ",
     submiting: "ກຳລັງສົ່ງ",
-    placeholderRatingReview:"ໃຫ້ຄຳເຫັນຣີວິວສັ້ນໆ (ທາງເລືອກ)",
+    placeholderRatingReview: "ໃຫ້ຄຳເຫັນຣີວິວສັ້ນໆ (ທາງເລືອກ)",
+    updateSuccess: "ອັບເດດ ສຳເລັດ",
+    updateFailed: "ອັບເດດ ບໍ່ສຳເລັດ",
   },
   // Cookie consent translations
   cookieConsent: {

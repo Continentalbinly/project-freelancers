@@ -41,6 +41,8 @@ const en = {
     submit: "Submit",
     submiting: "Submiting",
     placeholderRatingReview: "Leave a short review (optional)",
+    updateSuccess: "Update Success",
+    updateFailed: "Update Failed"
   },
   // Cookie consent translations
   cookieConsent: {
