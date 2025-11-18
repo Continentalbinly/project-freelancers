@@ -7,6 +7,7 @@ import { db } from "@/service/firebase";
 import WorkSamples from "./WorkSamples";
 import Milestones from "./Milestones";
 import ProposalSummary from "./ProposalSummary";
+import { toast } from "react-toastify";
 
 export default function ProposalForm({ project, user, profile, t }: any) {
   const [coverLetter, setCoverLetter] = useState("");
@@ -60,10 +61,33 @@ export default function ProposalForm({ project, user, profile, t }: any) {
         updatedAt: new Date(),
       });
 
-      window.location.href = "/proposals";
+      toast.success(t("common.submitSuccess") || "Submit Success", {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+
+      setTimeout(() => {
+        window.location.href = "/proposals";
+      }, 1800);
     } catch (err: any) {
-      console.error("❌ Proposal error:", err);
       setError(err.message);
+      toast.error(
+        t("common.submitFailed") || "Submit Failed, Please try again",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
+      );
     } finally {
       setSubmitting(false);
     }

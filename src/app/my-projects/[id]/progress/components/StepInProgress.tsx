@@ -15,6 +15,7 @@ import { db } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { UserRole } from "./utils";
+import { toast } from "react-toastify";
 
 export default function StepInProgress({
   project,
@@ -30,45 +31,68 @@ export default function StepInProgress({
   const isClient = user?.uid === project.clientId;
 
   const [note, setNote] = useState("");
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [previewFiles, setPreviewFiles] = useState<
+    { url: string; name: string }[]
+  >([]);
   const [originalFiles, setOriginalFiles] = useState<
     { url: string; name: string }[]
   >([]);
   const [uploadingPreview, setUploadingPreview] = useState(false);
   const [uploadingOriginal, setUploadingOriginal] = useState(false);
+  const [previewProgress, setPreviewProgress] = useState(0);
+  const [originalProgress, setOriginalProgress] = useState(0);
   const [saving, setSaving] = useState(false);
 
   const previewRef = useRef<HTMLInputElement>(null);
   const originalRef = useRef<HTMLInputElement>(null);
 
-  /** 🔹 Upload to your backend /api/upload route */
+  /** 🔹 Upload a file via /api/upload */
   const uploadToServer = async (
     file: File,
-    folderType: string
+    folderType: string,
+    onProgress: (p: number) => void
   ): Promise<{ url: string; name: string }> => {
-    const body = new FormData();
-    body.append("file", file);
-    body.append("folderType", folderType);
-    body.append("subfolder", project.id);
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folderType", folderType);
+      formData.append("subfolder", project.id);
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`,
-      },
-      body,
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/upload");
+      xhr.setRequestHeader(
+        "Authorization",
+        `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`
+      );
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const result = JSON.parse(xhr.responseText);
+            if (result.success && result.data?.url) {
+              resolve({
+                url: result.data.url,
+                name: result.data.fileName || file.name,
+              });
+            } else reject(new Error(result.error || "Upload failed"));
+          } catch {
+            reject(new Error("Invalid JSON response"));
+          }
+        } else reject(new Error(`HTTP ${xhr.status}`));
+      };
+
+      xhr.onerror = () => reject(new Error("Upload failed"));
+      xhr.send(formData);
     });
-
-    const data = await res.json();
-    if (!res.ok || !data.success || !data.data?.url) {
-      console.error("❌ Upload failed:", data);
-      throw new Error(data.error || "Upload failed");
-    }
-
-    return { url: data.data.url, name: data.data.fileName || file.name };
   };
 
-  /** 🔹 Upload preview files (images only) */
+  /** 🔹 Upload preview (now accepts ALL file types, not just image) */
   const handlePreviewUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -77,17 +101,24 @@ export default function StepInProgress({
     setUploadingPreview(true);
     try {
       const uploads = await Promise.all(
-        files.map((f) => uploadToServer(f, "previews"))
+        files.map((f) =>
+          uploadToServer(f, "previews", (p) => setPreviewProgress(p))
+        )
       );
-      setPreviewUrls((prev) => [...prev, ...uploads.map((u) => u.url)]);
-    } catch {
-      alert("Error uploading preview files. Please try again.");
+      setPreviewFiles((prev) => [...prev, ...uploads]);
+    } catch (err) {
+      toast.error(t("myProjects.stepper.step2.uploadError"), {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     } finally {
       setUploadingPreview(false);
+      setPreviewProgress(0);
     }
   };
 
-  /** 🔹 Upload original files (any file type, large allowed) */
+  /** 🔹 Upload original files (any type, large allowed up to 2 GB) */
   const handleOriginalUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -96,35 +127,43 @@ export default function StepInProgress({
     setUploadingOriginal(true);
     try {
       const uploads = await Promise.all(
-        files.map((f) => uploadToServer(f, "projectFiles"))
+        files.map((f) =>
+          uploadToServer(f, "projectFiles", (p) => setOriginalProgress(p))
+        )
       );
       setOriginalFiles((prev) => [...prev, ...uploads]);
-    } catch {
-      alert("Error uploading original files. Please try again.");
+    } catch (err) {
+      toast.error(t("myProjects.stepper.step2.uploadError"), {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     } finally {
       setUploadingOriginal(false);
+      setOriginalProgress(0);
     }
   };
 
   /** 🔹 Submit previews + originals */
   const handleSubmit = async () => {
-    if (!previewUrls.length && !originalFiles.length) {
-      alert(t("myProjects.stepper.step2.uploadPreviewAndOriginal"));
-      return;
-    }
-    if (!previewUrls.length) {
-      alert(t("myProjects.stepper.step2.uploadPreviewRequired"));
-      return;
-    }
-    if (!originalFiles.length) {
-      alert(t("myProjects.stepper.step2.uploadOriginalRequired"));
+    if (!previewFiles.length || !originalFiles.length) {
+      toast.warning("⚠️ Please upload both preview and original files first.", {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
       return;
     }
 
     setSaving(true);
     try {
       // 1️⃣ Save previews (for review)
-      await submitForReview(project.id, user!.uid, previewUrls, note);
+      await submitForReview(
+        project.id,
+        user!.uid,
+        previewFiles.map((x) => x.url),
+        note
+      );
 
       // 2️⃣ Replace old originals before saving new ones
       const deliverablesRef = collection(
@@ -140,7 +179,7 @@ export default function StepInProgress({
         await batch.commit();
       }
 
-      // 3️⃣ Add the new originals
+      // 3️⃣ Add new originals
       for (const file of originalFiles) {
         await addDoc(deliverablesRef, {
           freelancerId: user?.uid,
@@ -150,11 +189,18 @@ export default function StepInProgress({
         });
       }
 
-      alert("✅ " + t("myProjects.stepper.step2.uploadSuccess"));
+      toast.success(t("myProjects.stepper.step2.uploadSuccess"), {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
       window.location.reload();
     } catch (err) {
-      console.error("❌ Upload error:", err);
-      alert("Error while submitting. Please try again.");
+      toast.error(t("myProjects.stepper.step2.uploadError"), {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     } finally {
       setSaving(false);
     }
@@ -185,7 +231,7 @@ export default function StepInProgress({
       </h2>
       <p className="text-gray-500 mb-8">{t("myProjects.stepper.step2.desc")}</p>
 
-      {/* 🧩 Preview Files Section */}
+      {/* 🧩 Preview Section */}
       <section className="mb-10">
         <h3 className="text-lg font-semibold text-gray-700 mb-2">
           {t("myProjects.stepper.step2.previewSectionTitle")}
@@ -201,7 +247,7 @@ export default function StepInProgress({
             ref={previewRef}
             className="hidden"
             multiple
-            accept="image/*"
+            accept="*/*" // ✅ accept all file types
             onChange={handlePreviewUpload}
           />
           {uploadingPreview ? (
@@ -211,33 +257,44 @@ export default function StepInProgress({
           )}
           <p className="text-sm text-gray-600 mt-2">
             {uploadingPreview
-              ? t("myProjects.stepper.step2.uploading")
+              ? `${t("myProjects.stepper.step2.uploading")} ${previewProgress}%`
               : t("myProjects.stepper.step2.uploadBtn")}
           </p>
         </div>
 
-        {/* Preview thumbnails */}
+        {/* Show uploaded previews */}
         <AnimatePresence>
           <motion.div
             layout
             className="flex flex-wrap justify-center gap-3 mt-4"
           >
-            {previewUrls.map((url) => (
+            {previewFiles.map((file) => (
               <motion.div
-                key={url}
+                key={file.url}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
-                className="relative w-28 h-28 rounded-lg overflow-hidden border shadow-sm"
+                className="relative w-28 h-28 border rounded-lg overflow-hidden shadow-sm"
               >
-                <img
-                  src={url}
-                  alt="preview"
-                  className="w-full h-full object-cover"
-                />
+                {file.url.match(/\.(jpg|jpeg|png|webp|gif|avif|heic)$/i) ? (
+                  <img
+                    src={file.url}
+                    alt={file.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-600">
+                    <File className="w-8 h-8" />
+                    <p className="text-xs mt-1 text-center px-1 break-words">
+                      {file.name}
+                    </p>
+                  </div>
+                )}
                 <button
                   onClick={() =>
-                    setPreviewUrls(previewUrls.filter((x) => x !== url))
+                    setPreviewFiles(
+                      previewFiles.filter((x) => x.url !== file.url)
+                    )
                   }
                   className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs font-bold"
                 >
@@ -265,7 +322,7 @@ export default function StepInProgress({
             ref={originalRef}
             className="hidden"
             multiple
-            accept="*/*"
+            accept="*/*" // ✅ allow all file types
             onChange={handleOriginalUpload}
           />
           {uploadingOriginal ? (
@@ -275,7 +332,9 @@ export default function StepInProgress({
           )}
           <p className="text-sm text-gray-600 mt-2">
             {uploadingOriginal
-              ? t("myProjects.stepper.step2.uploading")
+              ? `${t(
+                  "myProjects.stepper.step2.uploading"
+                )} ${originalProgress}%`
               : t("myProjects.stepper.step2.finalSectionDesc")}
           </p>
         </div>
@@ -294,7 +353,7 @@ export default function StepInProgress({
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline break-all"
                 >
-                  {file.name || `File_${i + 1}`}
+                  {file.name}
                 </a>
               </li>
             ))}
@@ -302,7 +361,7 @@ export default function StepInProgress({
         )}
       </section>
 
-      {/* 🧩 Note + Submit */}
+      {/* 🧾 Note + Submit */}
       <textarea
         rows={3}
         value={note}

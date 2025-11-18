@@ -208,6 +208,11 @@ async function handleCloudinaryUpload(
   }
 }
 
+export const config = {
+  api: { bodyParser: false },
+  maxDuration: 600,
+};
+
 // ✅ Allow CORS preflight
 export async function OPTIONS() {
   return new NextResponse(null, {

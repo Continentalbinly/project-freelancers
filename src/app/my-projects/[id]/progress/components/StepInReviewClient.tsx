@@ -7,6 +7,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/service/firebase";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import { X } from "lucide-react";
+import { toast } from "react-toastify";
 
 // 🧩 Bilingual reasons
 const REQUEST_REASONS = [
@@ -88,10 +89,18 @@ export default function StepInReviewClient({ project }: { project: any }) {
     setLoading(true);
     try {
       await markCompleted(project.id);
-      alert("Project marked as completed!");
+      toast.success(t("common.modal.success"), {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
       window.location.reload();
     } catch (err) {
-      alert("Something went wrong while completing the project.");
+      toast.error(t("common.failed"), {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     } finally {
       setLoading(false);
       setShowApproveModal(false);
@@ -100,11 +109,19 @@ export default function StepInReviewClient({ project }: { project: any }) {
 
   const handleRequestChange = async () => {
     if (!selectedReason) {
-      alert("Please select a reason.");
+      toast.warning(t("common.pleaseSelectReason"), {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
       return;
     }
     if (localQuota <= 0) {
-      alert(t("myProjects.stepper.step3.noQuota"));
+      toast.warning(t("myProjects.stepper.step3.noQuota"), {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
       return;
     }
 
@@ -118,7 +135,11 @@ export default function StepInReviewClient({ project }: { project: any }) {
         localQuota
       );
       setLocalQuota((prev) => Math.max(prev - 1, 0));
-      alert("📩 Change request submitted — awaiting freelancer response.");
+      toast.success(t("common.submitSuccess"), {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
       setShowRequestModal(false);
       setSelectedReason(null);
       setPendingRequest(true);
@@ -149,15 +170,69 @@ export default function StepInReviewClient({ project }: { project: any }) {
         >
           <p className="text-gray-700 mb-3">{sub.note}</p>
           <div className="flex flex-wrap justify-center gap-3 mb-3">
-            {sub.previewUrls.map((url: string) => (
-              <img
-                key={url}
-                src={url}
-                alt="Preview"
-                className="w-32 sm:w-40 md:w-48 h-32 sm:h-40 md:h-48 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition"
-                onClick={() => setPreviewImage(url)}
-              />
-            ))}
+            {sub.previewUrls.map((url: string) => {
+              // Extract filename and extension
+              const fileName = decodeURIComponent(
+                url.split("/").pop() || "file"
+              );
+              const ext = fileName.split(".").pop()?.toLowerCase() || "";
+
+              // Check if it’s an image
+              const isImage =
+                /(jpg|jpeg|png|webp|gif|avif|heic|bmp|svg)$/i.test(ext);
+
+              return (
+                <div
+                  key={url}
+                  className="relative group w-32 sm:w-40 md:w-48 h-32 sm:h-40 md:h-48 border border-gray-200 rounded-lg overflow-hidden shadow-sm bg-white flex flex-col items-center justify-center text-center"
+                >
+                  {isImage ? (
+                    <img
+                      src={url}
+                      alt={fileName}
+                      className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition"
+                      onClick={() => setPreviewImage(url)}
+                    />
+                  ) : (
+                    <>
+                      {/* Non-image file icon */}
+                      <div className="flex flex-col items-center justify-center h-full p-2">
+                        <div className="bg-gray-100 rounded-full p-3 mb-2">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6 text-gray-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                        </div>
+                        <p className="text-xs text-gray-600 truncate w-28">
+                          {fileName}
+                        </p>
+                      </div>
+
+                      {/* Download button overlay */}
+                      <a
+                        href={url}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 text-white flex items-center justify-center transition"
+                      >
+                        <span className="text-sm font-semibold">Download</span>
+                      </a>
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}

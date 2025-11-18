@@ -16,8 +16,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/service/firebase";
-import { createOrOpenChatRoom } from "@/app/utils/chatUtils"; // ✅ added
+import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { toast } from "react-toastify";
 
 export default function ProposalSidebar({ proposal, t, isClient }: any) {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
     "accept" | "reject" | null
   >(null);
 
-  // === Fetch profile ===
+  /** 🧩 Fetch profile info */
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -47,12 +48,10 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
     fetchProfile();
   }, [proposal, isClient]);
 
-  // === Accept proposal + auto-create chat ===
+  /** ✅ Accept proposal and create chat */
   const handleAccept = async () => {
+    setLoadingAction(true);
     try {
-      setLoadingAction(true);
-
-      // ✅ Update proposal & project status
       await updateDoc(doc(db, "proposals", proposal.id), {
         status: "accepted",
         processedAt: serverTimestamp(),
@@ -64,48 +63,60 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
         updatedAt: serverTimestamp(),
       });
 
-      // ✅ Create or reuse chat room
       const currentUserId = isClient
         ? proposal.project?.clientId
         : proposal.freelancerId;
 
-      if (!currentUserId) {
-        console.error("❌ Missing user ID — cannot create chat room");
-        alert("Failed to create chat. Missing user ID.");
-        return;
-      }
+      if (!currentUserId) throw new Error("Missing user ID for chat room");
 
       const room = await createOrOpenChatRoom(
         proposal.projectId,
         currentUserId
       );
-      if (room) {
-        alert("✅ Proposal accepted! Chat room ready.");
-        router.push(`/messages?project=${proposal.projectId}`);
-      } else {
-        alert("⚠️ Proposal accepted, but chat room could not be created.");
-      }
+
+      toast.success(t("common.acceptSuccess"), {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
+
+      router.push(
+        room ? `/messages?project=${proposal.projectId}` : "/proposals"
+      );
     } catch (err) {
-      console.error("❌ Failed to accept proposal:", err);
-      alert("❌ Failed to accept the proposal.");
+      toast.error(t("common.acceptFailed"), {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     } finally {
       setLoadingAction(false);
       setConfirmAction(null);
     }
   };
 
-  // === Reject proposal ===
+  /** ❌ Reject proposal */
   const handleReject = async () => {
+    setLoadingAction(true);
     try {
-      setLoadingAction(true);
       await updateDoc(doc(db, "proposals", proposal.id), {
         status: "rejected",
         processedAt: serverTimestamp(),
       });
-      alert("🚫 Proposal rejected.");
+
+      toast.success(t("common.rejectSuccess"), {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
+
       window.location.reload();
-    } catch {
-      alert("❌ Failed to reject proposal.");
+    } catch (err) {
+      toast.error(t("common.rejectFailed"), {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     } finally {
       setLoadingAction(false);
       setConfirmAction(null);
@@ -175,7 +186,12 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
           </div>
           <div className="flex justify-between">
             <span>{t("proposals.detail.submitted")}</span>
-            <span>{timeAgo(proposal.createdAt?.toDate?.() || new Date(), currentLanguage)}</span>
+            <span>
+              {timeAgo(
+                proposal.createdAt?.toDate?.() || new Date(),
+                currentLanguage
+              )}
+            </span>
           </div>
         </div>
       </section>
@@ -187,9 +203,11 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("accept")}
-              className="w-full cursor-pointer bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center"
+              className={`w-full cursor-pointer bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center ${
+                loadingAction ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              {loadingAction && confirmAction === "accept" ? (
+              {loadingAction ? (
                 <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2"></span>
               ) : (
                 <CheckCircleIcon className="w-4 h-4 mr-1" />
@@ -200,9 +218,11 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("reject")}
-              className="w-full cursor-pointer bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center"
+              className={`w-full cursor-pointer bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-md text-sm font-medium transition-all flex items-center justify-center ${
+                loadingAction ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              {loadingAction && confirmAction === "reject" ? (
+              {loadingAction ? (
                 <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2"></span>
               ) : (
                 <XCircleIcon className="w-4 h-4 mr-1" />
@@ -222,15 +242,10 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
           </Link>
         )}
 
-        {/* === Back to Proposals Button === */}
+        {/* Back button */}
         <Link
           href="/proposals"
-          className="w-full py-2.5 rounded-md text-sm font-medium text-center
-                     border border-border text-text-primary 
-                     bg-white hover:bg-gray-50 
-                     transition-all duration-200 
-                     shadow-sm hover:shadow
-                     flex items-center justify-center gap-2"
+          className="w-full py-2.5 rounded-md text-sm font-medium text-center border border-border text-text-primary bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow flex items-center justify-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -269,7 +284,10 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => setConfirmAction(null)}
-                className="px-4 py-2 border border-border rounded-md text-sm hover:bg-background transition"
+                disabled={loadingAction}
+                className={`px-4 py-2 border border-border rounded-md text-sm hover:bg-background transition ${
+                  loadingAction ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 {t("common.cancel")}
               </button>
@@ -279,12 +297,15 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
                 onClick={
                   confirmAction === "accept" ? handleAccept : handleReject
                 }
-                className={`px-4 py-2 rounded-md text-sm text-white ${
+                className={`px-4 py-2 rounded-md text-sm text-white flex items-center justify-center ${
                   confirmAction === "accept"
                     ? "bg-green-600 hover:bg-green-700"
                     : "bg-red-600 hover:bg-red-700"
-                }`}
+                } ${loadingAction ? "opacity-70 cursor-not-allowed" : ""}`}
               >
+                {loadingAction ? (
+                  <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4 mr-2"></span>
+                ) : null}
                 {loadingAction ? t("common.processing") : t("common.confirm")}
               </button>
             </div>

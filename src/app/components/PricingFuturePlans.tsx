@@ -3,11 +3,18 @@
 import { useState, useEffect } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useAuth } from "@/contexts/AuthContext";
-import { doc, updateDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  serverTimestamp,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "@/service/firebase";
 import en from "@/lib/i18n/en";
 import lo from "@/lib/i18n/lo";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function PricingFuturePlans() {
   const { t, currentLanguage } = useTranslationContext();
@@ -18,10 +25,11 @@ export default function PricingFuturePlans() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(true);
+  const [profileExists, setProfileExists] = useState<boolean>(false);
 
-  /** Check or assign plan on mount */
+  /** ✅ Check profile + plan on mount */
   useEffect(() => {
-    async function checkUserPlan() {
+    async function verifyUserProfileAndPlan() {
       if (!user?.uid) {
         setInitializing(false);
         return;
@@ -31,54 +39,102 @@ export default function PricingFuturePlans() {
         const profileRef = doc(db, "profiles", user.uid);
         const snapshot = await getDoc(profileRef);
 
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          const plan = data.plan || null;
+        if (!snapshot.exists()) {
+          setProfileExists(false);
 
-          if (!plan) {
-            // 🔹 Old users get free Basic by default
-            await updateDoc(profileRef, {
-              plan: "basic",
-              planStatus: "active",
-              planStartDate: serverTimestamp(),
-              planEndDate: null,
-              updatedAt: serverTimestamp(),
-            });
-            setUserPlan("basic");
-          } else {
-            setUserPlan(plan);
-          }
-        } else {
+          toast.error(
+            currentLanguage === "lo"
+              ? "ບັນຊີຂອງທ່ານຍັງບໍ່ສົມບູນ, ກະລຸນາລົງທະບຽນໃຫ້ສົມບູນ!"
+              : "Your account setup is incomplete. Please complete your registration!",
+            { position: "top-right", autoClose: 4000, theme: "colored" }
+          );
+
+          setTimeout(() => router.push("/complete-profile"), 2000);
+          return;
+        }
+
+        setProfileExists(true);
+
+        const data = snapshot.data();
+        const plan = data.plan || null;
+
+        if (!plan) {
+          await updateDoc(profileRef, {
+            plan: "basic",
+            planStatus: "active",
+            planStartDate: serverTimestamp(),
+            planEndDate: null,
+            updatedAt: serverTimestamp(),
+          });
           setUserPlan("basic");
+        } else {
+          setUserPlan(plan);
         }
       } catch (err) {
-        console.error("Error checking plan:", err);
+        console.error("Error verifying user profile:", err);
+        toast.error(
+          currentLanguage === "lo"
+            ? "ມີບັນຫາໃນການກວດສອບບັນຊີ."
+            : "Error verifying account. Please try again later.",
+          { position: "top-right", autoClose: 3000, theme: "colored" }
+        );
       } finally {
         setInitializing(false);
       }
     }
 
-    checkUserPlan();
+    verifyUserProfileAndPlan();
   }, [user]);
 
-  /** Go to invoice confirmation page */
+  /** ✅ Handle subscription navigation */
   const goToSubscriptionPage = (plan: "pro") => {
     if (!user) {
-      alert("⚠️ Please sign in first to subscribe.");
+      toast.warn(
+        currentLanguage === "lo"
+          ? "⚠️ ກະລຸນາເຂົ້າລະບົບກ່ອນ!"
+          : "⚠️ Please sign in first to subscribe!",
+        { position: "top-right", autoClose: 3000, theme: "colored" }
+      );
       return;
     }
+
+    if (!profileExists) {
+      toast.error(
+        currentLanguage === "lo"
+          ? "ບັນຊີຂອງທ່ານຍັງບໍ່ມີໃນຖານຂໍ້ມູນ."
+          : "Your account profile is missing in database!",
+        { position: "top-right", autoClose: 3000, theme: "colored" }
+      );
+      return;
+    }
+
     setLoadingPlan(plan);
     router.push(`/billing/subscribe?plan=${plan}`);
   };
 
+  /** 🕐 Loading state */
   if (initializing) {
     return (
       <section className="py-20 text-center text-text-secondary">
-        <p>Loading subscription info...</p>
+        <p>{t("common.loading") || "Loading subscription info..."}</p>
       </section>
     );
   }
 
+  /** 🚫 Block UI if profile missing */
+  if (!profileExists) {
+    return (
+      <section className="py-20 text-center text-error">
+        <p>
+          {currentLanguage === "lo"
+            ? "ກຳລັງເປີດທາງໄປຫາໜ້າລົງທະບຽນ..."
+            : "Redirecting to registration..."}
+        </p>
+      </section>
+    );
+  }
+
+  /** ✅ Normal pricing UI */
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -92,7 +148,7 @@ export default function PricingFuturePlans() {
           </p>
         </div>
 
-        {/* Plans grid */}
+        {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* ---------- BASIC (Free) ---------- */}
           <div className="bg-white rounded-xl shadow-sm border border-border p-6 flex flex-col">
@@ -174,7 +230,8 @@ export default function PricingFuturePlans() {
                 )
               )}
             </ul>
-            <button suppressHydrationWarning
+            <button
+              suppressHydrationWarning
               onClick={() => goToSubscriptionPage("pro")}
               disabled={loadingPlan === "pro"}
               className="btn btn-primary w-full"

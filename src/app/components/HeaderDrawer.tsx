@@ -21,6 +21,8 @@ import { logoutUser } from "@/service/auth-client";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { useEffect, useState } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "@/service/firebase";
 
 export default function HeaderDrawer({
   isDrawerOpen,
@@ -29,7 +31,25 @@ export default function HeaderDrawer({
 }: any) {
   const { user, profile } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
+  const [liveCredit, setLiveCredit] = useState<number | null>(
+    profile?.credit || 0
+  );
 
+  /** ✅ Realtime listener for credit updates */
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const unsub = onSnapshot(doc(db, "profiles", user.uid), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setLiveCredit(data.credit || 0);
+      }
+    });
+
+    return () => unsub(); // cleanup listener
+  }, [user?.uid]);
+
+  /** ✅ Handle logout */
   const handleLogout = async () => {
     await logoutUser();
     window.location.href = "/";
@@ -129,7 +149,7 @@ export default function HeaderDrawer({
               </div>
             </div>
 
-            {/* ✅ Scrollable content area (with safe bottom padding) */}
+            {/* ✅ Scrollable content area */}
             <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-2 pb-24">
               {user ? (
                 <>
@@ -147,12 +167,15 @@ export default function HeaderDrawer({
                       </div>
                     </div>
 
-                    {/* 💰 Credit + Top Up button */}
+                    {/* 💰 Live Credit + Top Up */}
                     <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-border">
                       <span className="text-sm text-text-secondary">
                         {t("header.balance")}:{" "}
                         <span className="text-primary font-semibold">
-                          ₭ {profile?.credit?.toLocaleString() || "0"}
+                          ₭{" "}
+                          {liveCredit !== null
+                            ? liveCredit.toLocaleString()
+                            : "0"}
                         </span>
                       </span>
                       <Link
@@ -179,7 +202,7 @@ export default function HeaderDrawer({
                     )}
                   </div>
 
-                  {/* Links */}
+                  {/* Navigation Links */}
                   {navLinks.map(({ href, label, icon: Icon }) => (
                     <Link
                       key={href}
@@ -191,6 +214,7 @@ export default function HeaderDrawer({
                       <span className="text-sm font-medium">{label}</span>
                     </Link>
                   ))}
+
                   <Link
                     href="/withdraw"
                     onClick={() => setIsDrawerOpen(false)}
@@ -201,6 +225,7 @@ export default function HeaderDrawer({
                       {t("header.withdraw")}
                     </span>
                   </Link>
+
                   {canManageProjects && (
                     <Link
                       href="/projects/manage"
