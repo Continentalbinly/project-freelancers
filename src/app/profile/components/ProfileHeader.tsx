@@ -6,6 +6,7 @@ import { PencilIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { formatEarnings } from "@/service/currencyUtils";
 import { db } from "@/service/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 export default function ProfileHeader({
   user,
@@ -15,11 +16,12 @@ export default function ProfileHeader({
   setEditField,
   setEditValue,
   t,
-  setLocalProfile, // ✅ Add this optional local updater (passed from parent)
+  setLocalProfile,
 }: any) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   /** 📁 Open file selector */
@@ -33,19 +35,41 @@ export default function ProfileHeader({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowed = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowed.includes(file.type)) {
-      alert("Please upload a valid image (JPEG, PNG, or WebP)");
+    // ✅ Allow all image types
+    if (!file.type.startsWith("image/")) {
+      toast.error(
+        "Please upload a valid image file (JPG, PNG, WEBP, HEIC, etc.)",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
+      );
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image too large (max 5MB)");
+    // ✅ 2 GB limit
+    const maxSize = 2 * 1024 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("Image too large. Max allowed is 2 GB.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
       return;
     }
 
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
+    setProgress(0);
   };
 
   /** ❌ Remove selected file */
@@ -53,29 +77,72 @@ export default function ProfileHeader({
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setSelectedFile(null);
     setPreviewUrl("");
+    setProgress(0);
   };
 
-  /** ☁️ Upload to API and update Firestore */
+  /** ☁️ Upload image to API + update Firestore */
   const handleProfileImageUpload = async () => {
     if (!selectedFile || !user) return;
     setUploading(true);
+    toast.info("Uploading profile image...", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored",
+    });
 
     try {
       const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("folderType", "profileImage");
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`,
-        },
+      // ✅ Use XMLHttpRequest for progress tracking
+      const res = await new Promise<Response>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/upload");
+        xhr.setRequestHeader(
+          "Authorization",
+          `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`
+        );
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            setProgress(Math.round((event.loaded / event.total) * 100));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(
+              new Response(xhr.responseText, {
+                status: xhr.status,
+                headers: { "Content-Type": "application/json" },
+              })
+            );
+          } else {
+            reject(new Error(xhr.statusText));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Upload failed"));
+        xhr.send(formData);
       });
 
       const result = await res.json();
+
       if (!result.success) {
-        alert(t("profile.profileImage.uploadFailed"));
+        toast.error(result.error || t("profile.profileImage.uploadFailed"), {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
         return;
       }
 
@@ -88,7 +155,6 @@ export default function ProfileHeader({
         updatedAt: new Date(),
       });
 
-      // ✅ Local update for instant refresh
       setLocalProfile?.((prev: any) => ({
         ...prev,
         avatarUrl: result.data.url,
@@ -104,17 +170,33 @@ export default function ProfileHeader({
         });
       }
 
+      toast.success("✅ Profile image updated successfully!", {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
       removeSelectedFile();
-      alert(t("profile.profileImage.updateSuccess"));
     } catch (err) {
-      console.error("Upload failed:", err);
-      alert(t("profile.profileImage.uploadFailed"));
+      toast.error(t("profile.profileImage.uploadFailed"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   };
 
-  /** ✏️ Open Edit Modal for name change */
+  /** ✏️ Edit name */
   const handleEditName = () => {
     setIsEditing(true);
     setEditField("fullName");
@@ -127,7 +209,6 @@ export default function ProfileHeader({
         {/* === Avatar + Upload === */}
         <div className="flex flex-col items-center w-full sm:w-auto text-center">
           <div className="relative mb-3">
-            {/* ✅ add key to force re-render */}
             <Avatar
               key={profile?.avatarUrl}
               {...getAvatarProps(profile, user)}
@@ -137,8 +218,8 @@ export default function ProfileHeader({
 
           {/* Upload section */}
           {previewUrl ? (
-            <div className="w-full max-w-[10rem] space-y-3">
-              <div className="relative w-24 h-24 mx-auto">
+            <div className="w-full max-w-[12rem] space-y-3">
+              <div className="relative w-28 h-28 mx-auto">
                 <img
                   src={previewUrl}
                   alt="Preview"
@@ -151,18 +232,26 @@ export default function ProfileHeader({
                   <XMarkIcon className="w-3 h-3" />
                 </button>
               </div>
-              <button
-                onClick={handleProfileImageUpload}
-                disabled={uploading}
-                className="w-full px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 text-sm transition"
-              >
-                {uploading
-                  ? t("profile.profileImage.uploading")
-                  : t("profile.profileImage.updateProfileImage")}
-              </button>
+
+              {uploading ? (
+                <div className="w-full bg-gray-100 rounded-lg h-3 overflow-hidden">
+                  <div
+                    className="bg-primary h-3 rounded-lg transition-all"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              ) : (
+                <button
+                  onClick={handleProfileImageUpload}
+                  disabled={uploading}
+                  className="w-full px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover disabled:opacity-50 text-sm transition"
+                >
+                  {t("profile.profileImage.updateProfileImage")}
+                </button>
+              )}
             </div>
           ) : (
-            <div className="w-full max-w-[10rem] space-y-2">
+            <div className="w-full max-w-[12rem] space-y-2">
               <button
                 onClick={handleFileButtonClick}
                 className="w-full px-3 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 text-sm flex items-center justify-center gap-2 transition"
@@ -181,7 +270,7 @@ export default function ProfileHeader({
           )}
         </div>
 
-        {/* === Profile Info + Stats === */}
+        {/* === Profile Info === */}
         <div className="flex-1 w-full text-center lg:text-left">
           <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between mb-4 gap-4">
             <div>

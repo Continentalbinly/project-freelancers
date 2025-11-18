@@ -34,7 +34,7 @@ export default function ProposalCard({
   const [loadingChat, setLoadingChat] = useState(false);
   const router = useRouter();
 
-  // ✅ Detect screen size (mobile vs desktop)
+  // ✅ Detect screen size
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
     checkScreen();
@@ -42,7 +42,7 @@ export default function ProposalCard({
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  // 🔍 Fetch avatar + profile details
+  // 🔍 Fetch profile info
   useEffect(() => {
     const fetchProfileAvatar = async () => {
       try {
@@ -115,24 +115,22 @@ export default function ProposalCard({
 
   // ✅ Handle “Start Chat”
   const handleStartChat = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // ✅ Prevent triggering card click
     const chatUrl = `/messages?project=${proposal.projectId}`;
 
     if (!isMobile) {
-      // 💻 Desktop / Tablet → open inline chat in new tab
       e.preventDefault();
       window.open(chatUrl, "_blank", "noopener,noreferrer");
       return;
     }
 
-    // 📱 Mobile → directly open [id] route
-    e.preventDefault();
     if (!user) return;
 
     try {
       setLoadingChat(true);
       const room = await createOrOpenChatRoom(proposal.projectId, user.uid);
       if (room?.id) {
-        router.push(`/messages/${room.id}`); // ✅ goes straight to [id]
+        router.push(`/messages/${room.id}`);
       }
     } catch (err) {
       console.error("❌ Error opening chat:", err);
@@ -141,8 +139,24 @@ export default function ProposalCard({
     }
   };
 
+  /** ✅ Navigate to detail page when clicking card */
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent if clicked inside a button or link
+    const target = e.target as HTMLElement;
+    if (
+      target.closest("button") ||
+      target.closest("a") ||
+      target.tagName === "BUTTON"
+    )
+      return;
+    router.push(`/proposals/${proposal.id}`);
+  };
+
   return (
-    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-border p-4 sm:p-6 transition-all hover:shadow-md">
+    <div
+      onClick={handleCardClick}
+      className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-border p-4 sm:p-6 transition-all hover:shadow-lg hover:scale-[1.01] cursor-pointer"
+    >
       {/* === Header === */}
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-6 gap-4">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
@@ -275,6 +289,7 @@ export default function ProposalCard({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-4 border-t border-border gap-3">
         <Link
           href={`/proposals/${proposal.id}`}
+          onClick={(e) => e.stopPropagation()} // ✅ prevent double navigation
           className="text-xs sm:text-sm text-primary hover:text-primary-dark font-semibold flex items-center gap-1 hover:underline"
         >
           <span className="w-1 h-3 bg-primary rounded-full"></span>
@@ -282,22 +297,8 @@ export default function ProposalCard({
         </Link>
 
         <div className="flex gap-3">
-          {proposal.status === "pending" && activeTab === "received" && (
-            <>
-              <button className="text-xs sm:text-sm text-success hover:text-success-dark font-semibold flex items-center gap-1 hover:underline">
-                <span className="w-1 h-3 bg-success rounded-full"></span>
-                {t("proposals.proposalCard.accept")}
-              </button>
-              <button className="text-xs sm:text-sm text-error hover:text-error-dark font-semibold flex items-center gap-1 hover:underline">
-                <span className="w-1 h-3 bg-error rounded-full"></span>
-                {t("proposals.proposalCard.reject")}
-              </button>
-            </>
-          )}
-
           {proposal.status === "accepted" && (
-            <Link
-              href={`/messages?project=${proposal.projectId}`}
+            <button
               onClick={handleStartChat}
               className={`btn btn-primary text-xs sm:text-sm shadow hover:shadow-md transition-all ${
                 loadingChat ? "opacity-70 pointer-events-none" : ""
@@ -306,7 +307,7 @@ export default function ProposalCard({
               {loadingChat
                 ? t("proposals.proposalCard.openingChat") || "Opening..."
                 : t("proposals.proposalCard.startChat")}
-            </Link>
+            </button>
           )}
         </div>
       </div>

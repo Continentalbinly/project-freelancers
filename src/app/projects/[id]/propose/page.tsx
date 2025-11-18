@@ -46,7 +46,6 @@ export default function ProposePage() {
           client,
         });
       } catch (err) {
-        console.error("❌ Error fetching project:", err);
         router.push("/projects");
       } finally {
         setLoadingProject(false);

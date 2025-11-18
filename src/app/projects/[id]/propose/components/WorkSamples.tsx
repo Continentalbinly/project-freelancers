@@ -1,16 +1,19 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  PaperClipIcon,
-  XMarkIcon,
-  ArrowUpTrayIcon, // ✅ <-- use this instead of CloudUpload
-} from "@heroicons/react/24/outline";
+import { ArrowUpTrayIcon, XMarkIcon } from "@heroicons/react/24/outline";
+
+interface WorkSample {
+  id: string;
+  url: string;
+  type: string;
+  title: string;
+}
 
 interface WorkSamplesProps {
   t: (key: string) => string;
-  workSamples: any[];
-  setWorkSamples: (samples: any[]) => void;
+  workSamples: WorkSample[];
+  setWorkSamples: React.Dispatch<React.SetStateAction<WorkSample[]>>;
 }
 
 export default function WorkSamples({
@@ -22,8 +25,18 @@ export default function WorkSamples({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [progress, setProgress] = useState(0);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // 🖼️ Accept only images
+  /** 🔹 Handle file selection */
+  const handleFileInputChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    for (const file of Array.from(files)) await handleFileSelect(file);
+  };
+
+  /** 🔹 Upload single image */
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       setUploadError(
@@ -32,53 +45,92 @@ export default function WorkSamples({
       return;
     }
 
+    const MAX_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
+    if (file.size > MAX_SIZE) {
+      setUploadError("Image file too large. Maximum size is 2 GB.");
+      return;
+    }
+
     setUploadError("");
     setUploading(true);
-    setProgress(10);
+    setProgress(0);
 
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append(
-        "upload_preset",
-        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ""
-      );
+      formData.append("folderType", "workSamples");
 
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        { method: "POST", body: formData }
-      );
+      const upload = await new Promise<Response>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/upload");
+        xhr.setRequestHeader(
+          "Authorization",
+          `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`
+        );
 
-      if (!response.ok) throw new Error("Upload failed");
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable)
+            setProgress(Math.round((e.loaded / e.total) * 100));
+        };
 
-      setProgress(70);
-      const data = await response.json();
-      setProgress(100);
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(
+              new Response(xhr.responseText, {
+                status: xhr.status,
+                headers: { "Content-Type": "application/json" },
+              })
+            );
+          } else reject(new Error(xhr.statusText));
+        };
+        xhr.onerror = () => reject(new Error("Upload failed"));
+        xhr.send(formData);
+      });
 
-      const newSample = {
+      const result = await upload.json();
+      if (!result.success) throw new Error(result.error || "Upload failed");
+
+      const newSample: WorkSample = {
         id: Date.now().toString(),
-        url: data.secure_url,
+        url: result.data.url,
         type: "image",
         title: file.name,
-        publicId: data.public_id,
       };
 
-      setWorkSamples([...workSamples, newSample]);
+      setWorkSamples((prev) => [...prev, newSample]);
     } catch (err) {
+      console.error(err);
       setUploadError("Failed to upload image. Please try again.");
     } finally {
       setUploading(false);
-      setTimeout(() => setProgress(0), 1500);
+      setTimeout(() => setProgress(0), 1000);
     }
   };
 
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) for (const f of Array.from(files)) handleFileSelect(f);
-  };
+  /** 🔹 Remove file (both client + server) */
+  const removeSample = async (id: string) => {
+    const sample = workSamples.find((s) => s.id === id);
+    if (!sample) return;
 
-  const removeSample = (id: string) => {
-    setWorkSamples(workSamples.filter((s) => s.id !== id));
+    const confirmDelete = confirm("Delete this image from server?");
+    if (!confirmDelete) return;
+
+    setDeletingId(id);
+    try {
+      await fetch("/api/delete-file", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_UPLOAD_KEY}`,
+        },
+        body: JSON.stringify({ url: sample.url }),
+      });
+    } catch (err) {
+      console.error("⚠️ Delete failed:", err);
+    }
+
+    setWorkSamples((prev) => prev.filter((s) => s.id !== id));
+    setDeletingId(null);
   };
 
   return (
@@ -90,7 +142,7 @@ export default function WorkSamples({
       {/* Upload Box */}
       <label
         htmlFor="fileUpload"
-        className="block border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors bg-background-secondary"
+        className="block border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition bg-background-secondary"
       >
         <ArrowUpTrayIcon className="w-8 h-8 text-text-secondary mx-auto mb-2" />
         <span className="text-sm text-text-secondary">
@@ -101,15 +153,15 @@ export default function WorkSamples({
           ref={fileInputRef}
           type="file"
           accept="image/*"
+          multiple
           onChange={handleFileInputChange}
           className="hidden"
-          multiple
         />
       </label>
 
-      {/* Upload Progress */}
+      {/* Progress Bar */}
       {uploading && (
-        <div className="w-full mt-3">
+        <div className="mt-3">
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-primary h-2 rounded-full transition-all duration-300"
@@ -117,7 +169,7 @@ export default function WorkSamples({
             ></div>
           </div>
           <p className="text-xs text-text-secondary mt-1">
-            {t("proposePage.uploading")}... {progress}%
+            {t("proposePage.uploading")} {progress}%
           </p>
         </div>
       )}
@@ -130,7 +182,7 @@ export default function WorkSamples({
         {workSamples.map((sample) => (
           <div
             key={sample.id}
-            className="flex items-center gap-2 bg-background-secondary rounded-lg px-3 py-2 border border-border"
+            className="flex items-center gap-2 bg-background-secondary rounded-lg px-3 py-2 border border-border relative"
           >
             <img
               src={sample.url}
@@ -140,12 +192,20 @@ export default function WorkSamples({
             <span className="text-xs font-medium truncate max-w-[100px]">
               {sample.title}
             </span>
+
             <button
               type="button"
+              disabled={deletingId === sample.id}
               onClick={() => removeSample(sample.id)}
-              className="text-error hover:text-error/80"
+              className={`text-error hover:text-error/80 ${
+                deletingId === sample.id ? "opacity-50 cursor-wait" : ""
+              }`}
             >
-              <XMarkIcon className="w-4 h-4" />
+              {deletingId === sample.id ? (
+                <span className="animate-spin border-2 border-error border-t-transparent rounded-full w-4 h-4 inline-block" />
+              ) : (
+                <XMarkIcon className="w-4 h-4" />
+              )}
             </button>
           </div>
         ))}

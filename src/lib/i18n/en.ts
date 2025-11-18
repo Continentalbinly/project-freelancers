@@ -40,9 +40,17 @@ const en = {
     back2home: "Back to Home",
     submit: "Submit",
     submiting: "Submiting",
+    submitSuccess: "Submit Success",
+    submitFailed: "Submit Failed, Please try again",
     placeholderRatingReview: "Leave a short review (optional)",
     updateSuccess: "Update Success",
-    updateFailed: "Update Failed"
+    updateFailed: "Update Failed",
+    acceptSuccess: "Accept Success",
+    acceptFailed: "Accept Failed",
+    rejectSuccess: "Reject Success",
+    rejectFailed: "Reject Failed",
+    pleaseSelectReason: "Please Select Reason",
+    failed: "Failed"
   },
   // Cookie consent translations
   cookieConsent: {
@@ -2885,7 +2893,7 @@ const en = {
     availabilityPlaceholder: "e.g., Weekdays after 6pm, Weekends, etc.",
     workSamplesLabel: "Work Samples (Optional)",
     workSamplesUploadHint:
-      "Click or drag files here to upload (images, PDFs, docs, max 10MB)",
+      "Click or drag files here to upload (images max 2GB)",
     uploading: "Uploading...",
     milestonesLabel: "Milestones (Optional)",
     addMilestone: "Add Milestone",

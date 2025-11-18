@@ -41,9 +41,17 @@ const lo = {
     back2home: "ກັບໄປໜ້າຫຼັກ",
     submit: "ສົ່ງ",
     submiting: "ກຳລັງສົ່ງ",
+    submitSuccess: "ສົ່ງສຳເລັດ",
+    submitFailed: "ສົ່ງບໍ່ສຳເລັດ, ກະລຸນາລອງໃໝ່",
     placeholderRatingReview: "ໃຫ້ຄຳເຫັນຣີວິວສັ້ນໆ (ທາງເລືອກ)",
     updateSuccess: "ອັບເດດ ສຳເລັດ",
     updateFailed: "ອັບເດດ ບໍ່ສຳເລັດ",
+    acceptSuccess: "ຕອບຮັບ ສຳເລັດ",
+    acceptFailed: "ຕອບຮັບ ບໍ່ສຳເລັດ",
+    rejectSuccess: "ປະຕິເສດ ຂໍ້ສະເໜີ",
+    rejectFailed: "ການປະຕິເສດ ເກີດຂໍ້ຜິດພາດ",
+    pleaseSelectReason: "ກະລຸນາ ໃຫ້ເຫດຜົນ",
+    failed: "ເກີດຂໍ້ຜິດພາດ"
   },
   // Cookie consent translations
   cookieConsent: {
@@ -2837,7 +2845,7 @@ const lo = {
     availabilityPlaceholder: "ເຊັ່ນ ວັນທຳງານຫຼັງ 6 ໂມງເຢັນ, ສຸດສັບດາ, ແລະອື່ນໆ",
     workSamplesLabel: "ຕົວຢ່າງຜົນງານ (ທາງເລືອກ)",
     workSamplesUploadHint:
-      "ຄລິກຫຼືລາກໄຟລ໌ມາທີ່ນີ້ (ຮູບ, PDF, ເອກະສານ, ສູງສຸດ 10MB)",
+      "ຄລິກຫຼືລາກໄຟລ໌ມາທີ່ນີ້ (ຮູບພາບ ສູງສຸດ 2GB)",
     uploading: "ກຳລັງອັບໂຫຼດ...",
     milestonesLabel: "Milestones (ທາງເລືອກ)",
     addMilestone: "ເພີ່ມ Milestone",
