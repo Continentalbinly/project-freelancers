@@ -60,7 +60,7 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('Error fetching platform stats:', error)
+    //console.error('Error fetching platform stats:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch platform statistics' },
       { status: 500 }

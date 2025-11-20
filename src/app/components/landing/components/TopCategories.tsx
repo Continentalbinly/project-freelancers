@@ -53,7 +53,7 @@ export default function TopCategories({ t }: any) {
         })) as Category[];
         setCategories(data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        //console.error("Error fetching categories:", error);
       } finally {
         setLoading(false);
       }

@@ -108,7 +108,7 @@ export default function ProposalsPage() {
 
       setProposals(detailed);
     } catch (err) {
-      console.error("❌ Error loading proposals:", err);
+      //console.error("❌ Error loading proposals:", err);
     } finally {
       setLoadingProposals(false);
     }

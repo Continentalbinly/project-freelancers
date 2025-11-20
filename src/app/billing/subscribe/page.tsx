@@ -95,7 +95,7 @@ export default function SubscribePageLAK() {
       setTransactionId(txnId);
       alert(t("pay.confirmation.success"));
     } catch (err) {
-      console.error(err);
+      //console.error(err);
       alert(t("pay.confirmation.failed"));
     } finally {
       setIsSubmitting(false);

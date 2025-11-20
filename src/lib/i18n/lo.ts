@@ -51,7 +51,11 @@ const lo = {
     rejectSuccess: "ປະຕິເສດ ຂໍ້ສະເໜີ",
     rejectFailed: "ການປະຕິເສດ ເກີດຂໍ້ຜິດພາດ",
     pleaseSelectReason: "ກະລຸນາ ໃຫ້ເຫດຜົນ",
-    failed: "ເກີດຂໍ້ຜິດພາດ"
+    failed: "ເກີດຂໍ້ຜິດພາດ",
+    NoProjectsYet: "ບໍ່ທັນມີໂປຣເຈັກເທື່ອ",
+    NoProjectsYetDesc:
+      "ທ່ານບໍ່ທັນມີໂປຣເຈັກທີ່ໄດ້ຮັບມອບໝາຍເທື່ອ. ໂປຣເຈັກທີ່ທ່ານສະໝັກ ແລະ ໄດ້ຮັບການຕອບກັບ, ແມ່ນຈະສະແດງຢູ່ບ່ອນນີ້!",
+    browseProject: "ໄປຊອກຫາໂປຣເຈັກ",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -2844,8 +2848,7 @@ const lo = {
     availabilityLabel: "ຄວາມພ້ອມ",
     availabilityPlaceholder: "ເຊັ່ນ ວັນທຳງານຫຼັງ 6 ໂມງເຢັນ, ສຸດສັບດາ, ແລະອື່ນໆ",
     workSamplesLabel: "ຕົວຢ່າງຜົນງານ (ທາງເລືອກ)",
-    workSamplesUploadHint:
-      "ຄລິກຫຼືລາກໄຟລ໌ມາທີ່ນີ້ (ຮູບພາບ ສູງສຸດ 2GB)",
+    workSamplesUploadHint: "ຄລິກຫຼືລາກໄຟລ໌ມາທີ່ນີ້ (ຮູບພາບ ສູງສຸດ 2GB)",
     uploading: "ກຳລັງອັບໂຫຼດ...",
     milestonesLabel: "Milestones (ທາງເລືອກ)",
     addMilestone: "ເພີ່ມ Milestone",

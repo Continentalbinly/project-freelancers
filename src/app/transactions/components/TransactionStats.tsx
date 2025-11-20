@@ -38,7 +38,7 @@ export default function TransactionStats({ transactions, loading, t }: Props) {
             validEscrows.push(tx);
           }
         } catch (err) {
-          console.error("Error checking project status:", err);
+          //console.error("Error checking project status:", err);
         }
       }
 

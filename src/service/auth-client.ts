@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "./firebase"; // ✅ include db here
 import { AuthResponse } from "../types/auth";
+import { toast } from "react-toastify";
 
 /** ✅ LOGIN — handles Firebase + backend fetch + consistent error codes */
 export async function loginUser(
@@ -79,7 +80,6 @@ export async function loginUser(
   } catch (err: any) {
     const code =
       err?.code || extractFirebaseCode(err?.message) || "auth/unknown";
-    console.warn("[Login] Firebase Auth error:", code);
     const friendly = getFirebaseErrorMessage(code);
     return { success: false, error: friendly, errorCode: code };
   }
@@ -166,13 +166,10 @@ export async function signupUser(
       if (data.success) {
         profileCreated = true;
       } else {
-        console.warn("⚠️ /api/auth profile creation failed:", data.error);
+        toast.warn("⚠️ /api/auth profile creation failed:", data.error);
       }
     } catch (apiErr) {
-      console.warn(
-        "⚠️ API call failed, using local Firestore fallback:",
-        apiErr
-      );
+      toast.warn("⚠️ API call failed, using local Firestore fallback");
     }
 
     // ✅ 4. Fallback — Direct Firestore creation if API failed
@@ -199,10 +196,10 @@ export async function signupUser(
             updatedAt: serverTimestamp(),
             ...additionalData,
           });
-          console.log("✅ Fallback: Firestore profile created for", email);
+          //console.log("✅ Fallback: Firestore profile created for", email);
         }
       } catch (localErr) {
-        console.error("❌ Failed to create Firestore profile:", localErr);
+        //console.error("❌ Failed to create Firestore profile:", localErr);
         await user.delete(); // rollback orphan auth
         throw new Error("Failed to create profile in Firestore");
       }

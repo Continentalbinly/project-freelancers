@@ -94,7 +94,7 @@ export default function MyProjectsPage() {
         setProfiles(profileMap);
         setProjects(uniqueProjects);
       } catch (err) {
-        console.error("❌ Error loading projects:", err);
+        //console.error("❌ Error loading projects:", err);
       } finally {
         setLoading(false);
       }
@@ -120,22 +120,21 @@ export default function MyProjectsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6">
         <img
-          src="/empty-state.svg"
+          src="/empty-state.png"
           alt="No projects"
           className="w-48 h-48 mb-6 opacity-90 drop-shadow-sm"
         />
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
-          No projects yet
+          {t("common.NoProjectsYet")}
         </h2>
         <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-sm">
-          You haven’t started any projects yet. Once you post or accept one,
-          it’ll appear here!
+          {t("common.NoProjectsYetDesc")}
         </p>
         <button
-          onClick={() => (window.location.href = "/projects")}
-          className="px-6 py-2.5 bg-primary text-white font-medium rounded-md hover:bg-primary-dark transition-all shadow-sm"
+          onClick={() => (window.location.href = "/")}
+          className="px-6 cursor-pointer py-2.5 bg-primary text-white font-medium rounded-md hover:bg-primary-dark transition-all shadow-sm"
         >
-          Browse Projects
+          {t("common.browseProject")}
         </button>
       </div>
     );

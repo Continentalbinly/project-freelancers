@@ -88,7 +88,7 @@ export default function ProposalDetailPage() {
         client: clientData,
       } as Proposal);
     } catch (err) {
-      console.error("Error fetching proposal:", err);
+      //console.error("Error fetching proposal:", err);
     } finally {
       setLoadingProposal(false);
     }

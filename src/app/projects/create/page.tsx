@@ -153,7 +153,7 @@ export default function CreateProjectPage() {
         setCurrentStep(next);
         updateURLStep(next);
       } catch (err) {
-        console.error("⚠️ restore draft error:", err);
+        //console.error("⚠️ restore draft error:", err);
       } finally {
         setDraftLoaded(true);
       }
@@ -198,7 +198,6 @@ export default function CreateProjectPage() {
             updatedAt: serverTimestamp(),
           });
         } catch (err) {
-          console.warn("⚠️ sync step failed:", err);
         }
       };
       syncStep();
@@ -217,7 +216,6 @@ export default function CreateProjectPage() {
           updatedAt: serverTimestamp(),
         });
       } catch (err) {
-        console.warn("⚠️ autosync failed:", err);
       }
     }, 10000);
     return () => clearInterval(interval);
@@ -307,7 +305,7 @@ export default function CreateProjectPage() {
       await clearLocalForm();
       router.push("/projects");
     } catch (err: any) {
-      console.error("❌ Failed to create project:", err);
+      //console.error("❌ Failed to create project:", err);
       setError(err.message || "Submit failed");
     } finally {
       setLoading(false);

@@ -46,7 +46,7 @@ export function useProjects() {
 
       setProjects(data);
     } catch (err) {
-      console.error("❌ Error fetching projects:", err);
+      //console.error("❌ Error fetching projects:", err);
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ export function useProjects() {
       const currentViews = snap.data().views || 0;
       await updateDoc(projectRef, { views: currentViews + 1 });
     } catch (err) {
-      console.error("Error updating views:", err);
+      //console.error("Error updating views:", err);
     }
   };
 

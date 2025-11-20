@@ -79,7 +79,7 @@ export default function ManageProjectsPage() {
 
       setProjects(data);
     } catch (err) {
-      console.error("Error fetching projects:", err);
+      //console.error("Error fetching projects:", err);
     } finally {
       setLoadingProjects(false);
     }

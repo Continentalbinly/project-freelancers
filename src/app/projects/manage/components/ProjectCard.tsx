@@ -170,7 +170,7 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
       setIsModalOpen(false);
       if (onProjectDeleted) onProjectDeleted(project.id);
     } catch (err) {
-      console.error("❌ Error cancelling project:", err);
+      //console.error("❌ Error cancelling project:", err);
       alert("Failed to cancel project. Please try again.");
     } finally {
       setLoading(false);

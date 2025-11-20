@@ -183,6 +183,6 @@ export async function deleteProjectImage(url: string): Promise<void> {
       body: JSON.stringify({ url })
     })
   } catch (err) {
-    console.error('Failed to delete project image:', err)
+    //console.error('Failed to delete project image:', err)
   }
 } 

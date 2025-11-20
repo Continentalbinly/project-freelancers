@@ -67,7 +67,7 @@ export default function EditProjectPage() {
 
         setProject({ ...data, id: projectId });
       } catch (err) {
-        console.error(err);
+        //console.error(err);
       } finally {
         setLoadingProject(false);
       }

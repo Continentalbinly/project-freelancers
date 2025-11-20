@@ -63,7 +63,7 @@ export default function ProposalCard({
           }
         }
       } catch (err) {
-        console.error("⚠️ Error fetching profile:", err);
+        //console.error("⚠️ Error fetching profile:", err);
       }
     };
 
@@ -133,7 +133,7 @@ export default function ProposalCard({
         router.push(`/messages/${room.id}`);
       }
     } catch (err) {
-      console.error("❌ Error opening chat:", err);
+      //console.error("❌ Error opening chat:", err);
     } finally {
       setLoadingChat(false);
     }

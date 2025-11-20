@@ -71,7 +71,7 @@ export default function PricingFuturePlans() {
           setUserPlan(plan);
         }
       } catch (err) {
-        console.error("Error verifying user profile:", err);
+        //console.error("Error verifying user profile:", err);
         toast.error(
           currentLanguage === "lo"
             ? "ມີບັນຫາໃນການກວດສອບບັນຊີ."

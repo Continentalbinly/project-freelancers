@@ -36,7 +36,7 @@ async function updateProposalsCount() {
     
     //console.log(`Update complete! Updated ${updatedCount} projects.`)
   } catch (error) {
-    console.error('Error updating proposals count:', error)
+    //console.error('Error updating proposals count:', error)
   }
 }
 

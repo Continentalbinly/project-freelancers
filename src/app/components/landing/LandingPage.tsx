@@ -36,7 +36,7 @@ export default function LandingPage() {
         const data = await res.json();
         if (data.success) setStats(data.data);
       } catch (err) {
-        console.error("Error fetching stats:", err);
+        //console.error("Error fetching stats:", err);
       } finally {
         setLoadingStats(false);
       }

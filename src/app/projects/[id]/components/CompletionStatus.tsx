@@ -119,7 +119,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
         },
       }));
     } catch (e) {
-      console.error("❌ Freelancer confirm error:", e);
+      //console.error("❌ Freelancer confirm error:", e);
     } finally {
       setUpdating(false);
       setShowModal(null);
@@ -183,7 +183,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
         clientCompleted: { ...data.clientCompleted, completedAt: new Date() },
       }));
     } catch (e) {
-      console.error("❌ Client confirm error:", e);
+      //console.error("❌ Client confirm error:", e);
     } finally {
       setUpdating(false);
       setShowModal(null);
@@ -249,7 +249,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       setShowRatingModal(false);
       alert("✅ " + t("rating.thankYou"));
     } catch (err) {
-      console.error("❌ Rating submission error:", err);
+      //console.error("❌ Rating submission error:", err);
       alert("Failed to submit rating.");
     } finally {
       setRatingLoading(false);

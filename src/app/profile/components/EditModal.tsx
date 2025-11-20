@@ -51,7 +51,7 @@ export default function EditModal({
         }
       );
     } catch (err) {
-      console.error("❌ Failed to update:", err);
+      //console.error("❌ Failed to update:", err);
 
       // ❌ Toastify Error
       toast.error(t("common.updateFailed") || "Failed to update profile.", {

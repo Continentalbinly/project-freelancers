@@ -171,7 +171,7 @@ export default function ProjectProposalsPage() {
       setProposals(list);
       setFiltered(list);
     } catch (error) {
-      console.error("❌ Error fetching project and proposals:", error);
+      //console.error("❌ Error fetching project and proposals:", error);
     } finally {
       setLoadingProposals(false);
     }

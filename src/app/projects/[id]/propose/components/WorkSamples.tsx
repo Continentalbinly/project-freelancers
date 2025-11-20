@@ -99,7 +99,7 @@ export default function WorkSamples({
 
       setWorkSamples((prev) => [...prev, newSample]);
     } catch (err) {
-      console.error(err);
+      //console.error(err);
       setUploadError("Failed to upload image. Please try again.");
     } finally {
       setUploading(false);
@@ -126,7 +126,7 @@ export default function WorkSamples({
         body: JSON.stringify({ url: sample.url }),
       });
     } catch (err) {
-      console.error("⚠️ Delete failed:", err);
+      //console.error("⚠️ Delete failed:", err);
     }
 
     setWorkSamples((prev) => prev.filter((s) => s.id !== id));

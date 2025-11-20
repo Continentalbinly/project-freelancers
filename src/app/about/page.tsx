@@ -39,10 +39,10 @@ export default function AboutPage() {
         if (data.success) {
           setImpactStats(data.data);
         } else {
-          console.error('Failed to fetch impact stats:', data.error);
+          //console.error('Failed to fetch impact stats:', data.error);
         }
       } catch (error) {
-        console.error('Error fetching impact statistics:', error);
+        //console.error('Error fetching impact statistics:', error);
       } finally {
         setLoadingStats(false);
       }

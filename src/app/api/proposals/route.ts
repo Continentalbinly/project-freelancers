@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('API Error:', error)
+    //console.error('API Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -135,7 +135,7 @@ async function createProposal(freelancerId: string, data: any) {
       message: 'Proposal submitted successfully'
     })
   } catch (error) {
-    console.error('Create proposal error:', error)
+    //console.error('Create proposal error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to create proposal' },
       { status: 500 }
@@ -167,7 +167,7 @@ async function getProposals(projectId: string) {
       data: proposals
     })
   } catch (error) {
-    console.error('Get proposals error:', error)
+    //console.error('Get proposals error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to get proposals' },
       { status: 500 }
@@ -215,7 +215,7 @@ async function updateProposalStatus(userId: string, data: any) {
       message: 'Proposal status updated successfully'
     })
   } catch (error) {
-    console.error('Update proposal status error:', error)
+    //console.error('Update proposal status error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update proposal status' },
       { status: 500 }

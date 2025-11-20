@@ -62,7 +62,7 @@ export default function PortfolioSection() {
       );
       setCompletedProjects(projects);
     } catch (err) {
-      console.error("❌ Error loading projects:", err);
+      //console.error("❌ Error loading projects:", err);
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ export default function PortfolioSection() {
               >
                 <div className="relative aspect-video">
                   <img
-                    src={project.imageUrl || "/images/default-project.jpg"}
+                    src={project.imageUrl || "/default-project.png"}
                     alt={project.title}
                     className="w-full h-full object-cover"
                   />

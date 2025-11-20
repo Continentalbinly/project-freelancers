@@ -60,7 +60,7 @@ export default function ProposalCard({
           }
         }
       } catch (err) {
-        console.error("⚠️ Error loading profile avatar:", err);
+        //console.error("⚠️ Error loading profile avatar:", err);
       }
     };
 
@@ -109,7 +109,7 @@ export default function ProposalCard({
         });
       }
     } catch (e) {
-      console.error("Error accepting proposal:", e);
+      //console.error("Error accepting proposal:", e);
     } finally {
       setLoadingAction(false);
     }
@@ -127,7 +127,7 @@ export default function ProposalCard({
         });
       }
     } catch (e) {
-      console.error("Error rejecting proposal:", e);
+      //console.error("Error rejecting proposal:", e);
     } finally {
       setLoadingAction(false);
     }
@@ -145,7 +145,7 @@ export default function ProposalCard({
           : proposal.freelancerId) || "";
 
       if (!currentUserId) {
-        console.error("❌ Missing current user ID — cannot start chat");
+        //console.error("❌ Missing current user ID — cannot start chat");
         return;
       }
 
@@ -156,10 +156,10 @@ export default function ProposalCard({
       if (room) {
         router.push(`/messages?project=${proposal.projectId}`);
       } else {
-        console.error("❌ Could not create or open chat room.");
+        //console.error("❌ Could not create or open chat room.");
       }
     } catch (err) {
-      console.error("⚠️ Error starting chat:", err);
+      //console.error("⚠️ Error starting chat:", err);
     } finally {
       setLoadingAction(false);
     }

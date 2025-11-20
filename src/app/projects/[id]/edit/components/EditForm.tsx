@@ -85,7 +85,7 @@ export default function EditForm({
         }));
         setCategories(list);
       } catch (err) {
-        console.error("❌ Failed to fetch categories:", err);
+        //console.error("❌ Failed to fetch categories:", err);
       }
     }
     fetchCategories();
@@ -136,7 +136,7 @@ export default function EditForm({
     try {
       await uploadToCloudinary(file, "banner");
     } catch (err) {
-      console.error("Upload failed:", err);
+      //console.error("Upload failed:", err);
     } finally {
       setUploading(false);
     }
@@ -152,7 +152,7 @@ export default function EditForm({
     try {
       await uploadToCloudinary(file, "sample");
     } catch (err) {
-      console.error("Sample upload failed:", err);
+      //console.error("Sample upload failed:", err);
     } finally {
       setUploadingSample(false);
     }
@@ -275,7 +275,7 @@ export default function EditForm({
 
       router.push(`/projects/${project.id}`);
     } catch (err) {
-      console.error("❌ Error updating project:", err);
+      //console.error("❌ Error updating project:", err);
       setError(t("editProject.failedToUpdateProjectError"));
     } finally {
       setSaving(false);

@@ -93,7 +93,7 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
         lastMessageTime: serverTimestamp(),
       });
     } catch (err) {
-      console.error("❌ Error sending message:", err);
+      //console.error("❌ Error sending message:", err);
     }
   };
 

@@ -42,10 +42,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data.success) {
         setProfile(data.data)
       } else {
-        console.error('Failed to fetch profile:', data.error)
+        //console.error('Failed to fetch profile:', data.error)
       }
     } catch (err) {
-      console.error('Error fetching profile:', err)
+      //console.error('Error fetching profile:', err)
     }
   }
 
