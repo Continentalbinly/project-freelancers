@@ -127,7 +127,7 @@ export default function SignupPage() {
         setError(result.error || t("auth.signup.errors.signupFailed"));
       }
     } catch (err) {
-      console.error("❌ Signup error:", err);
+      //console.error("❌ Signup error:", err);
       setError(t("auth.signup.errors.unexpectedError"));
     } finally {
       setLoading(false);

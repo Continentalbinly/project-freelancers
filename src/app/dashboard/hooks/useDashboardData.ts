@@ -89,7 +89,7 @@ export function useDashboardData(user: any, profile: any, t: any) {
           activities.sort((a, b) => b.date - a.date).slice(0, 6)
         );
       } catch (err) {
-        console.error("Dashboard data error:", err);
+        //console.error("Dashboard data error:", err);
       } finally {
         setLoadingActivity(false);
       }

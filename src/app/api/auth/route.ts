@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     try {
       decodedToken = await adminAuth.verifyIdToken(token);
     } catch (error) {
-      console.error("❌ Invalid Firebase ID token:", error);
+      //console.error("❌ Invalid Firebase ID token:", error);
       return NextResponse.json(
         { success: false, error: "Invalid authorization token" },
         { status: 401 }
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         );
     }
   } catch (error) {
-    console.error("🔥 API Error:", error);
+    //console.error("🔥 API Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 }
@@ -168,7 +168,7 @@ async function createProfile(userId: string, data: any) {
       message: "Profile created successfully",
     });
   } catch (error) {
-    console.error("❌ Firestore create error:", error);
+    //console.error("❌ Firestore create error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create profile" },
       { status: 500 }
@@ -191,7 +191,7 @@ async function getProfile(userId: string) {
 
     return NextResponse.json({ success: true, data: snap.data() });
   } catch (error) {
-    console.error("❌ Firestore get error:", error);
+    //console.error("❌ Firestore get error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get profile" },
       { status: 500 }

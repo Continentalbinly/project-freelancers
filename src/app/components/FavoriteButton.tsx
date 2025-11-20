@@ -39,7 +39,7 @@ export default function FavoriteButton({
       }
       setInitialized(true)
     } catch (error) {
-      console.error('Error checking favorite status:', error)
+      //console.error('Error checking favorite status:', error)
       setInitialized(true)
     }
   }
@@ -64,7 +64,7 @@ export default function FavoriteButton({
         }
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error)
+      //console.error('Error toggling favorite:', error)
     } finally {
       setLoading(false)
     }

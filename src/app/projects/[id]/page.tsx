@@ -91,7 +91,7 @@ export default function ProjectDetailPage() {
         }
       }
     } catch (error) {
-      console.error("❌ Error fetching project or profiles:", error);
+      //console.error("❌ Error fetching project or profiles:", error);
     } finally {
       setLoading(false);
     }
@@ -132,7 +132,7 @@ export default function ProjectDetailPage() {
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
           <ProjectImage
-            src={project.imageUrl}
+            src={project.imageUrl || "/default-project.png"}
             alt={project.title}
             size="full"
           />

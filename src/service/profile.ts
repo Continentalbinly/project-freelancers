@@ -11,11 +11,10 @@ export async function getUserProfile(userId: string) {
     if (snap.exists()) {
       return { id: snap.id, ...snap.data() };
     } else {
-      console.warn("⚠️ No profile found for user:", userId);
       return null;
     }
   } catch (err) {
-    console.error("❌ getUserProfile failed:", err);
+    //console.error("❌ getUserProfile failed:", err);
     return null;
   }
 }

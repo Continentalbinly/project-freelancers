@@ -67,7 +67,7 @@ export default function RecentProjects({ user }: any) {
 
       setProjects(list);
     } catch (err) {
-      console.error("❌ Error fetching recent projects:", err);
+      //console.error("❌ Error fetching recent projects:", err);
     } finally {
       setLoading(false);
     }
@@ -173,7 +173,7 @@ export default function RecentProjects({ user }: any) {
                 className="relative h-36 sm:h-40 cursor-pointer overflow-hidden"
               >
                 <ProjectImage
-                  src={project.imageUrl || "/images/default-project.jpg"}
+                  src={project.imageUrl || "/default-project.png"}
                   alt={project.title}
                   size="full"
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"

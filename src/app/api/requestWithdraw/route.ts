@@ -102,7 +102,7 @@ export async function POST(req: Request) {
 
     return Response.json({ success: true });
   } catch (err) {
-    console.error("❌ Withdraw request failed:", err);
+    //console.error("❌ Withdraw request failed:", err);
     return Response.json(
       { success: false, error: "Internal server error" },
       { status: 500 }

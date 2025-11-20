@@ -108,7 +108,7 @@ export default function ChatRoomPage() {
         lastMessageTime: serverTimestamp(),
       });
     } catch (err) {
-      console.error("Error sending message:", err);
+      //console.error("Error sending message:", err);
     }
   };
 

@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('API Error:', error)
+    //console.error('API Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -107,7 +107,7 @@ async function addFavorite(userId: string, projectId: string) {
       message: 'Project added to favorites'
     })
   } catch (error) {
-    console.error('Add favorite error:', error)
+    //console.error('Add favorite error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to add favorite' },
       { status: 500 }
@@ -127,7 +127,7 @@ async function removeFavorite(userId: string, projectId: string) {
       message: 'Project removed from favorites'
     })
   } catch (error) {
-    console.error('Remove favorite error:', error)
+    //console.error('Remove favorite error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to remove favorite' },
       { status: 500 }
@@ -146,7 +146,7 @@ async function checkFavorite(userId: string, projectId: string) {
       isFavorited: favoriteSnap.exists()
     })
   } catch (error) {
-    console.error('Check favorite error:', error)
+    //console.error('Check favorite error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to check favorite status' },
       { status: 500 }
@@ -177,7 +177,7 @@ async function getUserFavorites(userId: string) {
       data: favorites
     })
   } catch (error) {
-    console.error('Get user favorites error:', error)
+    //console.error('Get user favorites error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to get user favorites' },
       { status: 500 }

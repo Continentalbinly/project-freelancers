@@ -36,7 +36,7 @@
 //         }));
 //         setCategories(list);
 //       } catch (err) {
-//         console.error("❌ Failed to fetch categories:", err);
+//         //console.error("❌ Failed to fetch categories:", err);
 //       } finally {
 //         setLoadingCategories(false);
 //       }

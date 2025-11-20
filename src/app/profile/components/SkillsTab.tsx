@@ -45,7 +45,7 @@ export default function SkillsTab({
       setShowModal(false);
       await refreshProfile();
     } catch (err) {
-      console.error("Error adding skill:", err);
+      //console.error("Error adding skill:", err);
       alert(t("profile.skillsSection.addFailed") || "Failed to add skill");
     } finally {
       setAdding(false);
@@ -68,7 +68,7 @@ export default function SkillsTab({
 
       await refreshProfile();
     } catch (err) {
-      console.error("Error removing skill:", err);
+      //console.error("Error removing skill:", err);
       alert(
         t("profile.skillsSection.removeFailed") || "Failed to remove skill"
       );

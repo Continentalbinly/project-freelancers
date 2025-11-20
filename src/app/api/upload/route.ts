@@ -84,12 +84,8 @@ export async function POST(request: NextRequest) {
 
     // ✅ Optional backup to Cloudinary (non-blocking)
     uploadToCloudinary(buffer, fileName, file.type, folderType, subfolder)
-      .then((res) =>
-        console.log(`☁️ Cloudinary backup success: ${res.secure_url}`)
-      )
-      .catch((err) =>
-        console.warn("⚠️ Cloudinary backup failed:", err.message)
-      );
+      .then((res) => res)
+      .catch((err) => err);
 
     return NextResponse.json({
       success: true,
@@ -129,8 +125,8 @@ async function handleProfileUpload(
     const localUrl = `/uploads/${folderType}/${fileName}`;
 
     // Backup to Cloudinary
-    uploadToCloudinary(buffer, fileName, file.type, folderType).catch((err) =>
-      console.error("Backup upload to Cloudinary failed:", err)
+    uploadToCloudinary(buffer, fileName, file.type, folderType).catch(
+      (err) => err
     );
 
     return NextResponse.json({
@@ -144,7 +140,7 @@ async function handleProfileUpload(
       },
     });
   } catch (error) {
-    console.error("Local profile upload failed:", error);
+    // console.error("Local profile upload failed:", error);
     try {
       const result = await uploadToCloudinary(
         buffer,

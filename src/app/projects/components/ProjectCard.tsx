@@ -28,7 +28,7 @@ export default function ProjectCard({
         const snap = await getDoc(ref);
         if (snap.exists()) setOwner({ id: snap.id, ...snap.data() });
       } catch (err) {
-        console.error("❌ Failed to fetch owner profile:", err);
+        //console.error("❌ Failed to fetch owner profile:", err);
       }
     }
     fetchOwner();
@@ -87,7 +87,7 @@ export default function ProjectCard({
       await incrementProjectViews(project.id);
       window.location.href = `/projects/${project.id}`;
     } catch (err) {
-      console.error("❌ Failed to increment views:", err);
+      //console.error("❌ Failed to increment views:", err);
       window.location.href = `/projects/${project.id}`;
     }
   };
@@ -100,7 +100,7 @@ export default function ProjectCard({
       {/* 🖼️ Image */}
       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
         <ProjectImage
-          src={project.imageUrl || "/images/default-project.jpg"}
+          src={project.imageUrl || "/default-project.png"}
           alt={project.title || "Project image"}
           size="full"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

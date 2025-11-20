@@ -42,7 +42,7 @@ export default function Step3Details({ formData, setFormData, t }: Props) {
         }));
         setCategories(data);
       } catch (err) {
-        console.error("❌ Failed to fetch categories:", err);
+        //console.error("❌ Failed to fetch categories:", err);
       } finally {
         setLoadingCategories(false);
       }

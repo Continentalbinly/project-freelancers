@@ -50,7 +50,10 @@ const en = {
     rejectSuccess: "Reject Success",
     rejectFailed: "Reject Failed",
     pleaseSelectReason: "Please Select Reason",
-    failed: "Failed"
+    failed: "Failed",
+    NoProjectsYet: "No projects yet",
+    NoProjectsYetDesc: "You haven’t started any projects yet. Once you post or accept one, it’ll appear here!",
+    browseProject: "Browse Project"
   },
   // Cookie consent translations
   cookieConsent: {

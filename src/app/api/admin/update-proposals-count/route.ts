@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       results
     })
   } catch (error) {
-    console.error('Error updating proposals count:', error)
+    //console.error('Error updating proposals count:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update proposals count' },
       { status: 500 }

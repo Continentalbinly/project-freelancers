@@ -52,7 +52,7 @@ export default function RecentActivity({ user }: any) {
 
       setActivities(list.slice(0, 6));
     } catch (err) {
-      console.error("Error fetching activity:", err);
+      //console.error("Error fetching activity:", err);
     } finally {
       setLoading(false);
     }

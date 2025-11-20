@@ -43,7 +43,7 @@ export default function NavigationButtons({
         const snap = await getDoc(ref);
         if (snap.exists()) setCredits(snap.data().credit ?? 0);
       } catch (err) {
-        console.error("❌ Error fetching credit:", err);
+        //console.error("❌ Error fetching credit:", err);
       }
     }
     fetchCredits();

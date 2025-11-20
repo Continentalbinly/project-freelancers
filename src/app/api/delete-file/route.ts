@@ -28,7 +28,6 @@ export async function POST(req: NextRequest) {
     if (url.startsWith("/uploads/")) {
       const filePath = join(process.cwd(), "public", url);
       await unlink(filePath);
-      console.log(`🗑️ Deleted local file: ${filePath}`);
       return NextResponse.json({ success: true, storage: "local" });
     }
 
@@ -39,7 +38,6 @@ export async function POST(req: NextRequest) {
       const publicId = publicIdWithExt.split(".")[0];
 
       await cloudinary.v2.uploader.destroy(publicId);
-      console.log(`🗑️ Deleted Cloudinary file: ${publicId}`);
       return NextResponse.json({ success: true, storage: "cloudinary" });
     }
 
@@ -48,7 +46,7 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   } catch (err: any) {
-    console.error("❌ Delete failed:", err);
+    //console.error("❌ Delete failed:", err);
     return NextResponse.json(
       { success: false, error: err.message },
       { status: 500 }

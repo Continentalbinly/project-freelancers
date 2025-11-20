@@ -101,7 +101,7 @@ export default function TopupPage() {
       setTransactionId(txnId);
       alert(t("topup.confirmation.success"));
     } catch (err) {
-      console.error(err);
+      //console.error(err);
       alert(t("topup.confirmation.failed"));
     } finally {
       setIsSubmitting(false);
