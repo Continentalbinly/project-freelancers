@@ -4,7 +4,12 @@ import ProjectCard from "./ProjectCard";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-export default function ManageProjectsList({ projects, filters, t }: any) {
+export default function ManageProjectsList({
+  projects,
+  filters,
+  t,
+  onProjectDeleted,
+}: any) {
   const filtered = projects.filter((p: any) => {
     const matchStatus = filters.status === "all" || p.status === filters.status;
     const matchCat =
@@ -26,6 +31,7 @@ export default function ManageProjectsList({ projects, filters, t }: any) {
             ? t("manageProjects.noProjectsYet")
             : t("manageProjects.noProjectsMatch")}
         </p>
+
         {projects.length === 0 && (
           <Link href="/projects/create" className="btn btn-primary">
             <PlusIcon className="w-5 h-5 mr-2" />
@@ -39,7 +45,12 @@ export default function ManageProjectsList({ projects, filters, t }: any) {
   return (
     <div className="space-y-6">
       {filtered.map((project: any) => (
-        <ProjectCard key={project.id} project={project} t={t} />
+        <ProjectCard
+          key={project.id}
+          project={project}
+          t={t}
+          onProjectDeleted={onProjectDeleted}
+        />
       ))}
     </div>
   );

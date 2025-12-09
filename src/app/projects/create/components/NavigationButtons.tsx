@@ -16,7 +16,9 @@ interface NavProps {
   prevStep: () => void;
   handleSubmit: (e: React.FormEvent) => void;
   t: (key: string) => string;
-  projectBudget: number; // 👈 passed directly from parent
+
+  // NEW — only posting fee is required for project posting
+  postingFee: number;
 }
 
 export default function NavigationButtons({
@@ -28,39 +30,46 @@ export default function NavigationButtons({
   prevStep,
   handleSubmit,
   t,
-  projectBudget,
+  postingFee,
 }: NavProps) {
   const { user } = useAuth();
   const [credits, setCredits] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
 
-  // Fetch user's credit from profile
+  // Load user credit balance
   useEffect(() => {
     async function fetchCredits() {
       if (!user) return;
+
       try {
         const ref = doc(db, "profiles", user.uid);
         const snap = await getDoc(ref);
-        if (snap.exists()) setCredits(snap.data().credit ?? 0);
+        if (snap.exists()) {
+          setCredits(snap.data().credit ?? 0);
+        }
       } catch (err) {
-        //console.error("❌ Error fetching credit:", err);
+        console.log("❌ Error fetching credits:", err);
       }
     }
+
     fetchCredits();
   }, [user]);
 
-  // 🪙 Handle submit check
+  // Final submit → check posting fee only
   const handleFinalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (credits < Number(projectBudget)) {
+
+    if (credits < postingFee) {
       setShowModal(true);
       return;
     }
+
     handleSubmit(e);
   };
 
   return (
     <div className="flex justify-between pt-6 border-t border-border mt-6 relative">
+      {/* PREVIOUS BUTTON */}
       <button
         type="button"
         onClick={prevStep}
@@ -71,6 +80,7 @@ export default function NavigationButtons({
         {t("createProject.previous")}
       </button>
 
+      {/* NEXT or SUBMIT */}
       {currentStep < stepsLength ? (
         <button
           type="button"
@@ -89,18 +99,18 @@ export default function NavigationButtons({
           className="btn btn-primary disabled:opacity-50"
         >
           {loading
-            ? t("createProject.creating") || "Creating..."
-            : t("createProject.createProject") || "Create Project"}
+            ? t("createProject.creating")
+            : t("createProject.createProject")}
         </button>
       )}
 
-      {/* ⚠️ Credit Warning Modal */}
+      {/* CREDIT WARNING MODAL */}
       <CreditWarningModal
         show={showModal}
         onClose={() => setShowModal(false)}
         t={t}
         userCredits={credits}
-        projectBudget={projectBudget}
+        postingFee={postingFee}
       />
     </div>
   );

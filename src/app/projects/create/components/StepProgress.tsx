@@ -87,16 +87,6 @@ export default function StepProgress({
           );
         })}
       </div>
-
-      {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gray-200 rounded-b-lg overflow-hidden">
-        <div
-          className="h-full bg-primary transition-all duration-500 ease-in-out"
-          style={{
-            width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
-          }}
-        />
-      </div>
     </div>
   );
 }

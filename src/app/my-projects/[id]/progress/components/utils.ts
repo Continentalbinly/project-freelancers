@@ -1,26 +1,40 @@
-// ✅ Define allowed statuses as a literal tuple
+// ================================
+// PROJECT STATUS DEFINITIONS
+// ================================
+
+// ✅ Step order for project flow
 export const statusSteps = [
   "open",
   "in_progress",
   "in_review",
+  "payout_project", // ⭐ NEW
   "completed",
 ] as const;
 
-// ✅ Derive the literal union type from the tuple
+// => Creates: "open" | "in_progress" | "in_review" | "payout_project" | "completed"
 export type ProjectStatus = (typeof statusSteps)[number];
 
-// ✅ Define allowed user roles
+// ================================
+// USER ROLES
+// ================================
 export type UserRole = "freelancer" | "client" | null;
 
-// ✅ Status color mapping — strongly typed
+// ================================
+// STATUS COLORS (Used in badges/UI)
+// ================================
 export const statusColors: Record<ProjectStatus, string> = {
   open: "bg-yellow-100 text-yellow-700",
   in_progress: "bg-blue-100 text-blue-700",
   in_review: "bg-purple-100 text-purple-700",
+
+  payout_project: "bg-orange-100 text-orange-700", // ⭐ NEW STEP COLOR
+
   completed: "bg-green-100 text-green-700",
 };
 
-// ✅ EN–LO translation map
+// ================================
+// STATUS LABELS (EN / LO)
+// ================================
 export const statusLabels: Record<ProjectStatus, { en: string; lo: string }> = {
   open: {
     en: "Open",
@@ -34,13 +48,21 @@ export const statusLabels: Record<ProjectStatus, { en: string; lo: string }> = {
     en: "In Review",
     lo: "ກຳລັງກວດສອບ",
   },
+
+  payout_project: {
+    en: "Awaiting Payment",
+    lo: "ກຳລັງລໍຖ້າການຊຳລະ", // ⭐ NEW
+  },
+
   completed: {
     en: "Completed",
     lo: "ສຳເລັດແລ້ວ",
   },
 };
 
-// ✅ Helper to get localized label
+// ================================
+// HELPER — GET LABEL BASED ON LANGUAGE
+// ================================
 export function getStatusLabel(
   status: ProjectStatus,
   lang: "en" | "lo" = "en"
@@ -48,10 +70,14 @@ export function getStatusLabel(
   return statusLabels[status]?.[lang] ?? status;
 }
 
-// ✅ Determine the user's role in a project
+// ================================
+// HELPER — DETERMINE USER ROLE IN A PROJECT
+// ================================
 export function getRole(project: any, userId?: string): UserRole {
   if (!userId) return null;
+
   if (project.acceptedFreelancerId === userId) return "freelancer";
   if (project.clientId === userId) return "client";
+
   return null;
 }

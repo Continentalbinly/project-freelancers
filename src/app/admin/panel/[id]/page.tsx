@@ -21,7 +21,7 @@ export default function AdminDashboardPage() {
         <AdminStatsOverview />
 
         {/* 📈 Chart Section */}
-        <section className="bg-white rounded-2xl shadow-sm border p-6">
+        <section className="bg-white rounded-2xl shadow-sm border border-border p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-800">
               Monthly Overview

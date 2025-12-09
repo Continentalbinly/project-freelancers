@@ -20,6 +20,5 @@ export default function Home() {
     );
   }
 
-  // Show user dashboard if authenticated, landing page if not
   return user ? <ProjectsPage /> : <LandingPage />;
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { XMarkIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { db } from "@/service/firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 interface SkillsTabProps {
   t: (key: string) => string;
@@ -31,7 +32,18 @@ export default function SkillsTab({
       setAdding(true);
       const currentSkills = profile.skills || [];
       if (currentSkills.includes(skill)) {
-        alert(t("profile.skillsSection.skillExists") || "Skill already added");
+        toast.warn(
+          t("profile.skillsSection.skillExists") || "Skill already added",
+          {
+            position: "top-right",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          }
+        );
         return;
       }
 
@@ -46,7 +58,18 @@ export default function SkillsTab({
       await refreshProfile();
     } catch (err) {
       //console.error("Error adding skill:", err);
-      alert(t("profile.skillsSection.addFailed") || "Failed to add skill");
+      toast.error(
+        t("profile.skillsSection.addFailed") || "Failed to add skill",
+        {
+          position: "top-right",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
+      );
     } finally {
       setAdding(false);
     }
@@ -69,8 +92,17 @@ export default function SkillsTab({
       await refreshProfile();
     } catch (err) {
       //console.error("Error removing skill:", err);
-      alert(
-        t("profile.skillsSection.removeFailed") || "Failed to remove skill"
+      toast.error(
+        t("profile.skillsSection.removeFailed") || "Failed to remove skill",
+        {
+          position: "top-right",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
       );
     }
   };

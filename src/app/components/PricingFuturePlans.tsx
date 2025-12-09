@@ -46,7 +46,15 @@ export default function PricingFuturePlans() {
             currentLanguage === "lo"
               ? "ບັນຊີຂອງທ່ານຍັງບໍ່ສົມບູນ, ກະລຸນາລົງທະບຽນໃຫ້ສົມບູນ!"
               : "Your account setup is incomplete. Please complete your registration!",
-            { position: "top-right", autoClose: 4000, theme: "colored" }
+            {
+              position: "top-right",
+              autoClose: 2500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "colored",
+            }
           );
 
           setTimeout(() => router.push("/complete-profile"), 2000);
@@ -76,7 +84,15 @@ export default function PricingFuturePlans() {
           currentLanguage === "lo"
             ? "ມີບັນຫາໃນການກວດສອບບັນຊີ."
             : "Error verifying account. Please try again later.",
-          { position: "top-right", autoClose: 3000, theme: "colored" }
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          }
         );
       } finally {
         setInitializing(false);
@@ -103,7 +119,15 @@ export default function PricingFuturePlans() {
         currentLanguage === "lo"
           ? "ບັນຊີຂອງທ່ານຍັງບໍ່ມີໃນຖານຂໍ້ມູນ."
           : "Your account profile is missing in database!",
-        { position: "top-right", autoClose: 3000, theme: "colored" }
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
       );
       return;
     }

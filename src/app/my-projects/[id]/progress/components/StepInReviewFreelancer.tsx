@@ -7,6 +7,7 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/service/firebase";
 import ConfirmModal from "@/app/components/ConfirmModal";
+import { toast } from "react-toastify";
 
 // ✅ Define shape of changeRequest documents
 interface ChangeRequest {
@@ -58,7 +59,15 @@ export default function StepInReviewFreelancer({ project }: { project: any }) {
         prev.filter((req) => req.id !== selectedRequest.id)
       );
       setShowAcceptModal(false);
-      alert("✅ Change request accepted — project moved to in progress.");
+      toast.success("Change request accepted — project moved to in progress.", {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } finally {
       setLoading(false);
     }
@@ -67,7 +76,15 @@ export default function StepInReviewFreelancer({ project }: { project: any }) {
   // 🔹 Reject
   const handleReject = async () => {
     if (!rejectReason.trim()) {
-      alert("Please provide a rejection reason.");
+      toast.warn("Please provide a rejection reason.", {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
       return;
     }
     if (!selectedRequest) return;
@@ -84,7 +101,15 @@ export default function StepInReviewFreelancer({ project }: { project: any }) {
       );
       setShowRejectModal(false);
       setRejectReason("");
-      alert("🚫 Change request rejected.");
+      toast.error("🚫 Change request rejected.", {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } finally {
       setLoading(false);
     }

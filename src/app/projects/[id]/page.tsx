@@ -25,6 +25,8 @@ import ProjectSidebar from "./components/ProjectSidebar";
 import ProjectActions from "./components/ProjectActions";
 import CompletionStatus from "./components/CompletionStatus";
 import ProjectImage from "@/app/utils/projectImageHandler";
+import router from "next/router";
+import { ChevronLeftIcon } from "lucide-react";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
@@ -128,7 +130,7 @@ export default function ProjectDetailPage() {
   // ✅ Page layout
   return (
     <div className="bg-background min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
           <ProjectImage
@@ -161,19 +163,6 @@ export default function ProjectDetailPage() {
           <div className="flex flex-col space-y-6 lg:sticky lg:top-[100px] self-start">
             <ProjectSidebar project={project} t={t} />
             <ProjectActions project={project} user={user} t={t} />
-            {/* <CompletionStatus
-              project={project}
-              t={t}
-              formatDate={(d: Date) =>
-                new Intl.DateTimeFormat("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }).format(d)
-              }
-            /> */}
           </div>
         </div>
       </div>

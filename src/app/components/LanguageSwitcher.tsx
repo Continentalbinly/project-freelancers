@@ -57,7 +57,7 @@ export default function LanguageSwitcher() {
       {/* 🌐 Circle flag button */}
       <button
         onClick={() => setIsOpen((p) => !p)}
-        className="w-9 h-9 rounded-full overflow-hidden border border-border shadow-sm hover:shadow-md transition-all flex items-center justify-center p-0 bg-transparent"
+        className="w-9 h-9 rounded-full overflow-hidden border border-border shadow-sm hover:shadow-md transition-all flex items-center justify-center p-0 bg-transparent cursor-pointer"
       >
         <img
           src={getFlagImage(currentLanguage)}

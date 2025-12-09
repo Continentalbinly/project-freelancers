@@ -110,6 +110,10 @@ export default function StepInProgress({
       toast.error(t("myProjects.stepper.step2.uploadError"), {
         position: "top-right",
         autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
         theme: "colored",
       });
     } finally {
@@ -136,6 +140,10 @@ export default function StepInProgress({
       toast.error(t("myProjects.stepper.step2.uploadError"), {
         position: "top-right",
         autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
         theme: "colored",
       });
     } finally {
@@ -147,7 +155,7 @@ export default function StepInProgress({
   /** 🔹 Submit previews + originals */
   const handleSubmit = async () => {
     if (!previewFiles.length || !originalFiles.length) {
-      toast.warning("⚠️ Please upload both preview and original files first.", {
+      toast.warn("⚠️ Please upload both preview and original files first.", {
         position: "top-right",
         autoClose: 2500,
         theme: "colored",
@@ -192,6 +200,10 @@ export default function StepInProgress({
       toast.success(t("myProjects.stepper.step2.uploadSuccess"), {
         position: "top-right",
         autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
         theme: "colored",
       });
       window.location.reload();
@@ -199,6 +211,10 @@ export default function StepInProgress({
       toast.error(t("myProjects.stepper.step2.uploadError"), {
         position: "top-right",
         autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
         theme: "colored",
       });
     } finally {

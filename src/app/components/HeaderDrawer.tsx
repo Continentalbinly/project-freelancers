@@ -31,11 +31,12 @@ export default function HeaderDrawer({
 }: any) {
   const { user, profile } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
+  const [openFinance, setOpenFinance] = useState(false);
   const [liveCredit, setLiveCredit] = useState<number | null>(
     profile?.credit || 0
   );
 
-  /** ✅ Realtime listener for credit updates */
+  /** Realtime credit listener */
   useEffect(() => {
     if (!user?.uid) return;
 
@@ -46,16 +47,16 @@ export default function HeaderDrawer({
       }
     });
 
-    return () => unsub(); // cleanup listener
+    return () => unsub();
   }, [user?.uid]);
 
-  /** ✅ Handle logout */
+  /** Logout handler */
   const handleLogout = async () => {
     await logoutUser();
     window.location.href = "/";
   };
 
-  /** 🧩 Role check — true if user has "admin" in userRoles */
+  /** Admin role check */
   const isAdmin =
     (Array.isArray(profile?.userRoles) &&
       profile.userRoles
@@ -64,7 +65,7 @@ export default function HeaderDrawer({
     (Array.isArray(profile?.userType) &&
       profile.userType.map((r: string) => r.toLowerCase()).includes("admin"));
 
-  // ✅ Detect screen width
+  /** Detect mobile width */
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
     checkScreen();
@@ -86,7 +87,7 @@ export default function HeaderDrawer({
 
   const navLinks = user ? loggedInLinks : guestLinks;
 
-  /** ✅ Role Detection for Access Control (client/admin only) */
+  /** Role check */
   const roles = Array.isArray(profile?.userRoles)
     ? profile.userRoles.map((r: string) => r.toLowerCase())
     : [];
@@ -99,6 +100,7 @@ export default function HeaderDrawer({
     roles.includes("client") ||
     types.includes("client") ||
     category.includes("client");
+
   const canManageProjects = isClient || isAdmin;
 
   return (
@@ -142,18 +144,18 @@ export default function HeaderDrawer({
                 <LanguageSwitcher />
                 <button
                   onClick={() => setIsDrawerOpen(false)}
-                  className="p-2 rounded-md hover:bg-background-secondary transition"
+                  className="p-2 rounded-md hover:bg-background-secondary transition cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* ✅ Scrollable content area */}
+            {/* Nav scrollable area */}
             <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-2 pb-24">
               {user ? (
                 <>
-                  {/* 👤 Profile Section + Credit + TopUp */}
+                  {/* Profile section */}
                   <div className="flex flex-col gap-3 px-4 py-3 border border-border rounded-lg mb-4 bg-background-secondary/40">
                     <div className="flex items-center gap-3">
                       <Avatar {...getAvatarProps(profile, user)} size="sm" />
@@ -167,24 +169,14 @@ export default function HeaderDrawer({
                       </div>
                     </div>
 
-                    {/* 💰 Live Credit + Top Up */}
+                    {/* Credit */}
                     <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-border">
                       <span className="text-sm text-text-secondary">
                         {t("header.balance")}:{" "}
                         <span className="text-primary font-semibold">
-                          ₭{" "}
-                          {liveCredit !== null
-                            ? liveCredit.toLocaleString()
-                            : "0"}
+                          {liveCredit?.toLocaleString() ?? "0"}
                         </span>
                       </span>
-                      <Link
-                        href="/topup"
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="text-sm font-medium text-primary hover:underline"
-                      >
-                        {t("header.topUp")}
-                      </Link>
                     </div>
 
                     {/* Admin Panel */}
@@ -202,7 +194,7 @@ export default function HeaderDrawer({
                     )}
                   </div>
 
-                  {/* Navigation Links */}
+                  {/* General navigation */}
                   {navLinks.map(({ href, label, icon: Icon }) => (
                     <Link
                       key={href}
@@ -215,17 +207,74 @@ export default function HeaderDrawer({
                     </Link>
                   ))}
 
-                  <Link
-                    href="/withdraw"
-                    onClick={() => setIsDrawerOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 text-text-primary hover:text-primary transition-all"
-                  >
-                    <BanknoteArrowDown className="w-5 h-5" />
-                    <span className="text-sm font-medium">
-                      {t("header.withdraw")}
-                    </span>
-                  </Link>
+                  {/* ---------------------- FINANCE ACCORDION ---------------------- */}
+                  {isMobile && (
+                    <div className="px-2 pt-3">
+                      <button
+                        onClick={() => setOpenFinance(!openFinance)}
+                        className="flex cursor-pointer items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-lg hover:bg-primary/10 text-text-primary"
+                      >
+                        <div className="flex items-center gap-3">
+                          <BanknoteArrowDown className="w-5 h-5" />
+                          {t("header.finance")}
+                        </div>
 
+                        <svg
+                          className={`w-4 h-4 transition-transform ${
+                            openFinance ? "rotate-180" : ""
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeWidth={2}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+
+                      {openFinance && (
+                        <div className="mt-2 ml-10 flex flex-col gap-1">
+                          <Link
+                            href="/transactions"
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="text-sm px-2 py-2 rounded-lg hover:bg-primary/10 text-text-primary"
+                          >
+                            {t("header.transactions")}
+                          </Link>
+
+                          <Link
+                            href="/topup"
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="text-sm px-2 py-2 rounded-lg hover:bg-primary/10 text-text-primary"
+                          >
+                            {t("header.topUp")}
+                          </Link>
+
+                          <Link
+                            href="/withdraw"
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="text-sm px-2 py-2 rounded-lg hover:bg-primary/10 text-text-primary"
+                          >
+                            {t("header.withdraw")}
+                          </Link>
+
+                          <Link
+                            href="/pricing"
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="text-sm px-2 py-2 rounded-lg hover:bg-primary/10 text-text-primary"
+                          >
+                            {t("header.subscription")}
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Project Management */}
                   {canManageProjects && (
                     <Link
                       href="/projects/manage"
@@ -239,6 +288,7 @@ export default function HeaderDrawer({
                     </Link>
                   )}
 
+                  {/* Dashboard */}
                   <Link
                     href="/dashboard"
                     onClick={() => setIsDrawerOpen(false)}
@@ -250,6 +300,7 @@ export default function HeaderDrawer({
                     </span>
                   </Link>
 
+                  {/* Settings */}
                   <Link
                     href="/settings"
                     onClick={() => setIsDrawerOpen(false)}
@@ -263,10 +314,10 @@ export default function HeaderDrawer({
 
                   <hr className="my-3 border-border" />
 
-                  {/* 🚪 Logout */}
+                  {/* Logout */}
                   <button
                     onClick={handleLogout}
-                    className="flex cursor-pointer items-center gap-3 px-4 py-2 w-full text-left rounded-lg text-error hover:bg-error/10 transition-all"
+                    className="flex items-center gap-3 px-4 py-2 w-full cursor-pointer text-left rounded-lg text-error hover:bg-error/10 transition-all"
                   >
                     <LogOut className="w-5 h-5" />
                     <span className="text-sm font-semibold">
@@ -276,7 +327,6 @@ export default function HeaderDrawer({
                 </>
               ) : (
                 <>
-                  {/* Guest Links */}
                   {navLinks.map(({ href, label, icon: Icon }) => (
                     <Link
                       key={href}

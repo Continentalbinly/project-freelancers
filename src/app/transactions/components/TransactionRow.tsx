@@ -1,163 +1,92 @@
 "use client";
 
-import {
-  CreditCard,
-  Package,
-  Hash,
-  Banknote,
-  RefreshCcw,
-  BanknoteArrowDown,
-  BanknoteArrowUp,
-} from "lucide-react";
-import type { Transaction } from "../page";
-import Money from "./Money";
+import { useState } from "react";
 import StatusBadge from "./StatusBadge";
+import TransactionAmount from "./TransactionAmount";
+import TransactionTypeLabel from "./TransactionTypeLabel";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
-export default function TransactionRow({
-  tx,
-  t,
-  isCard = false,
-}: {
-  tx: Transaction;
-  t: any;
-  isCard?: boolean;
-}) {
-  const renderType = () => {
-    switch (tx.type) {
-      case "topup":
-        return (
-          <>
-            <CreditCard className="w-4 h-4 text-primary" />
-            {t("transactions.types.topup")}
-          </>
-        );
-      case "escrow_hold":
-        return (
-          <>
-            <Package className="w-4 h-4 text-amber-500" />
-            {t("transactions.types.escrowHold")}
-          </>
-        );
-      case "escrow_refund":
-        return (
-          <>
-            <RefreshCcw className="w-4 h-4 text-green-600" />
-            {t("transactions.types.escrowRefund")}
-          </>
-        );
-      case "withdraw_request":
-        return (
-          <>
-            <BanknoteArrowDown className="w-4 h-4 text-red-600" />
-            {t("transactions.types.withdrawRequest")}
-          </>
-        );
-      case "subscription":
-        return (
-          <>
-            <CreditCard className="w-4 h-4 text-primary" />
-            {t("transactions.types.subscription")}
-          </>
-        );
-      case "refund":
-        return (
-          <>
-            <RefreshCcw className="w-4 h-4 text-red-600" />
-            {t("transactions.types.refund")}
-          </>
-        );
-      case "escrow_add":
-        return (
-          <>
-            <BanknoteArrowUp className="w-4 h-4 text-green-600" />
-            {t("transactions.types.escrowAdd")}
-          </>
-        );
-      case "escrow_payment":
-        return (
-          <>
-            <BanknoteArrowUp className="w-4 h-4 text-red-600" />
-            {t("transactions.types.escrowPayment")}
-          </>
-        );
-      case "escrow_release":
-        return (
-          <>
-            <BanknoteArrowDown className="w-4 h-4 text-green-600" />
-            {t("transactions.types.escrow_release")}
-          </>
-        );
-      default:
-        return (
-          <>
-            <Package className="w-4 h-4 text-primary" />
-            {tx.type}
-          </>
-        );
-    }
-  };
+export default function TransactionRow({ tx, t, isCard = false }: any) {
+  const [open, setOpen] = useState(false);
+  const lang = t("lang");
+
+  const incomeTypes = [
+    "topup",
+    "escrow_release",
+    "payout_received",
+    "posting_fee_refund",
+    "proposal_refund",
+  ];
+  const outcomeTypes = [
+    "escrow_payment",
+    "posting_fee",
+    "proposal_fee",
+    "posting_fee_adjust",
+    "withdraw_request",
+  ];
+
+  const amountColor = incomeTypes.includes(tx.type)
+    ? "text-green-600"
+    : outcomeTypes.includes(tx.type)
+    ? "text-red-600"
+    : "text-primary";
 
   if (!isCard) {
-    // === Desktop Row ===
     return (
-      <tr className="hover:bg-gray-50 transition-all duration-150">
-        <td className="px-5 py-3 flex items-center gap-2 font-medium text-text-primary capitalize">
-          {renderType()}
+      <tr className="hover:bg-gray-50 transition">
+        <td className="px-5 py-3 flex items-center gap-2">
+          <TransactionTypeLabel tx={tx} t={t} />
         </td>
-        <td className="px-5 py-3 font-medium text-primary">
-          <Money amount={tx.amount} />
+
+        <td className={`px-5 py-3 font-semibold ${amountColor}`}>
+          <TransactionAmount tx={tx} t={t} lang={lang} />
         </td>
-        <td className="px-5 py-3 text-text-secondary flex items-center gap-1">
-          <Banknote className="w-3.5 h-3.5 text-primary/80" />
-          {tx.paymentMethod || "—"}
-        </td>
+
+        <td className="px-5 py-3 text-gray-500">{tx.paymentMethod || "—"}</td>
+
         <td className="px-5 py-3">
           <StatusBadge status={tx.status} t={t} />
         </td>
-        <td className="px-5 py-3 text-text-secondary text-sm">
-          {tx.createdAt
-            ? new Date(tx.createdAt.toDate()).toLocaleString()
-            : "—"}
-        </td>
-        <td className="px-5 py-3 text-xs text-text-secondary font-mono flex items-center gap-1">
-          <Hash className="w-3.5 h-3.5 text-primary/70" />
+
+        <td className="px-5 py-3 font-mono text-xs">
           {tx.transactionId || tx.id}
         </td>
       </tr>
     );
   }
 
-  // === Mobile Card ===
   return (
-    <div className="bg-white border border-border rounded-xl shadow-sm p-4 flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 font-medium text-text-primary capitalize">
-          {renderType()}
+    <div className="bg-white border border-border rounded-xl shadow-sm p-4">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <TransactionTypeLabel tx={tx} t={t} />
         </div>
-        <div className="font-semibold text-primary">
-          <Money amount={tx.amount} />
-        </div>
+
+        <button onClick={() => setOpen(!open)}>
+          {open ? (
+            <ChevronUp className="w-5 h-5" />
+          ) : (
+            <ChevronDown className="w-5 h-5" />
+          )}
+        </button>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-text-secondary">
-        <span className="flex items-center gap-1">
-          <Banknote className="w-3.5 h-3.5 text-primary/80" />
-          {tx.paymentMethod || "—"}
-        </span>
-        <StatusBadge status={tx.status} t={t} />
+      <div className={`mt-2 font-semibold ${amountColor}`}>
+        <TransactionAmount tx={tx} t={t} lang={lang} />
       </div>
 
-      <div className="flex flex-col text-xs text-text-secondary mt-2">
-        <span>
-          {tx.createdAt
-            ? new Date(tx.createdAt.toDate()).toLocaleString()
-            : "—"}
-        </span>
-        <div className="flex items-center gap-1 font-mono mt-1 text-[11px] text-primary/70 break-all">
-          <Hash className="w-3 h-3" />
-          {tx.transactionId || tx.id}
+      <StatusBadge status={tx.status} t={t} />
+
+      {open && (
+        <div className="mt-3 text-xs text-gray-600 space-y-1">
+          <p>
+            {t("transactions.columns.method")}: {tx.paymentMethod || "—"}
+          </p>
+          <p>
+            {t("transactions.columns.id")}: {tx.transactionId || tx.id}
+          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 interface TaskCardProps {
   step: any;
@@ -78,7 +79,17 @@ export default function TaskCard({
             Mark as Done
           </button>
           <button
-            onClick={() => alert("Upload proof feature coming soon!")}
+            onClick={() =>
+              toast.warn("Upload proof feature coming soon!", {
+                position: "top-right",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+              })
+            }
             className="px-4 py-2 text-sm bg-gray-100 border rounded-lg hover:bg-gray-200 transition"
           >
             Upload Proof
@@ -96,7 +107,17 @@ export default function TaskCard({
             Approve
           </button>
           <button
-            onClick={() => alert("Request changes coming soon!")}
+            onClick={() =>
+              toast.warn("Request changes coming soon!", {
+                position: "top-right",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+              })
+            }
             className="px-4 py-2 text-sm bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
           >
             Request Changes

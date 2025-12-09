@@ -103,7 +103,6 @@ export default function ProposalDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <ProposalHeader router={router} t={t} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <ProposalMain

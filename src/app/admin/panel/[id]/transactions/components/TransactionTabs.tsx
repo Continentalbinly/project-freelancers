@@ -22,7 +22,7 @@ export default function TransactionTabs({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 pt-10">
+    <div className="max-w-8xl mx-auto px-6 pt-10">
       <div className="flex gap-3 border-b border-gray-200">
         {tabs.map((t) => (
           <button

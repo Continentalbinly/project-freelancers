@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+
 import {
   collection,
   query,
@@ -16,11 +17,15 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore";
+
 import { db } from "@/service/firebase";
+
 import TransactionTabs from "./components/TransactionTabs";
 import TransactionTable from "./components/TransactionTable";
 import GlobalStatus from "../../../../components/GlobalStatus";
 import TransactionHeader from "./components/TransactionHeader";
+
+import { toast } from "react-toastify";
 
 export interface Transaction {
   id: string;
@@ -43,11 +48,13 @@ export interface Transaction {
   newTotal?: number;
   approvedBy?: string;
   rejectedBy?: string;
+  credits?: number; // Credits a user gets (🔥 important)
 }
 
 export interface UserProfile {
   fullName?: string;
   email?: string;
+  avatarUrl?: string;
 }
 
 export default function AdminTransactionsPage() {
@@ -64,13 +71,17 @@ export default function AdminTransactionsPage() {
   );
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
-  // ✅ Check admin role
+  // -------------------------------------------------------
+  // 🔐 CHECK ADMIN ROLE
+  // -------------------------------------------------------
   useEffect(() => {
     async function checkRole() {
       if (!user?.uid) return setIsAdmin(false);
+
       const ref = doc(db, "profiles", user.uid);
       const snap = await getDoc(ref);
       const data = snap.data();
+
       const type = data?.userType;
       if (Array.isArray(type)) setIsAdmin(type.includes("admin"));
       else setIsAdmin(type === "admin");
@@ -78,15 +89,38 @@ export default function AdminTransactionsPage() {
     checkRole();
   }, [user]);
 
-  // 🔹 Fetch transactions (real-time) based on statusParam
+  // -------------------------------------------------------
+  // 🔥 UPDATE TOPUP SESSION STATUS
+  // -------------------------------------------------------
+  async function updateTopupSession(
+    tx: Transaction,
+    status: "approved" | "rejected"
+  ) {
+    if (!tx.transactionId) return; // Only for QR top-ups
+
+    const ref = doc(db, "topupSessions", tx.transactionId);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return;
+
+    await updateDoc(ref, {
+      status,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  // -------------------------------------------------------
+  // 🔄 FETCH TRANSACTIONS REAL-TIME
+  // -------------------------------------------------------
   useEffect(() => {
     if (!isAdmin) return;
+
     if (!["pending", "confirmed", "rejected", "all"].includes(statusParam)) {
       router.replace(`/admin/panel/${params.id}/transactions?status=pending`);
       return;
     }
 
     const baseQuery = collection(db, "transactions");
+
     const q =
       statusParam === "all"
         ? query(baseQuery, orderBy("createdAt", "desc"))
@@ -102,7 +136,7 @@ export default function AdminTransactionsPage() {
       );
       setTransactions(txs);
 
-      // Fetch user profiles for each transaction
+      // Fetch unique profiles
       const users: Record<string, UserProfile> = {};
       for (const tx of txs) {
         if (!users[tx.userId]) {
@@ -110,24 +144,36 @@ export default function AdminTransactionsPage() {
           const snap = await getDoc(ref);
           if (snap.exists()) {
             const d = snap.data();
-            users[tx.userId] = { fullName: d.fullName, email: d.email };
+            users[tx.userId] = {
+              fullName: d.fullName,
+              email: d.email,
+              avatarUrl: d.avatarUrl,
+            };
           }
         }
       }
+
       setUserProfiles(users);
     });
 
     return () => unsub();
   }, [isAdmin, statusParam, params.id, router]);
 
-  // ✅ Approve Transaction
+  // -------------------------------------------------------
+  // ✅ APPROVE TRANSACTION (FIXED LOGIC)
+  // -------------------------------------------------------
   async function handleApprove(tx: Transaction) {
-    if (!confirm(`Approve ${tx.type} of ₭${tx.amount.toLocaleString()}?`))
-      return;
+    const confirmText =
+      tx.type === "topup" && typeof tx.credits === "number"
+        ? `Approve TOP-UP: +${tx.credits} credits?`
+        : `Approve ${tx.type} of ₭${tx.amount.toLocaleString()}?`;
+
+    if (!confirm(confirmText)) return;
 
     const txRef = doc(db, "transactions", tx.id);
     const userRef = doc(db, "profiles", tx.userId);
 
+    // 🔵 Update transaction
     await updateDoc(txRef, {
       status: "confirmed",
       approvedBy: user?.uid || "admin",
@@ -135,6 +181,9 @@ export default function AdminTransactionsPage() {
       updatedAt: serverTimestamp(),
     });
 
+    // -------------------------------------------------------
+    // 🔵 Subscription Approval
+    // -------------------------------------------------------
     if (tx.type === "subscription") {
       await updateDoc(userRef, {
         plan: tx.plan || "basic",
@@ -143,17 +192,37 @@ export default function AdminTransactionsPage() {
         planEndDate: null,
         updatedAt: serverTimestamp(),
       });
-    } else if (tx.type === "topup") {
-      await updateDoc(userRef, {
-        credit: increment(tx.amount),
-        updatedAt: serverTimestamp(),
-      });
     }
 
-    alert("✅ Transaction approved successfully!");
+    // -------------------------------------------------------
+    // 🔵 FIXED: Top-Up Approval → Add CREDITS, NOT LAK
+    // -------------------------------------------------------
+    else if (tx.type === "topup") {
+      if (typeof tx.credits !== "number") {
+        toast.error(
+          "❌ This top-up has no credit value. Cannot approve automatically.",
+          { theme: "colored" }
+        );
+        return;
+      }
+
+      await updateDoc(userRef, {
+        credit: increment(tx.credits), // 🔥 Correct value
+        updatedAt: serverTimestamp(),
+      });
+
+      // Update topup session
+      await updateTopupSession(tx, "approved");
+    }
+
+    toast.success("Transaction approved successfully!", {
+      theme: "colored",
+    });
   }
 
-  // ❌ Reject Transaction (with rollback)
+  // -------------------------------------------------------
+  // ❌ REJECT TRANSACTION
+  // -------------------------------------------------------
   async function handleReject(tx: Transaction) {
     if (!confirm("Reject this transaction?")) return;
 
@@ -166,11 +235,14 @@ export default function AdminTransactionsPage() {
       updatedAt: serverTimestamp(),
     });
 
+    // Withdrawal rollback
     if (tx.type === "withdraw_request") {
       const userSnap = await getDoc(userRef);
+
       if (userSnap.exists()) {
         const data = userSnap.data();
         const updateData: any = { updatedAt: serverTimestamp() };
+
         if (
           typeof tx.previousCredit === "number" &&
           typeof tx.previousTotal === "number"
@@ -180,6 +252,7 @@ export default function AdminTransactionsPage() {
         } else {
           updateData.credit = increment(tx.amount);
         }
+
         await updateDoc(userRef, updateData);
 
         await addDoc(collection(db, "transactions"), {
@@ -196,10 +269,19 @@ export default function AdminTransactionsPage() {
       }
     }
 
-    alert("🚫 Transaction rejected and user balance restored.");
+    // Reject topup session
+    if (tx.type === "topup") {
+      await updateTopupSession(tx, "rejected");
+    }
+
+    toast.error("Transaction rejected.", {
+      theme: "colored",
+    });
   }
 
-  // 🔒 Guard states
+  // -------------------------------------------------------
+  // 🔒 GUARD STATES
+  // -------------------------------------------------------
   if (isAdmin === null)
     return <GlobalStatus type="loading" message="Checking admin access..." />;
 
@@ -211,6 +293,9 @@ export default function AdminTransactionsPage() {
       />
     );
 
+  // -------------------------------------------------------
+  // 🎨 RENDER
+  // -------------------------------------------------------
   return (
     <div className="bg-gray-50 min-h-screen">
       <TransactionHeader />

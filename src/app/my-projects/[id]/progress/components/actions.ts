@@ -125,146 +125,41 @@ export async function rejectChangeRequest(
   });
 }
 
-/** ✅ Client approves project → release escrow → create both transactions + update freelancer profile */
+/** Client approves → create transaction + move to payout step */
 export async function markCompleted(projectId: string) {
   if (!projectId) return;
 
-  // Load project
   const projectRef = doc(db, "projects", projectId);
   const projectSnap = await getDoc(projectRef);
   if (!projectSnap.exists()) throw new Error("Project not found.");
+
   const project = projectSnap.data();
 
-  const clientId = project.clientId;
-  const freelancerId = project.acceptedFreelancerId;
-  const amount = Number(project.budget) || 0;
-  const currency = project.currency || "LAK";
-
-  // 1️⃣ Find escrow
-  const escrowQuery = query(
-    collection(db, "escrows"),
-    where("projectId", "==", projectId),
-    where("status", "==", "held")
+  // 1️⃣ Call your existing payment create API
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/payment/create`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: project.payoutAmount ?? project.budget ?? 0,
+        description: `Project payout for ${project.title}`,
+        tag1: project.clientId,
+        tag2: "project_payout",
+        tag3: projectId,
+      }),
+    }
   );
-  const escrowSnap = await getDocs(escrowQuery);
 
-  if (!escrowSnap.empty) {
-    const escrowDoc = escrowSnap.docs[0];
-    const escrowId = escrowDoc.id;
-    await updateDoc(doc(db, "escrows", escrowId), {
-      status: "released",
-      freelancerId,
-      releasedAt: serverTimestamp(),
-    });
-  } else {
-    console.warn("⚠️ No escrow found for project:", projectId);
-  }
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || "QR creation failed");
 
-  // 2️⃣ Locate freelancer profile
-  let freelancerProfileRef: any = null;
-  let freelancerProfileData: any = null;
+  const txId = data.transactionId;
 
-  const profileQuery = query(
-    collection(db, "profiles"),
-    where("userId", "==", freelancerId)
-  );
-  const profileSnap = await getDocs(profileQuery);
-
-  if (!profileSnap.empty) {
-    freelancerProfileRef = doc(db, "profiles", profileSnap.docs[0].id);
-    freelancerProfileData = profileSnap.docs[0].data();
-  } else {
-    // fallback: use document ID as freelancerId
-    const directProfileRef = doc(db, "profiles", freelancerId);
-    const directProfileSnap = await getDoc(directProfileRef);
-    if (directProfileSnap.exists()) {
-      freelancerProfileRef = directProfileRef;
-      freelancerProfileData = directProfileSnap.data();
-    } else {
-    }
-  }
-
-  // 3️⃣ Calculate balances safely
-  let previousBalance = 0;
-  let previousProjectsCompleted = 0;
-
-  if (freelancerProfileData) {
-    const rawEarned = freelancerProfileData.totalEarned;
-    const rawProjects = freelancerProfileData.projectsCompleted;
-
-    previousBalance =
-      typeof rawEarned === "string"
-        ? parseFloat(rawEarned) || 0
-        : typeof rawEarned === "number"
-        ? rawEarned
-        : 0;
-
-    previousProjectsCompleted =
-      typeof rawProjects === "string"
-        ? parseFloat(rawProjects) || 0
-        : typeof rawProjects === "number"
-        ? rawProjects
-        : 0;
-  }
-
-  const newBalance = previousBalance + amount;
-  const newProjects = previousProjectsCompleted + 1;
-
-  // 4️⃣ Create transactions
-  await addDoc(collection(db, "transactions"), {
-    userId: freelancerId,
-    projectId,
-    amount,
-    currency,
-    type: "escrow_release",
-    direction: "in",
-    previousBalance,
-    newBalance,
-    description: `Received ${amount} ${currency} from project "${project.title}"`,
-    status: "completed",
-    createdAt: serverTimestamp(),
-  });
-
-  await addDoc(collection(db, "transactions"), {
-    userId: clientId,
-    projectId,
-    amount,
-    currency,
-    type: "escrow_payment",
-    direction: "out",
-    previousBalance: 0,
-    newBalance: 0,
-    description: `Paid ${amount} ${currency} for project "${project.title}"`,
-    status: "completed",
-    createdAt: serverTimestamp(),
-  });
-
-  // 5️⃣ Update freelancer profile (totalEarned + projectsCompleted)
-  if (freelancerProfileRef) {
-    const updates: Record<string, any> = {
-      updatedAt: serverTimestamp(),
-    };
-
-    // Handle totalEarned
-    if (typeof freelancerProfileData.totalEarned === "string") {
-      updates.totalEarned = newBalance;
-    } else {
-      updates.totalEarned = increment(amount);
-    }
-
-    // Handle projectsCompleted
-    if (typeof freelancerProfileData.projectsCompleted === "string") {
-      updates.projectsCompleted = newProjects;
-    } else {
-      updates.projectsCompleted = increment(1);
-    }
-
-    await updateDoc(freelancerProfileRef, updates);
-  }
-
-  // 6️⃣ Mark project as completed
+  // 2️⃣ Save transactionId inside project
   await updateDoc(projectRef, {
-    status: "completed",
+    status: "payout_project",
+    transactionId: txId,
     updatedAt: serverTimestamp(),
   });
 }

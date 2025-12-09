@@ -8,18 +8,19 @@ import {
   AlertCircle,
   Lock,
   RefreshCcw,
+  TimerOff,
 } from "lucide-react";
 
 interface Props {
   status: string;
-  t?: (key: string) => string; // optional translation
+  t?: (key: string) => string;
 }
 
 export default function StatusBadge({ status, t }: Props) {
   const normalize = status?.toLowerCase?.() || "";
 
   switch (normalize) {
-    /** ✅ SUCCESS / COMPLETED STATES **/
+    /** ✅ SUCCESS / COMPLETED **/
     case "confirmed":
     case "completed":
     case "released":
@@ -31,7 +32,7 @@ export default function StatusBadge({ status, t }: Props) {
         </span>
       );
 
-    /** 🕒 PENDING STATES **/
+    /** 🕒 PENDING **/
     case "pending":
     case "processing":
       return (
@@ -41,16 +42,16 @@ export default function StatusBadge({ status, t }: Props) {
         </span>
       );
 
-    /** 🔒 HELD IN ESCROW **/
+    /** 🔒 ESCROW HOLD **/
     case "held":
       return (
         <span className="inline-flex items-center gap-1 text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full text-xs font-medium">
           <Lock className="w-3.5 h-3.5" />
-          {t ? t("transactions.status.held") : "Held in Escrow"}
+          {t ? t("transactions.status.held") : "Held"}
         </span>
       );
 
-    /** ⏸️ PAUSED / ON HOLD **/
+    /** ⏸️ PAUSED **/
     case "paused":
     case "on_hold":
       return (
@@ -60,7 +61,7 @@ export default function StatusBadge({ status, t }: Props) {
         </span>
       );
 
-    /** 🔁 REFUND / DISPUTE **/
+    /** 🔁 REFUNDED **/
     case "refunded":
     case "escrow_refund":
     case "disputed":
@@ -71,7 +72,7 @@ export default function StatusBadge({ status, t }: Props) {
         </span>
       );
 
-    /** ❌ FAILED / CANCELLED **/
+    /** ❌ FAILED **/
     case "failed":
     case "cancelled":
     case "rejected":
@@ -83,7 +84,16 @@ export default function StatusBadge({ status, t }: Props) {
         </span>
       );
 
-    /** 🟣 DISPUTE WARNING (optional special case) **/
+    /** ⏳ EXPIRED — FIX ADDED HERE! **/
+    case "expired":
+      return (
+        <span className="inline-flex items-center gap-1 text-gray-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full text-xs font-medium">
+          <TimerOff className="w-3.5 h-3.5" />
+          {t ? t("transactions.status.expired") : "Expired"}
+        </span>
+      );
+
+    /** 🟣 DISPUTE WARNING **/
     case "dispute_open":
       return (
         <span className="inline-flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full text-xs font-medium">
@@ -92,7 +102,7 @@ export default function StatusBadge({ status, t }: Props) {
         </span>
       );
 
-    /** DEFAULT (FALLBACK) **/
+    /** DEFAULT **/
     default:
       return (
         <span className="inline-flex items-center gap-1 text-gray-700 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-full text-xs font-medium">

@@ -7,7 +7,6 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 export default function ProjectSidebar({ project, t }: any) {
   const { currentLanguage } = useTranslationContext();
 
-  // ✅ Handle both string & object categories safely
   const categoryName =
     typeof project.category === "object"
       ? currentLanguage === "lo"
@@ -28,17 +27,14 @@ export default function ProjectSidebar({ project, t }: any) {
         border border-border
         p-6
         lg:sticky
-        lg:top-[100px]     /* 👈 about under navbar (adjust to your header height) */
-        self-start         /* prevents full height stretch in grid layout */
-        transition-all
-        duration-300
+        lg:top-[100px]
+        self-start
       "
     >
       <h2 className="text-xl font-semibold text-text-primary mb-4">
         {t("proposePage.projectDetails")}
       </h2>
 
-      {/* Project Info */}
       <div className="space-y-4">
         {/* Title + Description */}
         <div>
@@ -77,10 +73,12 @@ export default function ProjectSidebar({ project, t }: any) {
               {formatEarnings(project.budget)}
             </span>
           </div>
+
           <div className="flex justify-between">
             <span>{t("proposePage.type")}:</span>
             <span className="font-medium capitalize">{project.budgetType}</span>
           </div>
+
           <div className="flex justify-between">
             <span>{t("proposePage.category")}:</span>
             <span className="font-medium truncate">{categoryName}</span>
@@ -105,6 +103,21 @@ export default function ProjectSidebar({ project, t }: any) {
             </div>
           </div>
         )}
+
+        {/* 🔥 Proposal Fee Requirement */}
+        <div className="border-t border-border pt-4 mt-4">
+          <h4 className="font-medium text-text-primary mb-1">
+            {t("proposePage.applicationFee")}
+          </h4>
+
+          <p className="text-sm text-text-secondary">
+            {t("proposePage.thisProjectRequires")}{" "}
+            <span className="font-semibold text-primary">
+              {project.postingFee}
+            </span>{" "}
+            {t("proposePage.creditsToApply")}
+          </p>
+        </div>
       </div>
     </aside>
   );

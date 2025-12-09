@@ -133,7 +133,7 @@ export default function ProjectsFilters({
               value={filters.category}
               onChange={(e) => update("category", e.target.value)}
               disabled={loading}
-              className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+              className="px-3 py-2.5 border border-gray-300 rounded-lg cursor-pointer bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
             >
               <option value="all">{t("projects.filters.allCategories")}</option>
               {categories.map((cat) => (
@@ -149,7 +149,7 @@ export default function ProjectsFilters({
             <select
               value={filters.status}
               onChange={(e) => update("status", e.target.value)}
-              className="px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+              className="px-3 py-2.5 border border-gray-300 rounded-lg cursor-pointer bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
             >
               <option value="all">{t("projects.filters.allStatus")}</option>
               <option value="open">{t("projects.statuses.open")}</option>
@@ -164,7 +164,7 @@ export default function ProjectsFilters({
             {/* Reset */}
             <button
               onClick={onReset || reset}
-              className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
+              className="px-4 py-2 text-sm font-medium rounded-lg border cursor-pointer border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
             >
               {t("projects.search.clearFilters")}
             </button>

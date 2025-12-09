@@ -1,0 +1,24 @@
+{
+  "title": "Top Up Balance",
+  "subtitle": "Choose a package or enter a custom amount.",
+
+  "sessionExpired": "Session Expired",
+  "sessionExpiredTip": "Your top-up session expired because no payment was made in time.",
+  "expiredFooter": "You can start again anytime.",
+  "backToSelect": "Back to Select Amount",
+
+  "stepSelect": "Select Amount",
+  "stepPayment": "Scan & Pay",
+  "stepPending": "Waiting for Approval",
+
+  "scanQR": "Scan the QR Code",
+  "qrNote": "After scanning, confirm your payment.",
+
+  "enterAmount": "Enter custom amount",
+  "continue": "Continue",
+  "iPaid": "I Have Paid",
+
+  "waitingApproval": "Waiting for Approval",
+  "transactionId": "Transaction ID",
+  "pendingNote": "Your payment is being reviewed. We will credit your balance once confirmed."
+}
