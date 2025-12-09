@@ -3,21 +3,16 @@
 import { useState } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
-interface WithdrawFormProps {
-  user: any;
-  profile: any;
-}
-
-export default function WithdrawForm({ user, profile }: WithdrawFormProps) {
+export default function WithdrawForm({ user, profile }: any) {
   const { t } = useTranslationContext();
   const [accountName, setAccountName] = useState(profile.fullName || "");
   const [accountNumber, setAccountNumber] = useState("");
   const [amount, setAmount] = useState("");
   const [source, setSource] = useState("credit");
   const [loading, setLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [showConfirm, setShowConfirm] = useState(false);
 
   const credit = profile.credit || 0;
   const totalEarned = profile.totalEarned || 0;
@@ -28,43 +23,43 @@ export default function WithdrawForm({ user, profile }: WithdrawFormProps) {
   const feeAmount = Number(amount) * feePercent;
   const netAmount = Number(amount) - feeAmount;
 
-  // 🧮 Validation
   const validateAmount = (): boolean => {
     const amt = Number(amount);
     if (amt <= 0 || isNaN(amt)) {
       setError(t("withdraw.errors.invalidAmount"));
       return false;
     }
-
     if (source === "credit" && amt > credit) {
       setError(t("withdraw.errors.insufficientCredit"));
       return false;
     }
-
     if (source === "totalEarned" && amt > totalEarned) {
       setError(t("withdraw.errors.insufficientTotalEarned"));
       return false;
     }
-
     if (source === "all" && amt > totalBalance) {
       setError(t("withdraw.errors.insufficientBalance"));
       return false;
     }
-
     setError("");
     return true;
   };
 
-  const handleWithdraw = (e: React.FormEvent) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     if (!validateAmount()) return;
     setShowConfirm(true);
   };
 
+  const handleWithdrawAll = () => {
+    if (source === "credit") setAmount(String(credit));
+    else if (source === "totalEarned") setAmount(String(totalEarned));
+    else setAmount(String(totalBalance));
+  };
+
   const confirmWithdraw = async () => {
     setLoading(true);
     setShowConfirm(false);
-    setMessage("");
 
     try {
       const res = await fetch("/api/requestWithdraw", {
@@ -82,90 +77,65 @@ export default function WithdrawForm({ user, profile }: WithdrawFormProps) {
       });
 
       const data = await res.json();
+
       if (data.success) {
-        setMessage(t("withdraw.success"));
+        setMessage("✅ " + t("withdraw.success"));
         setAmount("");
         setAccountNumber("");
       } else {
         setMessage("❌ " + (data.error || t("withdraw.errors.failed")));
       }
-    } catch (err) {
-      setMessage(t("withdraw.errors.unknown"));
+    } catch {
+      setMessage("❌ " + t("withdraw.errors.unknown"));
     } finally {
       setLoading(false);
     }
   };
 
-  // 🧩 NEW: handle "Withdraw All" button click
-  const handleWithdrawAll = () => {
-    if (source === "credit") setAmount(String(credit));
-    else if (source === "totalEarned") setAmount(String(totalEarned));
-    else if (source === "all") setAmount(String(totalBalance));
-  };
-
   return (
     <>
       <form
-        onSubmit={handleWithdraw}
-        className="bg-white border border-border rounded-xl p-4 sm:p-6 shadow-md space-y-4"
+        onSubmit={handleSubmit}
+        className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] space-y-5"
       >
-        <h2 className="font-semibold text-lg text-text-primary mb-3">
+        <h2 className="text-xl font-bold text-gray-800 tracking-wide">
           {t("withdraw.title")}
         </h2>
 
-        {/* 💰 Balance Overview */}
-        <div className="text-sm text-gray-600 mb-2">
-          <p>
-            {t("withdraw.creditBalance")}:{" "}
-            <span className="font-semibold text-primary">
-              {credit.toLocaleString()} LAK
-            </span>
-          </p>
-          <p>
-            {t("withdraw.totalEarned")}:{" "}
-            <span className="font-semibold text-secondary">
-              {totalEarned.toLocaleString()} LAK
-            </span>
-          </p>
-        </div>
-
-        {/* 🏦 Account Name */}
-        <div>
-          <label className="block text-sm font-medium mb-1 text-text-secondary">
+        {/* Floating input */}
+        <div className="relative">
+          <label className="text-gray-500 text-xs transition-all peer-focus:text-primary">
             {t("withdraw.accountName")}
           </label>
           <input
-            type="text"
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
             required
-            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary"
+            className="peer w-full bg-white/40 backdrop-blur-xl border border-gray-300 rounded-xl px-3 py-3 focus:ring-2 focus:ring-primary outline-none"
           />
         </div>
 
-        {/* 💳 Account Number */}
-        <div>
-          <label className="block text-sm font-medium mb-1 text-text-secondary">
+        <div className="relative">
+          <label className="text-gray-500 text-xs transition-all peer-focus:text-primary">
             {t("withdraw.accountNumber")}
           </label>
           <input
-            type="text"
             value={accountNumber}
             onChange={(e) => setAccountNumber(e.target.value)}
             required
-            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary"
+            className="peer w-full bg-white/40 border border-gray-300 rounded-xl px-3 py-3 focus:ring-2 focus:ring-primary outline-none"
           />
         </div>
 
-        {/* 📂 Withdraw Source */}
+        {/* Source Dropdown */}
         <div>
-          <label className="block text-sm font-medium mb-1 text-text-secondary">
+          <label className="text-xs text-gray-500">
             {t("withdraw.withdrawFrom")}
           </label>
           <select
+            className="w-full mt-1 bg-white/40 border border-gray-300 px-3 py-3 rounded-xl focus:ring-2 focus:ring-primary outline-none"
             value={source}
             onChange={(e) => setSource(e.target.value)}
-            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary"
           >
             <option value="credit">{t("withdraw.options.credit")}</option>
             <option value="totalEarned">
@@ -175,120 +145,97 @@ export default function WithdrawForm({ user, profile }: WithdrawFormProps) {
           </select>
         </div>
 
-        {/* 💸 Amount Field with “All” Button */}
+        {/* Amount */}
         <div>
-          <div className="flex justify-between items-center">
-            <label className="block text-sm font-medium text-text-secondary">
-              {t("withdraw.amount")}
-            </label>
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>{t("withdraw.amount")}</span>
+
             <button
               type="button"
               onClick={handleWithdrawAll}
-              className="text-xs font-medium text-primary hover:underline"
+              className="text-primary font-medium"
             >
               {t("withdraw.allButton")}
             </button>
           </div>
+
           <input
             type="number"
+            min={1}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            required
-            min={1}
-            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary"
+            className="w-full bg-white/40 border border-gray-300 px-3 py-3 rounded-xl focus:ring-2 focus:ring-primary outline-none"
           />
         </div>
 
-        {/* ⚠️ Error Message */}
         {error && (
-          <p className="text-center text-sm text-error bg-error/10 border border-error/20 py-2 rounded-md">
+          <p className="text-center text-sm text-red-600 bg-red-50 border border-red-200 py-2 rounded-lg">
             {error}
           </p>
         )}
 
-        {/* 🟢 Submit */}
         <button
-          type="submit"
           disabled={loading}
-          className={`w-full cursor-pointer font-semibold py-2 rounded-lg text-white transition-colors ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-primary hover:bg-primary-hover"
+          className={`w-full py-3 rounded-xl text-white cursor-pointer font-semibold shadow transition ${
+            loading ? "bg-gray-400" : "bg-primary hover:bg-primary/90"
           }`}
         >
           {loading ? t("withdraw.processing") : t("withdraw.submit")}
         </button>
 
         {message && (
-          <p
-            className={`text-center text-sm mt-3 ${
-              message.startsWith("✅")
-                ? "text-success"
-                : message.startsWith("⚠️")
-                ? "text-warning"
-                : "text-error"
-            }`}
-          >
-            {message}
-          </p>
+          <div className="text-center text-sm mt-2 font-medium">{message}</div>
         )}
       </form>
 
-      {/* 💬 Confirmation Modal */}
+      {/* Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-lg">
-            <h3 className="text-lg font-semibold text-text-primary mb-3 text-center">
+          <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 w-full max-w-sm shadow-xl space-y-3">
+            <h3 className="text-lg font-bold text-center">
               {t("withdraw.confirm.title")}
             </h3>
 
-            <div className="space-y-1 text-sm text-gray-700 mb-4">
+            <div className="text-sm text-gray-600 space-y-1">
               <p>
                 <strong>{t("withdraw.confirm.from")}:</strong>{" "}
                 {source === "all"
                   ? t("withdraw.options.all")
                   : t(`withdraw.options.${source}`)}
               </p>
+
               <p>
                 <strong>{t("withdraw.confirm.amount")}:</strong>{" "}
                 {Number(amount).toLocaleString()} LAK
               </p>
 
-              {/* Show breakdown only when source = all */}
               {source === "all" && (
                 <p className="text-xs text-gray-500">
-                  {t("withdraw.confirm.breakdownPrefix") +
-                    credit.toLocaleString() +
-                    " LAK " +
-                    t("withdraw.confirm.breakdownMid") +
-                    totalEarned.toLocaleString() +
-                    " LAK " +
-                    t("withdraw.confirm.breakdownSuffix")}
+                  {credit.toLocaleString()} + {totalEarned.toLocaleString()} LAK
                 </p>
               )}
 
               <p>
                 <strong>{t("withdraw.confirm.fee")}:</strong>{" "}
-                {isFreelancerStudent
-                  ? t("withdraw.confirm.noFee")
-                  : `${feeAmount.toLocaleString()} LAK (0.5%)`}
+                {isFreelancerStudent ? "0" : feeAmount.toLocaleString()} LAK
               </p>
+
               <p>
                 <strong>{t("withdraw.confirm.net")}:</strong>{" "}
                 {netAmount.toLocaleString()} LAK
               </p>
             </div>
 
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="px-4 cursor-pointer py-2 rounded-md border border-border text-gray-700 hover:bg-gray-100"
+                className="px-4 py-2 rounded-xl border border-gray-300 backdrop-blur-md"
               >
                 {t("withdraw.confirm.cancel")}
               </button>
               <button
                 onClick={confirmWithdraw}
-                className="px-4 cursor-pointer py-2 rounded-md bg-primary text-white hover:bg-primary-hover"
+                className="px-4 py-2 rounded-xl bg-primary text-white"
               >
                 {t("withdraw.confirm.confirm")}
               </button>

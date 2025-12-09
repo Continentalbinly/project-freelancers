@@ -92,6 +92,10 @@ export default function StepInReviewClient({ project }: { project: any }) {
       toast.success(t("common.modal.success"), {
         position: "top-right",
         autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
         theme: "colored",
       });
       window.location.reload();
@@ -99,6 +103,10 @@ export default function StepInReviewClient({ project }: { project: any }) {
       toast.error(t("common.failed"), {
         position: "top-right",
         autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
         theme: "colored",
       });
     } finally {
@@ -109,7 +117,7 @@ export default function StepInReviewClient({ project }: { project: any }) {
 
   const handleRequestChange = async () => {
     if (!selectedReason) {
-      toast.warning(t("common.pleaseSelectReason"), {
+      toast.warn(t("common.pleaseSelectReason"), {
         position: "top-right",
         autoClose: 2500,
         theme: "colored",
@@ -117,7 +125,7 @@ export default function StepInReviewClient({ project }: { project: any }) {
       return;
     }
     if (localQuota <= 0) {
-      toast.warning(t("myProjects.stepper.step3.noQuota"), {
+      toast.warn(t("myProjects.stepper.step3.noQuota"), {
         position: "top-right",
         autoClose: 2500,
         theme: "colored",
@@ -138,6 +146,10 @@ export default function StepInReviewClient({ project }: { project: any }) {
       toast.success(t("common.submitSuccess"), {
         position: "top-right",
         autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
         theme: "colored",
       });
       setShowRequestModal(false);

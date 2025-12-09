@@ -11,7 +11,6 @@ import { Project } from "@/types/project";
 import ManageProjectsHeader from "./components/ManageProjectsHeader";
 import ManageProjectsFilters from "./components/ManageProjectsFilters";
 import ManageProjectsList from "./components/ManageProjectsList";
-import ManageProjectsSkeleton from "./components/ManageProjectsSkeleton";
 
 export default function ManageProjectsPage() {
   const { t } = useTranslationContext();
@@ -26,23 +25,19 @@ export default function ManageProjectsPage() {
     search: "",
   });
 
-  // 🧠 Determine if user is a freelancer
+  // Identify freelancer
   const isFreelancer = Array.isArray(profile?.userType)
     ? profile.userType.includes("freelancer") && profile.userType.length === 1
     : profile?.userType === "freelancer";
 
-  // 🔐 Redirect unauthenticated users
+  // Redirect if not logged in
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/auth/login");
-    }
+    if (!loading && !user) router.push("/auth/login");
   }, [user, loading, router]);
 
-  // 🚀 Fetch projects if user is client
+  // Load projects for clients
   useEffect(() => {
-    if (user && !isFreelancer) {
-      fetchProjects();
-    }
+    if (user && !isFreelancer) fetchProjects();
   }, [user, isFreelancer]);
 
   const fetchProjects = async () => {
@@ -78,55 +73,45 @@ export default function ManageProjectsPage() {
       );
 
       setProjects(data);
-    } catch (err) {
-      //console.error("Error fetching projects:", err);
     } finally {
       setLoadingProjects(false);
     }
   };
 
-  // 🚫 Freelancer view (no redirect)
   if (isFreelancer) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-background-secondary">
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md w-full border border-border">
-          <h2 className="text-xl font-bold text-text-primary mb-4">
-            {t("createProject.permissionDenied") || "Permission Denied"}
-          </h2>
-          <p className="text-text-secondary mb-6">
-            {t("createProject.permissionDeniedMessage") ||
-              "Only clients can manage projects. Please switch to a client account."}
-          </p>
-          <p className="text-xs text-text-secondary">
-            {t("createProject.contactSupport") ||
-              "If you believe this is an error, contact support."}
-          </p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <p>{t("createProject.permissionDenied")}</p>
       </div>
     );
   }
 
-  // 💬 Show loading while auth or projects are loading
   if (loading || loadingProjects) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
-        <p className="mt-4 text-text-secondary">{t("projects.loading")}</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p>{t("projects.loading")}</p>
       </div>
     );
   }
 
-  // 🧾 Client view
   return (
     <div className="bg-gradient-to-br from-background to-background-secondary">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <ManageProjectsHeader t={t} router={router} />
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <ManageProjectsFilters
           t={t}
           filters={filters}
           setFilters={setFilters}
         />
-        <ManageProjectsList projects={projects} filters={filters} t={t} />
+
+        <ManageProjectsList
+          projects={projects}
+          filters={filters}
+          t={t}
+          onProjectDeleted={(id: string) => {
+            setProjects((prev) => prev.filter((p) => p.id !== id));
+            fetchProjects();
+          }}
+        />
       </div>
     </div>
   );

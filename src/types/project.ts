@@ -38,7 +38,7 @@ export interface Project {
     userId?: string;
     userType?: string;
   };
-
+  postingFee?: number;
   progress?: {
     step: string; // e.g. “Design Phase”, “Submit Draft”, etc.
     completed?: boolean; // Freelancer toggles

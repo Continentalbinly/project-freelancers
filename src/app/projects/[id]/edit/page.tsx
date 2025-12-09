@@ -18,7 +18,6 @@ interface Project {
   description: string;
   budget: number;
   budgetType: "fixed";
-  deadline?: Date;
   skillsRequired: string[];
   status: string;
   category: string;

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+
 import {
   collection,
   addDoc,
@@ -13,6 +14,7 @@ import {
   setDoc,
   deleteDoc,
 } from "firebase/firestore";
+
 import { db } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -27,7 +29,7 @@ import Step5Media from "./components/Step5Media";
 import Step6Review from "./components/Step6Review";
 import GlobalStatus from "../../components/GlobalStatus";
 
-// Utility to recursively remove undefined fields
+// Utility: Clean undefined fields
 function removeUndefined(obj: Record<string, any>): Record<string, any> {
   return Object.entries(obj).reduce((acc, [k, v]) => {
     if (v !== undefined) {
@@ -40,23 +42,22 @@ function removeUndefined(obj: Record<string, any>): Record<string, any> {
   }, {} as Record<string, any>);
 }
 
-// Form data interface
+// Form Model
 export interface ProjectFormData {
   title: string;
   description: string;
   categoryId?: string;
   category?: { id: string; name_en: string; name_lo: string } | null;
-  budget: string;
-  budgetType: "fixed";
   timeline: string;
   skillsRequired: string[];
-  deadline: string;
   imageUrl: string;
   sampleImages?: string[];
   projectType: "client";
   maxFreelancers: number;
   visibility: "public" | "private";
   editQuota?: number;
+  budget: number;
+  postingFee: number;
 }
 
 const LOCAL_KEY = "createProjectFormData";
@@ -68,23 +69,71 @@ export default function CreateProjectPage() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
 
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  // Load user profile to determine role
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+      const snap = await getDoc(doc(db, "profiles", user.uid));
+      if (snap.exists()) setUserProfile(snap.data());
+    };
+    loadProfile();
+  }, [user]);
+
+  // 🔒 Block freelancers
+  if (!user)
+    return <GlobalStatus type="loading" message={t("common.loadingUser")} />;
+
+  if (!userProfile)
+    return <GlobalStatus type="loading" message={t("common.loadingUser")} />;
+
+  const roles = userProfile.userRoles || [];
+  const types = userProfile.userType || [];
+
+  const isFreelancerOnly =
+    (roles.includes("freelancer") || types.includes("freelancer")) &&
+    !roles.includes("client");
+
+  if (isFreelancerOnly) {
+    return (
+      <div className="max-w-xl mx-auto text-center mt-20 p-6 bg-white border border-border rounded-lg shadow">
+        <h2 className="text-xl font-semibold text-error mb-2">
+          {t("createProject.accessDeniedTitle") || "Access Denied"}
+        </h2>
+
+        <p className="text-text-secondary mb-4">
+          {t("createProject.accessDeniedMessage") ||
+            "Freelancer accounts cannot create projects."}
+        </p>
+
+        <Link href="/" className="btn btn-primary">
+          {t("createProject.goBack") || "Go Back"}
+        </Link>
+      </div>
+    );
+  }
+
+  // -----------------------------------------
+  // The rest of your original state & logic
+  // -----------------------------------------
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<ProjectFormData>({
     title: "",
     description: "",
     categoryId: "",
     category: null,
-    budget: "",
-    budgetType: "fixed",
     timeline: "",
     skillsRequired: [],
-    deadline: "",
     imageUrl: "",
     sampleImages: [],
     projectType: "client",
     maxFreelancers: 5,
     visibility: "public",
     editQuota: 3,
+    budget: 0,
+    postingFee: 0,
   });
 
   const [loading, setLoading] = useState(false);
@@ -94,42 +143,43 @@ export default function CreateProjectPage() {
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ✅ Safe helper to update ?step param AFTER render
   const updateURLStep = (step: number) => {
     queueMicrotask(() => {
       try {
         const url = new URL(window.location.href);
-        url.searchParams.set("step", step.toString());
+        url.searchParams.set("step", String(step));
         window.history.replaceState({}, "", url);
-      } catch (_) {}
+      } catch {}
     });
   };
 
   const clampStep = (s: number) => Math.min(Math.max(s, 1), MAX_STEPS);
 
-  // ✅ Step validation rules
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
         return formData.maxFreelancers > 0;
       case 2:
-        return !!formData.title.trim() && !!formData.description.trim();
+        return (
+          formData.title.trim() !== "" && formData.description.trim() !== ""
+        );
       case 3:
         return (
           !!formData.categoryId &&
           !!formData.category &&
-          !!formData.budget &&
-          !!formData.timeline
+          !!formData.timeline &&
+          formData.postingFee > 0
         );
       default:
         return true;
     }
   };
 
-  // ✅ Restore draft
+  // Restore Draft
   useEffect(() => {
     const restore = async () => {
       if (!user) return;
+
       try {
         const draftRef = doc(db, "project_drafts", user.uid);
         const snap = await getDoc(draftRef);
@@ -152,59 +202,61 @@ export default function CreateProjectPage() {
 
         setCurrentStep(next);
         updateURLStep(next);
-      } catch (err) {
-        //console.error("⚠️ restore draft error:", err);
       } finally {
         setDraftLoaded(true);
       }
     };
+
     restore();
   }, [user]);
 
-  // ✅ Validate + clamp steps
+  // Auto-Validate Step
   useEffect(() => {
     if (!draftLoaded) return;
+
     setTimeout(() => {
       let validUntil = 1;
       for (let i = 1; i <= MAX_STEPS; i++) {
         if (!isStepValid(i)) break;
         validUntil = i;
       }
+
       setCurrentStep((prev) => {
         const corrected = clampStep(Math.min(prev, validUntil + 1));
         updateURLStep(corrected);
         return corrected;
       });
-    }, 100);
+    }, 120);
   }, [formData, draftLoaded]);
 
-  // ✅ Save to LocalStorage
+  // Local Draft Save
   useEffect(() => {
-    if (typeof window !== "undefined")
+    if (typeof window !== "undefined") {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(formData));
+    }
   }, [formData]);
 
-  // ✅ Sync draft step to Firestore
+  // Sync to Firestore
   useEffect(() => {
     if (!draftLoaded) return;
+
     updateURLStep(clampStep(currentStep));
+
     if (user) {
-      const syncStep = async () => {
+      const sync = async () => {
         try {
           const cleaned = removeUndefined(formData);
           await setDoc(doc(db, "project_drafts", user.uid), {
             ...cleaned,
-            step: clampStep(currentStep),
+            step: currentStep,
             updatedAt: serverTimestamp(),
           });
-        } catch (err) {
-        }
+        } catch {}
       };
-      syncStep();
+      sync();
     }
   }, [currentStep, draftLoaded]);
 
-  // ✅ Auto-sync every 10s
   useEffect(() => {
     if (!user) return;
     const interval = setInterval(async () => {
@@ -212,16 +264,14 @@ export default function CreateProjectPage() {
         const cleaned = removeUndefined(formData);
         await setDoc(doc(db, "project_drafts", user.uid), {
           ...cleaned,
-          step: clampStep(currentStep),
+          step: currentStep,
           updatedAt: serverTimestamp(),
         });
-      } catch (err) {
-      }
+      } catch {}
     }, 10000);
     return () => clearInterval(interval);
   }, [user, formData, currentStep]);
 
-  // ✅ Navigation helpers
   const goToStep = (s: number) => {
     const clamped = clampStep(s);
     if (clamped <= currentStep || isStepValid(clamped - 1)) {
@@ -229,92 +279,81 @@ export default function CreateProjectPage() {
       updateURLStep(clamped);
     }
   };
+
   const nextStep = () => goToStep(currentStep + 1);
   const prevStep = () => goToStep(currentStep - 1);
 
-  // ✅ Clear draft
   const clearLocalForm = async () => {
     localStorage.removeItem(LOCAL_KEY);
     if (user) await deleteDoc(doc(db, "project_drafts", user.uid));
   };
 
-  // ✅ Submit with transaction + escrow log
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return setError("Please login first");
-    if (!formData.categoryId) return setError("Select category before submit");
+    if (!formData.categoryId) return setError("Select category first");
+    if (formData.postingFee <= 0) return setError("Invalid posting fee");
 
     setLoading(true);
+
     try {
       const pRef = doc(db, "profiles", user.uid);
       const snap = await getDoc(pRef);
+
       if (!snap.exists()) throw new Error("Profile not found");
 
-      const data = snap.data();
-      const currentCredit = data.credit ?? 0;
-      const projectBudget = Number(formData.budget);
-      if (currentCredit < projectBudget) throw new Error("Not enough credit");
+      const profile = snap.data();
+      const currentCredit = profile.credit ?? 0;
+      const postingFee = formData.postingFee;
 
-      // ➕ Create project doc
+      if (currentCredit < postingFee)
+        throw new Error("Not enough credit to post project");
+
       const projectRef = await addDoc(collection(db, "projects"), {
         ...removeUndefined(formData),
-        budget: projectBudget,
+        postingFee,
         clientId: user.uid,
         status: "open",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
 
-      const newCredit = currentCredit - projectBudget;
+      const newCredit = currentCredit - postingFee;
+
       await updateDoc(pRef, {
         credit: newCredit,
         updatedAt: serverTimestamp(),
       });
 
-      // 🧾 Log transaction
-      const transactionId = `TXN-${Date.now()}-${Math.random()
+      const transactionId = `POST-${Date.now()}-${Math.random()
         .toString(36)
         .substring(2, 8)
         .toUpperCase()}`;
+
       await addDoc(collection(db, "transactions"), {
         userId: user.uid,
         transactionId,
-        type: "escrow_hold",
-        amount: projectBudget,
-        currency: "LAK",
-        status: "held",
+        type: "posting_fee",
+        amount: postingFee,
+        currency: "CREDITS",
+        status: "completed",
         direction: "out",
-        paymentMethod: "credit_balance",
         projectId: projectRef.id,
         createdAt: serverTimestamp(),
         previousBalance: currentCredit,
         newBalance: newCredit,
-        description: `Held ${projectBudget} LAK for project "${formData.title}"`,
-      });
-
-      // 💼 Escrow record
-      await addDoc(collection(db, "escrows"), {
-        projectId: projectRef.id,
-        clientId: user.uid,
-        freelancerId: null,
-        amount: projectBudget,
-        status: "held",
-        createdAt: serverTimestamp(),
+        description: `Paid ${postingFee} credits to post project "${formData.title}"`,
       });
 
       await clearLocalForm();
       router.push("/projects");
     } catch (err: any) {
-      //console.error("❌ Failed to create project:", err);
       setError(err.message || "Submit failed");
     } finally {
       setLoading(false);
     }
   };
 
-  // Guards
-  if (!user)
-    return <GlobalStatus type="loading" message={t("common.loadingUser")} />;
   if (!draftLoaded)
     return <GlobalStatus type="loading" message={t("common.draftLoaded")} />;
 
@@ -338,6 +377,7 @@ export default function CreateProjectPage() {
 
       <div className="bg-white rounded-lg shadow-sm border border-border">
         <StepProgress currentStep={currentStep} steps={steps} />
+
         <div className="p-6">
           {currentStep === 1 && (
             <Step1ProjectType
@@ -387,8 +427,8 @@ export default function CreateProjectPage() {
             prevStep={prevStep}
             loading={loading}
             handleSubmit={handleSubmit}
+            postingFee={formData.postingFee}
             t={t}
-            projectBudget={Number(formData.budget)}
           />
 
           <div className="text-right mt-4">
@@ -396,7 +436,7 @@ export default function CreateProjectPage() {
               onClick={clearLocalForm}
               className="text-xs text-red-500 hover:underline"
             >
-              {t("createProject.clearDraft") || "Clear saved draft"}
+              {t("createProject.clearDraft")}
             </button>
           </div>
         </div>

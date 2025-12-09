@@ -10,7 +10,7 @@ import ProjectsGrid from "./components/ProjectsGrid";
 
 export default function ProjectsPage() {
   const { t } = useTranslationContext();
-  const { user } = useAuth();
+  const { user, profile } = useAuth(); // 👈 We need profile for userRoles
   const {
     filteredProjects,
     loading,
@@ -22,7 +22,17 @@ export default function ProjectsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // ✅ Watch URL changes — reactively sync filters
+  // -----------------------------
+  // 🔐 Determine if user is client
+  // -----------------------------
+  const roles = profile?.userRoles || [];
+  const types = profile?.userType || [];
+
+  const isClient = roles.includes("client") || types.includes("client");
+
+  // -------------------------------------
+  // Sync filters with URL query params
+  // -------------------------------------
   useEffect(() => {
     const urlSearch = searchParams.get("search") || "";
     const urlCategory = searchParams.get("category") || "all";
@@ -36,7 +46,9 @@ export default function ProjectsPage() {
     }));
   }, [searchParams, setFilters]);
 
-  // 🔄 Reset filters and clear query params
+  // -------------------------------------
+  // Reset Filters
+  // -------------------------------------
   const handleReset = () => {
     setFilters({
       search: "",
@@ -47,6 +59,9 @@ export default function ProjectsPage() {
     router.replace("/projects");
   };
 
+  // -------------------------------------
+  // Loading State
+  // -------------------------------------
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
@@ -56,6 +71,9 @@ export default function ProjectsPage() {
     );
   }
 
+  // -------------------------------------
+  // Page UI
+  // -------------------------------------
   return (
     <div className="bg-background">
       <ProjectsFilters
@@ -71,7 +89,8 @@ export default function ProjectsPage() {
             <h2 className="text-2xl font-bold text-text-primary">
               {filteredProjects.length} {t("projects.results.title")}
             </h2>
-            {user && (
+
+            {user && isClient && (
               <a href="/projects/create" className="btn btn-primary">
                 {t("projects.postProject")}
               </a>

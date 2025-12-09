@@ -54,7 +54,7 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors"
+            className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors cursor-pointer"
             title={t("header.account")}
           >
             <Avatar {...getAvatarProps(profile, user)} size="md" />
@@ -83,7 +83,7 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="md:hidden p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-background-secondary transition-colors bu"
             title={t("header.menu")}
           >
             <svg

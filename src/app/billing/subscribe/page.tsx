@@ -13,6 +13,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/service/firebase";
+import { toast } from "react-toastify";
 
 // 💰 constants
 const AMOUNT_LAK = 50000;
@@ -60,7 +61,15 @@ export default function SubscribePageLAK() {
   // ✅ Handle Confirm Payment
   async function handleConfirmPayment() {
     if (!user?.uid) {
-      alert(t("pay.confirmation.login"));
+      toast.warn(t("pay.confirmation.login"), {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
       return;
     }
 
@@ -93,10 +102,26 @@ export default function SubscribePageLAK() {
       });
 
       setTransactionId(txnId);
-      alert(t("pay.confirmation.success"));
+      toast.success(t("pay.confirmation.success"), {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } catch (err) {
       //console.error(err);
-      alert(t("pay.confirmation.failed"));
+      toast.error(t("pay.confirmation.failed"), {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -172,7 +197,8 @@ export default function SubscribePageLAK() {
 
             {/* Actions */}
             <div className="mt-6 flex flex-col items-center gap-3">
-              <button suppressHydrationWarning
+              <button
+                suppressHydrationWarning
                 onClick={handleConfirmPayment}
                 disabled={isSubmitting}
                 className={`btn btn-primary w-full px-6 py-3 rounded-xl font-semibold ${

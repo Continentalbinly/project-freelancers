@@ -166,10 +166,10 @@ export async function signupUser(
       if (data.success) {
         profileCreated = true;
       } else {
-        toast.warn("⚠️ /api/auth profile creation failed:", data.error);
+        toast.warn("profile creation failed:", data.error);
       }
     } catch (apiErr) {
-      toast.warn("⚠️ API call failed, using local Firestore fallback");
+      toast.warn("API call failed, using local Firestore fallback");
     }
 
     // ✅ 4. Fallback — Direct Firestore creation if API failed

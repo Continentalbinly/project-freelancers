@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { Money } from "./Money";
 import type { Transaction, UserProfile } from "../page";
+import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 
 export default function TransactionRow({
   tx,
@@ -36,21 +37,39 @@ export default function TransactionRow({
 
   return (
     <tr className="hover:bg-gray-50 transition-colors duration-150">
-      {/* 👤 User Info */}
+      {/* USER INFO */}
       <td className="py-3 px-4 align-top">
-        <div>
-          <div className="flex items-center gap-2 font-medium text-gray-800">
-            <User className="w-4 h-4 text-primary" />
-            {profile?.fullName || "Unknown User"}
+        <div className="flex items-center gap-3">
+          {/* USER AVATAR */}
+          <Avatar
+            src={profile?.avatarUrl}
+            alt={profile?.fullName}
+            name={profile?.fullName || "Unknown"}
+            size="lg"
+            className="shadow-sm border border-gray-200"
+          />
+
+          {/* USER DETAILS */}
+          <div className="leading-tight max-w-[80px] md:max-w-[130px] truncate">
+            <div
+              className="font-semibold text-gray-800 text-xs truncate"
+              title={profile?.fullName || "Unknown User"}
+            >
+              {profile?.fullName || "Unknown User"}
+            </div>
+
+            <div
+              className="text-[10px] text-gray-500 font-mono mt-0.5 truncate"
+              title={profile?.email || tx.userId}
+            >
+              {profile?.email || tx.userId}
+            </div>
           </div>
-          <p className="text-[12px] text-gray-500 mt-0.5">
-            {profile?.email || tx.userId}
-          </p>
         </div>
       </td>
 
-      {/* 💼 Type */}
-      <td className="py-3 px-4 capitalize text-gray-600">
+      {/* Type */}
+      <td className="py-3 px-4 text-gray-600 capitalize">
         <div className="flex items-center gap-2">
           {isWithdraw ? (
             <Wallet className="w-4 h-4 text-purple-600" />
@@ -63,34 +82,42 @@ export default function TransactionRow({
         </div>
       </td>
 
-      {/* 📋 Plan / Source */}
-      <td className="py-3 px-4 text-gray-600 whitespace-nowrap">
+      {/* Plan / Source */}
+      <td className="py-3 px-4 text-gray-600">
         {isWithdraw ? tx.source || "—" : tx.plan || "—"}
       </td>
 
-      {/* 💰 Amount */}
-      <td className="py-3 px-4 font-medium text-primary whitespace-nowrap">
-        <Money amount={tx.amount} />
+      {/* Amount + Credits */}
+      <td className="py-3 px-4 whitespace-nowrap">
+        <div className="font-semibold text-primary">
+          <Money amount={tx.amount} />
+        </div>
+
+        {tx.type === "topup" && tx.credits !== undefined && (
+          <div className="text-xs text-blue-600 font-medium mt-1">
+            + {tx.credits} credits
+          </div>
+        )}
       </td>
 
-      {/* 🏦 Payment / Account Info */}
-      <td className="py-3 px-4 text-gray-600 text-sm whitespace-nowrap">
+      {/* Method / Account */}
+      <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">
         {isWithdraw ? (
-          <div className="text-xs text-gray-700 leading-tight">
+          <div className="text-xs">
             <p className="font-medium">{tx.accountName || "—"}</p>
             <p className="relative flex items-center gap-1">
-              <span className="text-gray-500">No:</span>
+              No:
               {tx.accountNumber ? (
                 <>
                   <button
                     onClick={() => handleCopy(String(tx.accountNumber))}
-                    className="underline cursor-pointer text-primary hover:text-primary-dark transition text-[11px]"
+                    className="underline cursor-pointer text-primary text-[11px]"
                   >
                     {tx.accountNumber}
                   </button>
-                  <Copy className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
+                  <Copy className="w-3.5 h-3.5 text-gray-400" />
                   {copied && (
-                    <span className="absolute bg-black text-white text-[10px] px-2 py-1 rounded-md left-1/2 -translate-x-1/2 -top-5">
+                    <span className="absolute bg-black text-white text-[10px] px-2 py-1 rounded-md -top-5 left-1/2 -translate-x-1/2">
                       Copied!
                     </span>
                   )}
@@ -105,36 +132,36 @@ export default function TransactionRow({
         )}
       </td>
 
-      {/* 🕒 Date */}
-      <td className="py-3 px-4 text-gray-600 text-sm whitespace-nowrap">
+      {/* Date */}
+      <td className="py-3 px-4 text-gray-600 whitespace-nowrap">
         {tx.createdAt ? new Date(tx.createdAt.toDate()).toLocaleString() : "—"}
       </td>
 
-      {/* 🧾 Transaction ID */}
-      <td className="py-3 px-4 font-mono text-xs text-gray-600 whitespace-nowrap">
+      {/* Transaction ID */}
+      <td className="py-3 px-4 font-mono text-xs text-gray-600">
         {tx.transactionId || tx.id}
       </td>
 
-      {/* ✅ / ❌ Actions or Status */}
+      {/* Actions */}
       <td className="py-3 px-4 text-center">
         {isPending ? (
           <div className="flex justify-center gap-2">
             <button
               onClick={onApprove}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition"
+              className="cursor-pointer px-3 py-1.5 text-xs bg-green-600 text-white rounded-md flex items-center gap-1 hover:bg-green-700"
             >
               <CheckCircle className="w-4 h-4" /> Approve
             </button>
             <button
               onClick={onReject}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+              className="cursor-pointer px-3 py-1.5 text-xs bg-red-600 text-white rounded-md flex items-center gap-1 hover:bg-red-700"
             >
               <XCircle className="w-4 h-4" /> Reject
             </button>
           </div>
         ) : (
           <span
-            className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md ${
+            className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs rounded-md ${
               tx.status === "confirmed"
                 ? "bg-green-100 text-green-700"
                 : "bg-red-100 text-red-700"

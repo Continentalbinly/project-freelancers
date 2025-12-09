@@ -1,13 +1,17 @@
 "use client";
 
-export default function Money({ amount }: { amount: number }) {
+export default function Money({ amount, t }: any) {
+  const lang = t("lang"); // from translation JSON
+
+  // Currency words
+  const label =
+    lang === "lo"
+      ? t("money.currency.lak_lo") // ກີບ
+      : t("money.currency.lak"); // LAK
+
   return (
     <span>
-      {new Intl.NumberFormat("lo-LA", {
-        style: "currency",
-        currency: "LAK",
-        maximumFractionDigits: 0,
-      }).format(amount || 0)}
+      {amount?.toLocaleString()} {label}
     </span>
   );
 }

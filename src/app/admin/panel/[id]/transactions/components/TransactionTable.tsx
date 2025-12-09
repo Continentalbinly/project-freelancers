@@ -1,8 +1,8 @@
 "use client";
 
 import TransactionRow from "./TransactionRow";
+import TransactionCard from "./TransactionCard";
 import type { Transaction, UserProfile } from "../page";
-import TransactionCard from "./TransactionCard"; // 👈 new component
 
 export default function TransactionTable({
   transactions,
@@ -17,18 +17,18 @@ export default function TransactionTable({
 }) {
   if (transactions.length === 0)
     return (
-      <div className="max-w-6xl mx-auto py-20 text-center text-gray-500">
+      <div className="py-20 text-center text-gray-500">
         No transactions found.
       </div>
     );
 
   return (
     <section className="py-10">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* 🖥️ Table for desktop / tablet */}
+      <div className="max-w-8xl mx-auto px-4">
+        {/* DESKTOP TABLE */}
         <div className="hidden sm:block overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-          <table className="w-full border-collapse text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-border">
               <tr className="text-left text-gray-700">
                 <th className="py-3.5 px-4 font-semibold">User</th>
                 <th className="py-3.5 px-4 font-semibold">Type</th>
@@ -42,7 +42,8 @@ export default function TransactionTable({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+
+            <tbody className="border border-border">
               {transactions.map((tx) => (
                 <TransactionRow
                   key={tx.id}
@@ -56,7 +57,7 @@ export default function TransactionTable({
           </table>
         </div>
 
-        {/* 📱 Card View for Mobile */}
+        {/* MOBILE CARDS */}
         <div className="sm:hidden space-y-4">
           {transactions.map((tx) => (
             <TransactionCard

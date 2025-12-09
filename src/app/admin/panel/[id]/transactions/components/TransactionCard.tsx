@@ -6,12 +6,12 @@ import {
   CreditCard,
   Wallet,
   Package,
-  User,
   Copy,
 } from "lucide-react";
 import { useState } from "react";
 import { Money } from "./Money";
 import type { Transaction, UserProfile } from "../page";
+import Avatar from "@/app/utils/avatarHandler";
 
 export default function TransactionCard({
   tx,
@@ -45,21 +45,40 @@ export default function TransactionCard({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col gap-3 transition hover:shadow-md">
-      {/* Header: user info */}
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col gap-4 transition hover:shadow-md">
+      {/* Header: Avatar + user info + status */}
       <div className="flex justify-between items-start">
-        <div>
-          <div className="flex items-center gap-2 font-medium text-gray-800">
-            <User className="w-4 h-4 text-primary" />
-            {profile?.fullName || "Unknown User"}
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          <Avatar
+            src={profile?.avatarUrl}
+            alt={profile?.fullName}
+            name={profile?.fullName || "Unknown"}
+            size="md"
+            className="border border-gray-300 shadow-sm"
+          />
+
+          {/* User details */}
+          <div className="leading-tight max-w-[120px] truncate">
+            <div
+              className="font-semibold text-gray-800 text-sm truncate"
+              title={profile?.fullName || "Unknown User"}
+            >
+              {profile?.fullName || "Unknown User"}
+            </div>
+
+            <div
+              className="text-[11px] text-gray-500 font-mono truncate"
+              title={profile?.email || tx.userId}
+            >
+              {profile?.email || tx.userId}
+            </div>
           </div>
-          <p className="text-[12px] text-gray-500 mt-0.5">
-            {profile?.email || tx.userId}
-          </p>
         </div>
 
+        {/* Status badge */}
         <div
-          className={`text-xs font-semibold px-2 py-1 rounded-md ${
+          className={`text-xs font-semibold px-2 py-1 rounded-md shrink-0 ${
             tx.status === "pending"
               ? "bg-yellow-100 text-yellow-800"
               : tx.status === "confirmed"
@@ -72,11 +91,22 @@ export default function TransactionCard({
       </div>
 
       {/* Transaction Details */}
-      <div className="flex items-center gap-2 text-gray-700">
-        <Icon className="w-4 h-4 text-primary" />
-        <span className="capitalize">{tx.type.replace("_", " ")}</span>
-        <span className="text-gray-400">•</span>
-        <Money amount={tx.amount} />
+      <div className="flex flex-col gap-1 text-gray-700 text-sm">
+        <div className="flex items-center gap-2">
+          <Icon className="w-4 h-4 text-primary" />
+          <span className="capitalize truncate">
+            {tx.type.replace("_", " ")}
+          </span>
+          <span className="text-gray-400">•</span>
+          <Money amount={tx.amount} />
+        </div>
+
+        {/* Credits (only for topup) */}
+        {tx.type === "topup" && tx.credits !== undefined && (
+          <div className="flex items-center gap-2 text-primary font-semibold text-sm">
+            <Package className="w-4 h-4" />+ {tx.credits} credits
+          </div>
+        )}
       </div>
 
       {/* Withdraw Account Info */}
@@ -84,11 +114,11 @@ export default function TransactionCard({
         <div className="text-xs text-gray-700 leading-tight bg-gray-50 p-2 rounded-lg border border-gray-100">
           <p className="font-medium">{tx.accountName || "—"}</p>
           {tx.accountNumber && (
-            <p className="relative mt-0.5 flex items-center gap-1">
+            <p className="relative mt-0.5 flex items-center gap-1 truncate">
               No:{" "}
               <button
                 onClick={handleCopy}
-                className="underline cursor-pointer text-primary hover:text-primary-dark transition text-[11px]"
+                className="underline cursor-pointer text-primary hover:text-primary-dark transition text-[11px] truncate"
               >
                 {tx.accountNumber}
               </button>
@@ -104,18 +134,18 @@ export default function TransactionCard({
       )}
 
       {/* Metadata */}
-      <div className="text-xs text-gray-500 flex flex-wrap justify-between border-t pt-2">
-        <p>
+      <div className="text-[11px] text-gray-500 flex flex-wrap justify-between border-t pt-2">
+        <p className="truncate">
           {tx.createdAt
             ? new Date(tx.createdAt.toDate()).toLocaleString()
             : "—"}
         </p>
-        <p className="font-mono">{tx.transactionId || tx.id}</p>
+        <p className="font-mono truncate">{tx.transactionId || tx.id}</p>
       </div>
 
       {/* Action Buttons */}
       {isPending && (
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex justify-end gap-2 pt-1">
           <button
             onClick={onReject}
             className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-red-600 text-white hover:bg-red-700 transition"

@@ -1,12 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext"; // ✅ add this
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProjectActions({ project, t }: any) {
-  const { user, profile } = useAuth(); // ✅ get profile from context
+  const { user, profile } = useAuth();
   const isOwner = user?.uid === project.clientId;
 
-  /** 🧩 Check freelancer role/type/category/occupation from profile */
   const isFreelancer =
     (Array.isArray(profile?.userType) &&
       profile.userType.includes("freelancer")) ||
@@ -21,7 +20,7 @@ export default function ProjectActions({ project, t }: any) {
       </h3>
 
       <div className="space-y-3">
-        {/* ✅ Submit Proposal — only freelancer and not owner */}
+        {/* ✅ Submit Proposal (freelancer only + not owner + open) */}
         {user && project.status === "open" && !isOwner && isFreelancer && (
           <Link
             href={`/projects/${project.id}/propose`}
@@ -35,8 +34,7 @@ export default function ProjectActions({ project, t }: any) {
         {user && project.status === "open" && isOwner && (
           <div className="p-3 bg-background-secondary rounded-lg border border-border">
             <p className="text-sm text-text-secondary text-center">
-              {t("projectDetail.ownProjectMessage") ||
-                "You cannot submit proposals to your own project"}
+              {t("projectDetail.ownProjectMessage")}
             </p>
           </div>
         )}
@@ -45,14 +43,13 @@ export default function ProjectActions({ project, t }: any) {
         {user && project.status === "open" && !isOwner && !isFreelancer && (
           <div className="p-3 bg-background-secondary rounded-lg border border-border">
             <p className="text-sm text-text-secondary text-center">
-              {t("projectDetail.onlyFreelancerMessage") ||
-                "Only freelancers can submit proposals"}
+              {t("projectDetail.onlyFreelancerMessage")}
             </p>
           </div>
         )}
 
-        {/* ✏️ Edit Project — for owner */}
-        {user && isOwner && (
+        {/* ✏️ Edit Project — only if owner AND project is open */}
+        {user && isOwner && project.status === "open" && (
           <Link
             href={`/projects/${project.id}/edit`}
             className="btn btn-outline w-full"
@@ -61,7 +58,7 @@ export default function ProjectActions({ project, t }: any) {
           </Link>
         )}
 
-        {/* 🔙 Back to projects */}
+        {/* 🔙 Back to home */}
         <Link href="/" className="btn btn-outline w-full">
           {t("common.back2home")}
         </Link>

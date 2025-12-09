@@ -15,6 +15,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+
 // Components
 import ProposalsHeader from "./components/ProposalsHeader";
 import ProposalsFilter from "./components/ProposalsFilter";
@@ -65,10 +66,10 @@ export interface Project {
 }
 
 // ------------------------------------
-// Page Component
+// Component
 // ------------------------------------
 export default function ProjectProposalsPage() {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as string;
@@ -84,18 +85,25 @@ export default function ProjectProposalsPage() {
   const [loadingProposals, setLoadingProposals] = useState(true);
 
   // ------------------------------------
-  // Auth Redirect
+  // Identify freelancer
+  // ------------------------------------
+  const isFreelancer = Array.isArray(profile?.userType)
+    ? profile.userType.includes("freelancer") && profile.userType.length === 1
+    : profile?.userType === "freelancer";
+
+  // ------------------------------------
+  // Redirect unauthenticated user
   // ------------------------------------
   useEffect(() => {
     if (!loading && !user) router.push("/auth/login");
   }, [user, loading, router]);
 
   // ------------------------------------
-  // Fetch data when ready
+  // Fetch data
   // ------------------------------------
   useEffect(() => {
-    if (user && projectId) fetchData();
-  }, [user, projectId]);
+    if (user && projectId && !isFreelancer) fetchData();
+  }, [user, projectId, isFreelancer]);
 
   // ------------------------------------
   // Firestore Fetch
@@ -104,7 +112,6 @@ export default function ProjectProposalsPage() {
     try {
       setLoadingProposals(true);
 
-      // 🔹 1. Fetch the project
       const projectDoc = await getDoc(firestoreDoc(db, "projects", projectId));
       if (!projectDoc.exists()) {
         router.push("/projects/manage");
@@ -113,7 +120,7 @@ export default function ProjectProposalsPage() {
 
       const projectData = projectDoc.data() as Project;
 
-      // ✅ Check owner
+      // ensure owner
       if (projectData.clientId !== user?.uid) {
         router.push("/projects/manage");
         return;
@@ -122,7 +129,7 @@ export default function ProjectProposalsPage() {
       const projectWithId = { ...projectData, id: projectId };
       setProject(projectWithId);
 
-      // 🔹 2. Fetch proposals for this project
+      // fetch proposals
       const q = query(
         collection(db, "proposals"),
         where("projectId", "==", projectId),
@@ -133,13 +140,13 @@ export default function ProjectProposalsPage() {
       const list: Proposal[] = await Promise.all(
         snap.docs.map(async (docSnap) => {
           const data = docSnap.data();
+
           const freelancerRef = firestoreDoc(db, "profiles", data.freelancerId);
           const freelancerDoc = await getDoc(freelancerRef);
           const freelancerData = freelancerDoc.exists()
-            ? (freelancerDoc.data() as any)
+            ? freelancerDoc.data()
             : null;
 
-          // ✅ Merge freelancer + project data into proposal
           return {
             id: docSnap.id,
             ...data,
@@ -167,11 +174,8 @@ export default function ProjectProposalsPage() {
         })
       );
 
-      // ✅ Update both main + filtered lists
       setProposals(list);
       setFiltered(list);
-    } catch (error) {
-      //console.error("❌ Error fetching project and proposals:", error);
     } finally {
       setLoadingProposals(false);
     }
@@ -182,8 +186,11 @@ export default function ProjectProposalsPage() {
   // ------------------------------------
   const handleFilter = (status: string) => {
     setStatusFilter(status);
-    if (status === "all") setFiltered(proposals);
-    else setFiltered(proposals.filter((p) => p.status === status));
+    setFiltered(
+      status === "all"
+        ? proposals
+        : proposals.filter((p) => p.status === status)
+    );
   };
 
   const handleAccept = async (proposal: Proposal) => {
@@ -198,10 +205,9 @@ export default function ProjectProposalsPage() {
       updatedAt: new Date(),
     });
 
-    // Reject all other proposals
     const otherProposals = proposals.filter((p) => p.id !== proposal.id);
     await Promise.all(
-      otherProposals.map(async (p) =>
+      otherProposals.map((p) =>
         updateDoc(firestoreDoc(db, "proposals", p.id), {
           status: "rejected",
           updatedAt: new Date(),
@@ -221,18 +227,29 @@ export default function ProjectProposalsPage() {
   };
 
   // ------------------------------------
-  // Render
+  // Render (NO EARLY RETURNS)
   // ------------------------------------
+
+  // still loading auth
   if (loading) return <div className="p-10 text-center">Loading...</div>;
+
+  // freelancer view block
+  if (isFreelancer) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-center text-lg text-red-500">
+          {t("createProject.permissionDenied")}
+        </p>
+      </div>
+    );
+  }
+
+  // not logged in (after loading)
   if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* 🧭 Header */}
-        <ProposalsHeader project={project} router={router} />
-
-        {/* 🔍 Filter Bar */}
         <ProposalsFilter
           status={statusFilter}
           setStatus={handleFilter}
@@ -240,18 +257,16 @@ export default function ProjectProposalsPage() {
           filtered={filtered.length}
         />
 
-        {/* 📋 Proposal List */}
         <ProposalsList
           proposals={filtered}
           loading={loadingProposals}
-          activeTab="received" // ✅ for client view
-          t={t} // ✅ placeholder translator
+          activeTab="received"
+          t={t}
           onAccept={handleAccept}
           onReject={handleReject}
           onSelect={setSelectedProposal}
         />
 
-        {/* 🪟 Proposal Modal */}
         {selectedProposal && (
           <ProposalModal
             proposal={selectedProposal}

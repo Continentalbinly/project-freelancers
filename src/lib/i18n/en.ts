@@ -52,8 +52,12 @@ const en = {
     pleaseSelectReason: "Please Select Reason",
     failed: "Failed",
     NoProjectsYet: "No projects yet",
-    NoProjectsYetDesc: "You haven’t started any projects yet. Once you post or accept one, it’ll appear here!",
-    browseProject: "Browse Project"
+    NoProjectsYetDesc:
+      "You haven’t started any projects yet. Once you post or accept one, it’ll appear here!",
+    browseProject: "Browse Project",
+    credits: "Credits",
+    currncyLAK: "KIP",
+    copy: "Copy",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -137,6 +141,8 @@ const en = {
     myProjects: "My Projects",
     account: "Account",
     projectManage: "Manage Projects",
+    finance: "Finance",
+    subscription: "Subscription",
   },
   // Footer translations
   footer: {
@@ -1686,6 +1692,23 @@ const en = {
     addSampleImage: "Add Sample Image",
     clearDraft: "Clear Draft",
     contactSupport: "Contact Support",
+    selectCategoryWarning: "Please select a category before proceeding.",
+    postingFee: "Posting Fee",
+    postingFeeApplied: "This category will apply the following posting fee:",
+    credits: "credits",
+    suggestedSkills: "Suggested Skills",
+    dragDropBanner: "Drag & drop a banner image",
+    orClickToUpload: "or click to upload",
+    dragDropSamples: "Drag & drop sample images",
+    projectBudgetNote:
+      "You will pay this amount only after the freelancer delivers the work. The payment will be held in escrow before you can download the final files.",
+
+    projectBudgetPlaceholder: "Project budget (in LAK)",
+    insufficientCreditsMessagePosting:
+      "You don't have enough credits to pay the project posting fee. Please top up your balance to continue.",
+    accessDeniedTitle: "Access Denied",
+    accessDeniedMessage: "Freelancer accounts cannot create projects.",
+    goBack: "Go Back",
   },
   // Profile page translations
   profile: {
@@ -1716,6 +1739,7 @@ const en = {
       completed: "Completed",
       earned: "Earned",
       rating: "Rating",
+      spent: "Spent",
     },
     recentActivity: {
       title: "Recent Activity",
@@ -1918,6 +1942,9 @@ const en = {
     },
     confirmAcceptTitle: "Confirm Proposal",
     confirmAcceptDesc: "Are you sure to confirm accept this proposal?",
+    confirmRejectTitle: "Confirm Proposal Rejection",
+    confirmRejectDesc:
+      "Are you sure you want to reject this proposal? This action cannot be undone.",
   },
   // Settings page translations
   settings: {
@@ -2751,6 +2778,16 @@ const en = {
     failedToUploadProjectImageError: "Failed to upload project image",
     failedToUpdateProjectError: "Failed to update project",
     updateProjectDetails: "Update your project details",
+    reviewPostingFeeChange: "Review Posting Fee Change",
+    oldFee: "Old Fee",
+    newFee: "New Fee",
+    youWillBeCharged: "You will be charged",
+    youWillBeRefunded: "You will be refunded",
+    credits: "credits",
+    confirm: "Confirm",
+    feeChanged: "Posting fee has changed",
+    creditsWillBeDeducted: "credits will be deducted",
+    creditsWillBeRefunded: "credits will be refunded",
   },
   // Clients page translations
   clientsPage: {
@@ -2912,6 +2949,23 @@ const en = {
     dueDate: "Due Date",
     submitting: "Submitting...",
     milestoneDueDateLabel: "Milestone Due Date *",
+    costToSubmit: "Cost to submit",
+    credits: "credits",
+    notEnoughCredits: "You do not have enough credits to submit a proposal.",
+    thisProjectRequires: "This project requires",
+    creditsToApply: "credits to apply.",
+    applicationFee: "Application Fee",
+    notEnoughCreditsTitle: "Insufficient Credits",
+    notEnoughCreditsMessage:
+      "You do not have enough credits to submit a proposal for this project.",
+    topUpCredits: "Top Up Credits",
+    coverLetterRequired: "Cover letter is required.",
+    durationRequired: "Please select an estimated duration.",
+    hourlyRateRequired: "Please enter your hourly rate.",
+    confirmSubmission: "Confirm Submission",
+    confirmToSubmit: "Are you sure you want to submit this proposal?",
+    submitNow: "Submit Now",
+    submitSuccess: "Your proposal has been submitted successfully!",
   },
   pay: {
     title: "Subscription Payment",
@@ -2967,6 +3021,35 @@ const en = {
       idLabel: "Your Transaction ID:",
       note: "Keep this ID for reference or send it to admin for confirmation.",
     },
+    scanQR: "Scan QR",
+    iPaid: "I Paid",
+    continue: "Continue",
+    sessionExpired: "Session Expired",
+    sessionExpiredTip:
+      "Your session expired because no payment was made in time.",
+    backToSelect: "Back to select amount",
+    startNew: "Start New",
+    expiredFooter: "You can start again anytime.",
+    stepSelect: "Select Amount",
+    stepPayment: "Scan & Pay",
+    stepPending: "Waiting for Approval",
+    waitingApproval: "Waiting for Approval",
+    transactionId: "Transaction ID",
+    pendingNote:
+      "Your payment is being reviewed. We will credit your balance once confirmed.",
+    creditsReceive: "Credits you will receive",
+    autoRefresh: "Auto Refresh",
+    securePaymentInfo: "Your payment is secure and processed instantly.",
+    scanWithBankApp: "Use your banking app to scan and complete the payment.",
+    expiresIn: "QR expires in",
+    expired: "QR Code Expired",
+    expiredMessage:
+      "The payment QR code has expired. Please generate a new one to continue.",
+    tryAgain: "Try Again",
+    success: "Payment Successful",
+    successMessage:
+      "Your top-up has been completed. The credits have been added to your account.",
+    backToTopup: "Back to Top-Up",
   },
 
   transactions: {
@@ -2997,12 +3080,21 @@ const en = {
       escrowHold: "Escrow Hold",
       escrowRelease: "Escrow Release",
       escrowRefund: "Escrow Refund",
-      withdrawRequest: "Withdraw Request",
-      refund: "Refund",
       escrowAdd: "Escrow Add",
       escrowPayment: "Escrow Payment",
-      escrow_release: "Project Completed Received Money",
+      escrow_release: "Project Completed – Money Received",
+      withdrawRequest: "Withdraw Request",
+      withdrawSuccess: "Withdrawal Successful",
+      refund: "Refund",
+      project_payout: "Project Payout",
+      payout_received: "Payout Received",
+      posting_fee: "Job Posting Fee",
+      posting_fee_adjust: "Posting Fee Adjustment",
+      posting_fee_refund: "Posting Fee Refund",
+      proposal_fee: "Proposal Fee",
+      proposal_refund: "Proposal Fee Refund"
     },
+
     status: {
       held: "Held",
       released: "Released",
@@ -3010,6 +3102,20 @@ const en = {
       confirmed: "Confirmed",
       pending: "Pending",
       failed: "Failed",
+      expired: "Expired",
+    },
+
+    filters: {
+      search: "Search Transactions",
+      searchPlaceholder: "Search by amount, ID, or method...",
+      type: "Transaction Type",
+      all: "All",
+      status: "Status",
+      dateFrom: "Date From",
+      dateTo: "Date To",
+      reset: "Reset Filters",
+      advanced: "Advanced",
+      hideAdvanced: "Hide Advanced",
     },
   },
 
@@ -3084,6 +3190,7 @@ const en = {
     timeliness: "Timeliness",
     value: "Value for Money",
     alreadySubmitted: "You have already submitted your rating.",
+    writeReview: "Write Review",
   },
   myProjects: {
     title: "My Project Handler",
@@ -3156,6 +3263,34 @@ const en = {
         noFiles: "No files available for download.",
       },
     },
+  },
+  payout: {
+    title: "Project Payment",
+    scanToPay: "Scan the QR code to pay",
+    projectNotFound: "Project not found",
+    missingTransactionId: "Missing transaction ID",
+    qrExpired: "QR code has expired",
+    regenerateQR: "Regenerate QR Code",
+    regenerating: "Generating new QR...",
+    paymentConfirmed: "Payment confirmed!",
+    securePayment: "Secure payment powered by PhayJay",
+    autoUpdating: "Updating automatically...",
+    freelancer: {
+      waitingTitle: "Waiting for Client Payment",
+      waitingDesc: "The client is completing their payment. Please wait...",
+      autoUpdating: "Updating automatically...",
+      amount: "Payout Amount",
+      doneTitle: "Payout Received!",
+      doneDesc:
+        "The client has completed the payment. Your earnings have been updated.",
+      receivedAmount: "Amount Received",
+    },
+  },
+  money: {
+    currency: {
+      lak: "LAK",
+    },
+    credit: "credit",
   },
 };
 

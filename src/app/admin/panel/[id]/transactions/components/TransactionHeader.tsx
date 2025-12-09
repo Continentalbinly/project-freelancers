@@ -8,7 +8,7 @@ export default function TransactionHeader() {
 
   return (
     <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0">
-      <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
+      <div className="max-w-8xl mx-auto px-6 py-5 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}

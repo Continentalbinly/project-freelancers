@@ -15,7 +15,6 @@ import {
 import { db } from "@/service/firebase";
 import { ArrowLeft } from "lucide-react";
 import TransactionTable from "./components/TransactionTable";
-import TransactionStats from "./components/TransactionStats";
 
 export interface Transaction {
   id: string;
@@ -25,8 +24,8 @@ export interface Transaction {
   status: string;
   plan?: string;
   paymentMethod?: string;
-  projectId?: string; 
-  userId?: string; 
+  projectId?: string;
+  userId?: string;
   currency?: string;
   description?: string;
   createdAt?: Timestamp;
@@ -35,8 +34,13 @@ export interface Transaction {
 export default function TransactionsPage() {
   const { t } = useTranslationContext();
   const { user } = useAuth();
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // ⭐ Filter state
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // 🔹 Fetch all transactions for this user
   useEffect(() => {
@@ -58,29 +62,32 @@ export default function TransactionsPage() {
     return () => unsub();
   }, [user]);
 
+  // ⭐ Filtering logic
+  const filtered = transactions.filter((tx) => {
+    const typeOK = typeFilter === "all" || tx.type === typeFilter;
+    const statusOK = statusFilter === "all" || tx.status === statusFilter;
+    return typeOK && statusOK;
+  });
+
   if (!user?.uid)
     return (
-      <div className="min-h-screen flex items-center justify-center text-text-secondary">
-        <p>{t("transactions.signInPrompt")}</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
+        <p className="mt-4 text-text-secondary">{t("common.loading")}</p>
       </div>
     );
 
   return (
-    <div className="bg-background min-h-screen">
-      {/* Stats Summary */}
-      <TransactionStats transactions={transactions} loading={loading} t={t} />
-
-      {/* Table */}
+    <div className="bg-background pt-4">
       <section>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <TransactionTable
-            transactions={transactions}
-            loading={loading}
-            t={t}
-          />
+          {/* ⭐ Table */}
+          <TransactionTable transactions={filtered} loading={loading} t={t} />
+
+          {/* Back */}
           <div className="text-center mt-6">
             <Link
-              href="/dashboard"
+              href="/"
               className="inline-flex items-center gap-1 text-sm underline text-text-secondary hover:text-primary transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> {t("transactions.back")}

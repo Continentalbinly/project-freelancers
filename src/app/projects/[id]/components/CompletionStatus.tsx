@@ -21,6 +21,7 @@ import {
   HandThumbUpIcon,
   StarIcon,
 } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
 
 export default function CompletionStatus({ project, t, formatDate }: any) {
   const { user } = useAuth();
@@ -193,8 +194,17 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
   // ⭐ Submit rating — localized
   const handleSubmitRating = async () => {
     if (!communication || !quality || !timeliness || !value) {
-      alert(
-        "⚠️ " + t("rating.pleaseSelectStars") || "Please rate all categories!"
+      toast.warn(
+        t("rating.pleaseSelectStars") || "Please rate all categories!",
+        {
+          position: "top-right",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        }
       );
       return;
     }
@@ -247,10 +257,25 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
 
       setAlreadyRated(true);
       setShowRatingModal(false);
-      alert("✅ " + t("rating.thankYou"));
+      toast.success(t("rating.thankYou"), {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } catch (err) {
-      //console.error("❌ Rating submission error:", err);
-      alert("Failed to submit rating.");
+      toast.error("Failed to submit rating.", {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
     } finally {
       setRatingLoading(false);
     }

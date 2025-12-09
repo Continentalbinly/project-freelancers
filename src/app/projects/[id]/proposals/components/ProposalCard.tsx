@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/service/firebase";
 import Avatar from "@/app/utils/avatarHandler";
 import { timeAgo } from "@/service/timeUtils";
 import { formatEarnings } from "@/service/currencyUtils";
 import { StarIcon, BriefcaseIcon } from "@heroicons/react/24/solid";
-import { createOrOpenChatRoom } from "@/app/utils/chatUtils"; // ✅ correct import path
+import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
 import type { ProposalWithDetails } from "@/types/proposal";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
@@ -17,17 +17,12 @@ interface ProposalCardProps {
   proposal: ProposalWithDetails;
   activeTab: "submitted" | "received";
   t: (key: string) => string;
-  onAccept?: (p: ProposalWithDetails) => Promise<void> | void;
-  onReject?: (p: ProposalWithDetails) => Promise<void> | void;
-  onSelect?: (p: ProposalWithDetails) => void;
 }
 
 export default function ProposalCard({
   proposal,
   activeTab,
   t,
-  onAccept,
-  onReject,
 }: ProposalCardProps) {
   const router = useRouter();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -35,50 +30,34 @@ export default function ProposalCard({
   const [rating, setRating] = useState<number | null>(null);
   const [totalProjects, setTotalProjects] = useState<number | null>(null);
   const [loadingAction, setLoadingAction] = useState(false);
-
   const { currentLanguage } = useTranslationContext();
-  // 🔍 Load profile avatar
+
+  /** Load Profile */
   useEffect(() => {
-    const fetchProfileAvatar = async () => {
-      try {
-        const profileId =
-          activeTab === "submitted"
-            ? proposal.client?.id || proposal.project?.clientId
-            : proposal.freelancerId;
+    const fetchProfile = async () => {
+      const profileId =
+        activeTab === "submitted"
+          ? proposal.client?.id || proposal.project?.clientId
+          : proposal.freelancerId;
 
-        if (!profileId) return;
-        const profileRef = doc(db, "profiles", profileId);
-        const profileSnap = await getDoc(profileRef);
+      if (!profileId) return;
 
-        if (profileSnap.exists()) {
-          const data = profileSnap.data();
-          setAvatarUrl(data.avatarUrl || null);
-          setDisplayName(data.fullName || "Unknown User");
-          if (activeTab === "received") {
-            setRating(data.rating || null);
-            setTotalProjects(data.totalProjects || null);
-          }
+      const snap = await getDoc(doc(db, "profiles", profileId));
+      if (snap.exists()) {
+        const data = snap.data();
+        setAvatarUrl(data.avatarUrl || null);
+        setDisplayName(data.fullName || "Unknown User");
+        if (activeTab === "received") {
+          setRating(data.rating || null);
+          setTotalProjects(data.totalProjects || null);
         }
-      } catch (err) {
-        //console.error("⚠️ Error loading profile avatar:", err);
       }
     };
 
-    const embeddedUser =
-      activeTab === "submitted" ? proposal.client : proposal.freelancer;
-    if (embeddedUser?.avatar) {
-      setAvatarUrl(embeddedUser.avatar);
-      setDisplayName(embeddedUser.fullName || "Unknown User");
-      if (activeTab === "received") {
-        setRating(embeddedUser.rating || null);
-        setTotalProjects(embeddedUser.totalProjects || null);
-      }
-    } else {
-      fetchProfileAvatar();
-    }
+    fetchProfile();
   }, [proposal, activeTab]);
 
-  // === STATUS HELPERS ===
+  /** Status Color */
   const getStatusColor = (status: string) => {
     switch (status) {
       case "accepted":
@@ -94,81 +73,45 @@ export default function ProposalCard({
     }
   };
 
-  const getStatusText = (status: string) => t(`proposals.status.${status}`);
-
-  // === ACCEPT / REJECT HANDLERS ===
-  const handleAccept = async () => {
+  /** Chat Button Handler */
+  const handleStartChat = async (e: any) => {
+    e.stopPropagation(); // prevent triggering card click
     try {
       setLoadingAction(true);
-      if (onAccept) {
-        await onAccept(proposal);
-      } else {
-        await updateDoc(doc(db, "proposals", proposal.id), {
-          status: "accepted",
-          updatedAt: new Date(),
-        });
-      }
-    } catch (e) {
-      //console.error("Error accepting proposal:", e);
-    } finally {
-      setLoadingAction(false);
-    }
-  };
-
-  const handleReject = async () => {
-    try {
-      setLoadingAction(true);
-      if (onReject) {
-        await onReject(proposal);
-      } else {
-        await updateDoc(doc(db, "proposals", proposal.id), {
-          status: "rejected",
-          updatedAt: new Date(),
-        });
-      }
-    } catch (e) {
-      //console.error("Error rejecting proposal:", e);
-    } finally {
-      setLoadingAction(false);
-    }
-  };
-
-  // === START CHAT HANDLER ===
-  const handleStartChat = async () => {
-    try {
-      setLoadingAction(true);
-
-      // ✅ Ensure we have a valid user ID
       const currentUserId =
-        (activeTab === "received"
+        activeTab === "received"
           ? proposal.project?.clientId
-          : proposal.freelancerId) || "";
+          : proposal.freelancerId;
 
-      if (!currentUserId) {
-        //console.error("❌ Missing current user ID — cannot start chat");
-        return;
-      }
+      if (!currentUserId) return;
 
       const room = await createOrOpenChatRoom(
         proposal.projectId,
         currentUserId
       );
-      if (room) {
-        router.push(`/messages?project=${proposal.projectId}`);
-      } else {
-        //console.error("❌ Could not create or open chat room.");
-      }
-    } catch (err) {
-      //console.error("⚠️ Error starting chat:", err);
+      if (room) router.push(`/messages?project=${proposal.projectId}`);
     } finally {
       setLoadingAction(false);
     }
   };
 
-  // === RENDER ===
+  /** ------------------------------------
+   * Now clicking card navigates directly
+   * ------------------------------------ */
+  const navigateToDetails = () => {
+    router.push(`/proposals/${proposal.id}`);
+  };
+
   return (
-    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-border p-4 sm:p-6 transition-all hover:shadow-md">
-      {/* === Header === */}
+    <div
+      onClick={navigateToDetails}
+      className="
+        bg-white rounded-xl sm:rounded-2xl shadow-sm border border-border 
+        p-4 sm:p-6 transition-all cursor-pointer
+        hover:shadow-md hover:-translate-y-1
+      "
+    >
+      {/* HEADER */}
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-6 gap-4">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
           <Avatar
@@ -187,16 +130,15 @@ export default function ProposalCard({
             </p>
 
             <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-              {proposal.project?.skillsRequired
-                ?.slice(0, 3)
-                .map((skill: string, i: number) => (
-                  <span
-                    key={i}
-                    className="px-2 py-1 bg-primary-light text-primary text-xs rounded-full"
-                  >
-                    {skill}
-                  </span>
-                ))}
+              {proposal.project?.skillsRequired?.slice(0, 3).map((skill, i) => (
+                <span
+                  key={i}
+                  className="px-2 py-1 bg-primary-light text-primary text-xs rounded-full"
+                >
+                  {skill}
+                </span>
+              ))}
+
               {proposal.project?.skillsRequired &&
                 proposal.project.skillsRequired.length > 3 && (
                   <span className="px-2 py-1 bg-background-secondary text-text-secondary text-xs rounded-full">
@@ -207,14 +149,16 @@ export default function ProposalCard({
           </div>
         </div>
 
+        {/* STATUS + BUDGET */}
         <div className="flex flex-col items-center lg:items-end gap-3">
           <span
             className={`px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border ${getStatusColor(
               proposal.status
             )}`}
           >
-            {getStatusText(proposal.status)}
+            {t(`proposals.status.${proposal.status}`)}
           </span>
+
           <div className="text-center lg:text-right">
             <div className="text-lg sm:text-2xl font-bold text-primary">
               {formatEarnings(proposal.proposedBudget)}
@@ -226,15 +170,16 @@ export default function ProposalCard({
         </div>
       </div>
 
-      {/* === Details === */}
+      {/* DETAILS GRID */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        {/* Freelancer / Client */}
         <div className="bg-background-secondary rounded-xl p-3">
-          <h4 className="font-semibold text-text-primary mb-1 text-sm flex items-center gap-1">
-            <span className="w-1 h-3 bg-primary rounded-full"></span>
+          <h4 className="font-semibold text-text-primary mb-1 text-sm">
             {activeTab === "submitted"
               ? t("proposals.proposalCard.client")
               : t("proposals.proposalCard.freelancer")}
           </h4>
+
           <p className="text-xs text-text-secondary">{displayName}</p>
 
           {activeTab === "received" && (
@@ -249,6 +194,7 @@ export default function ProposalCard({
                   {t("common.noRating")}
                 </span>
               )}
+
               {totalProjects !== null && (
                 <span className="text-xs text-text-secondary flex items-center gap-1">
                   <BriefcaseIcon className="w-3 h-3 text-primary/60" />
@@ -259,9 +205,9 @@ export default function ProposalCard({
           )}
         </div>
 
+        {/* Duration */}
         <div className="bg-background-secondary rounded-xl p-3">
-          <h4 className="font-semibold text-text-primary mb-1 text-sm flex items-center gap-1">
-            <span className="w-1 h-3 bg-secondary rounded-full"></span>
+          <h4 className="font-semibold text-text-primary mb-1 text-sm">
             {t("proposals.proposalCard.duration")}
           </h4>
           <p className="text-xs text-text-secondary">
@@ -269,9 +215,9 @@ export default function ProposalCard({
           </p>
         </div>
 
+        {/* Submitted */}
         <div className="bg-background-secondary rounded-xl p-3">
-          <h4 className="font-semibold text-text-primary mb-1 text-sm flex items-center gap-1">
-            <span className="w-1 h-3 bg-success rounded-full"></span>
+          <h4 className="font-semibold text-text-primary mb-1 text-sm">
             {t("proposals.proposalCard.submitted")}
           </h4>
           <p className="text-xs text-text-secondary">
@@ -284,9 +230,9 @@ export default function ProposalCard({
           </p>
         </div>
 
+        {/* Work Samples */}
         <div className="bg-background-secondary rounded-xl p-3">
-          <h4 className="font-semibold text-text-primary mb-1 text-sm flex items-center gap-1">
-            <span className="w-1 h-3 bg-warning rounded-full"></span>
+          <h4 className="font-semibold text-text-primary mb-1 text-sm">
             {t("proposals.proposalCard.workSamples")}
           </h4>
           <p className="text-xs text-text-secondary">
@@ -295,56 +241,30 @@ export default function ProposalCard({
         </div>
       </div>
 
-      {/* === Actions === */}
+      {/* FOOTER ACTIONS */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-4 border-t border-border gap-3">
+        {/* View Details Link */}
         <Link
           href={`/proposals/${proposal.id}`}
-          className="text-xs sm:text-sm text-primary hover:text-primary-dark font-semibold flex items-center gap-1 hover:underline"
+          onClick={(e) => e.stopPropagation()} // prevent triggering card click
+          className="text-xs sm:text-sm text-primary font-semibold flex items-center gap-1 hover:underline"
         >
           <span className="w-1 h-3 bg-primary rounded-full"></span>
           {t("proposals.proposalCard.viewDetails")}
         </Link>
 
-        <div className="flex gap-3">
-          {proposal.status === "pending" && activeTab === "received" && (
-            <>
-              <button
-                disabled={loadingAction}
-                onClick={handleAccept}
-                className={`text-xs sm:text-sm font-semibold hover:underline ${
-                  loadingAction
-                    ? "text-success/50 cursor-not-allowed"
-                    : "text-success hover:text-success-dark"
-                }`}
-              >
-                {t("proposals.proposalCard.accept")}
-              </button>
-              <button
-                disabled={loadingAction}
-                onClick={handleReject}
-                className={`text-xs sm:text-sm font-semibold hover:underline ${
-                  loadingAction
-                    ? "text-error/50 cursor-not-allowed"
-                    : "text-error hover:text-error-dark"
-                }`}
-              >
-                {t("proposals.proposalCard.reject")}
-              </button>
-            </>
-          )}
-
-          {proposal.status === "accepted" && (
-            <button
-              onClick={handleStartChat}
-              disabled={loadingAction}
-              className="btn btn-primary text-xs sm:text-sm shadow hover:shadow-md transition-all"
-            >
-              {loadingAction
-                ? t("common.loading")
-                : t("proposals.proposalCard.startChat")}
-            </button>
-          )}
-        </div>
+        {/* Chat Button */}
+        {proposal.status === "accepted" && (
+          <button
+            onClick={handleStartChat}
+            disabled={loadingAction}
+            className="btn btn-primary text-xs sm:text-sm shadow hover:shadow-md transition-all"
+          >
+            {loadingAction
+              ? t("common.loading")
+              : t("proposals.proposalCard.startChat")}
+          </button>
+        )}
       </div>
     </div>
   );
