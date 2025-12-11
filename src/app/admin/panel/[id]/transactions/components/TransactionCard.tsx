@@ -45,7 +45,7 @@ export default function TransactionCard({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col gap-4 transition hover:shadow-md">
+    <div className="border border-border rounded-xl shadow-sm p-4 flex flex-col gap-4 transition hover:shadow-md bg-background">
       {/* Header: Avatar + user info + status */}
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
@@ -55,20 +55,20 @@ export default function TransactionCard({
             alt={profile?.fullName}
             name={profile?.fullName || "Unknown"}
             size="md"
-            className="border border-gray-300 shadow-sm"
+            className="border border-border shadow-sm"
           />
 
           {/* User details */}
           <div className="leading-tight max-w-[120px] truncate">
             <div
-              className="font-semibold text-gray-800 text-sm truncate"
+              className="font-semibold text-text-primary text-sm truncate"
               title={profile?.fullName || "Unknown User"}
             >
               {profile?.fullName || "Unknown User"}
             </div>
 
             <div
-              className="text-[11px] text-gray-500 font-mono truncate"
+              className="text-[11px] text-text-secondary font-mono truncate"
               title={profile?.email || tx.userId}
             >
               {profile?.email || tx.userId}
@@ -91,13 +91,13 @@ export default function TransactionCard({
       </div>
 
       {/* Transaction Details */}
-      <div className="flex flex-col gap-1 text-gray-700 text-sm">
+      <div className="flex flex-col gap-1 text-text-secondary text-sm">
         <div className="flex items-center gap-2">
           <Icon className="w-4 h-4 text-primary" />
           <span className="capitalize truncate">
             {tx.type.replace("_", " ")}
           </span>
-          <span className="text-gray-400">•</span>
+          <span className="text-text-muted">•</span>
           <Money amount={tx.amount} />
         </div>
 
@@ -111,7 +111,7 @@ export default function TransactionCard({
 
       {/* Withdraw Account Info */}
       {isWithdraw && (
-        <div className="text-xs text-gray-700 leading-tight bg-gray-50 p-2 rounded-lg border border-gray-100">
+        <div className="text-xs text-text-secondary leading-tight p-2 rounded-lg border border-border">
           <p className="font-medium">{tx.accountName || "—"}</p>
           {tx.accountNumber && (
             <p className="relative mt-0.5 flex items-center gap-1 truncate">
@@ -122,7 +122,7 @@ export default function TransactionCard({
               >
                 {tx.accountNumber}
               </button>
-              <Copy className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
+              <Copy className="w-3.5 h-3.5 text-text-muted hover:text-text-secondary" />
               {copied && (
                 <span className="absolute bg-black text-white text-[10px] px-2 py-1 rounded-md left-1/2 -translate-x-1/2 -top-5">
                   Copied!
@@ -134,7 +134,7 @@ export default function TransactionCard({
       )}
 
       {/* Metadata */}
-      <div className="text-[11px] text-gray-500 flex flex-wrap justify-between border-t pt-2">
+      <div className="text-[11px] text-text-secondary flex flex-wrap justify-between border-t border-border pt-2">
         <p className="truncate">
           {tx.createdAt
             ? new Date(tx.createdAt.toDate()).toLocaleString()

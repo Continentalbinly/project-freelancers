@@ -7,10 +7,11 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useProjects } from "./components/useProjects";
 import ProjectsFilters from "./components/ProjectsFilters";
 import ProjectsGrid from "./components/ProjectsGrid";
+import ProjectsSkeleton from "./components/ProjectsSkeleton";
 
 export default function ProjectsPage() {
   const { t } = useTranslationContext();
-  const { user, profile } = useAuth(); // 👈 We need profile for userRoles
+  const { user, profile } = useAuth();
   const {
     filteredProjects,
     loading,
@@ -60,22 +61,10 @@ export default function ProjectsPage() {
   };
 
   // -------------------------------------
-  // Loading State
-  // -------------------------------------
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
-        <p className="mt-4 text-text-secondary">{t("projects.loading")}</p>
-      </div>
-    );
-  }
-
-  // -------------------------------------
   // Page UI
   // -------------------------------------
   return (
-    <div className="bg-background">
+    <div className="">
       <ProjectsFilters
         filters={filters}
         setFilters={setFilters}
@@ -86,9 +75,13 @@ export default function ProjectsPage() {
       <section className="py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-text-primary">
-              {filteredProjects.length} {t("projects.results.title")}
-            </h2>
+            {loading ? (
+              <div className="h-7 w-40 bg-background-tertiary rounded" />
+            ) : (
+              <h2 className="text-2xl font-bold">
+                {filteredProjects.length} {t("projects.results.title")}
+              </h2>
+            )}
 
             {user && isClient && (
               <a href="/projects/create" className="btn btn-primary">
@@ -97,11 +90,15 @@ export default function ProjectsPage() {
             )}
           </div>
 
-          <ProjectsGrid
-            projects={filteredProjects}
-            t={t}
-            incrementProjectViews={incrementProjectViews}
-          />
+          {loading ? (
+            <ProjectsSkeleton />
+          ) : (
+            <ProjectsGrid
+              projects={filteredProjects}
+              t={t}
+              incrementProjectViews={incrementProjectViews}
+            />
+          )}
         </div>
       </section>
     </div>

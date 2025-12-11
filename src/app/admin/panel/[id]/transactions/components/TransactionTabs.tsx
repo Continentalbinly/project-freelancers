@@ -23,7 +23,7 @@ export default function TransactionTabs({
 
   return (
     <div className="max-w-8xl mx-auto px-6 pt-10">
-      <div className="flex gap-3 border-b border-gray-200">
+      <div className="flex gap-3 border-b border-border">
         {tabs.map((t) => (
           <button
             key={t.key}
@@ -31,7 +31,7 @@ export default function TransactionTabs({
             className={`pb-2 px-3 text-sm font-medium transition-colors ${
               currentStatus === t.key
                 ? "text-primary border-b-2 border-primary"
-                : "text-gray-600 hover:text-primary/80"
+                : "text-text-secondary hover:text-primary/80"
             }`}
           >
             {t.label}

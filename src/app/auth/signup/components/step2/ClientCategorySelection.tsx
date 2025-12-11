@@ -18,7 +18,7 @@ export default function ClientCategorySelection({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="bg-secondary-light/10 rounded-xl p-4 sm:p-6 border border-secondary/20">
+      <div className="bg-secondary/10 rounded-xl p-4 sm:p-6 border border-secondary/20">
         <h4 className="font-semibold text-secondary mb-3 sm:mb-4 flex items-center">
           <svg
             className="w-4 h-4 sm:w-5 sm:h-5 mr-2"
@@ -41,7 +41,7 @@ export default function ClientCategorySelection({
           <label
             className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
               formData.clientCategory === "teacher"
-                ? "border-secondary bg-secondary-light/20"
+                ? "border-secondary bg-secondary/10"
                 : "border-border hover:border-secondary/50"
             }`}
           >
@@ -52,7 +52,7 @@ export default function ClientCategorySelection({
               value="teacher"
               checked={formData.clientCategory === "teacher"}
               onChange={handleChange}
-              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border"
+              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border bg-background"
             />
             <div className="ml-3 sm:ml-4 flex-1">
               <div className="flex items-center mb-2">
@@ -71,7 +71,7 @@ export default function ClientCategorySelection({
                     />
                   </svg>
                 </div>
-                <span className="text-base sm:text-lg font-semibold text-text-primary">
+                <span className="text-base sm:text-lg font-semibold  ">
                   {t("auth.signup.step2.clientCategory.teacher.title")}
                 </span>
               </div>
@@ -85,7 +85,7 @@ export default function ClientCategorySelection({
           <label
             className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
               formData.clientCategory === "worker"
-                ? "border-secondary bg-secondary-light/20"
+                ? "border-secondary bg-secondary/10"
                 : "border-border hover:border-secondary/50"
             }`}
           >
@@ -96,7 +96,7 @@ export default function ClientCategorySelection({
               value="worker"
               checked={formData.clientCategory === "worker"}
               onChange={handleChange}
-              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border"
+              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border bg-background"
             />
             <div className="ml-3 sm:ml-4 flex-1">
               <div className="flex items-center mb-2">
@@ -115,7 +115,7 @@ export default function ClientCategorySelection({
                     />
                   </svg>
                 </div>
-                <span className="text-base sm:text-lg font-semibold text-text-primary">
+                <span className="text-base sm:text-lg font-semibold  ">
                   {t("auth.signup.step2.clientCategory.worker.title")}
                 </span>
               </div>
@@ -129,7 +129,7 @@ export default function ClientCategorySelection({
           <label
             className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
               formData.clientCategory === "freelancer"
-                ? "border-secondary bg-secondary-light/20"
+                ? "border-secondary bg-secondary/10"
                 : "border-border hover:border-secondary/50"
             }`}
           >
@@ -140,7 +140,7 @@ export default function ClientCategorySelection({
               value="freelancer"
               checked={formData.clientCategory === "freelancer"}
               onChange={handleChange}
-              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border"
+              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border bg-background"
             />
             <div className="ml-3 sm:ml-4 flex-1">
               <div className="flex items-center mb-2">
@@ -159,7 +159,7 @@ export default function ClientCategorySelection({
                     />
                   </svg>
                 </div>
-                <span className="text-base sm:text-lg font-semibold text-text-primary">
+                <span className="text-base sm:text-lg font-semibold  ">
                   {t("auth.signup.step2.clientCategory.freelancer.title")}
                 </span>
               </div>

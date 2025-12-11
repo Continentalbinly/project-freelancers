@@ -59,6 +59,9 @@ const lo = {
     credits: "ເຄຣດິດ",
     currncyLAK: "ກີບ",
     copy: "ຄັດລອກ",
+    viewAll: "ເບິ່ງທັງໝົດ",
+    editProfile: "ແກ້ໄຂໂປຣໄຟລ໌",
+    postProject: "ລົງໂປຣເຈັກທໍາອິດຂອງທ່ານ",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -139,11 +142,13 @@ const lo = {
     withdraw: "ຖອນເງິນ",
     balance: "ເຄຣດິດ",
     adminPanel: "ຜູ້ດູແລລະບົບ",
-    myProjects: "ໂປຣເຈັກ",
+    myProjects: "ວຽກຂ້ອຍ",
     account: "ບັນຊີ",
     projectManage: "ການຈັດການໂປຣເຈັກ",
     finance: "ການເງິນ",
     subscription: "ສະໝັກສະມາຊິກ",
+    findWork: "ຊອກຫາວຽກ",
+    hireFreelancer: "ຈ້າງຜູ້ເຮັດວຽກ",
   },
   // Add more keys as needed
   // Footer translations
@@ -1431,6 +1436,10 @@ const lo = {
     title: "ແດຊບອດ",
     subtitle: "ຍິນດີຕ້ອນຮັບ! ນີ້ແມ່ນສິ່ງທີ່ກຳລັງເກີດຂຶ້ນກັບໂປຣເຈັກຂອງທ່ານ.",
     loading: "ກຳລັງໂຫຼດແດຊບອດຂອງທ່ານ...",
+    activeProjects: "ໂປຣເຈັກທີ່ກຳລັງດຳເນີນຢູ່",
+    completedProjects: "ສຳເລັດແລ້ວ",
+    credits: "ເຄຣດິດ",
+    recentProjects: "ໂປຣເຈັກຫຼ້າສຸດ",
     stats: {
       activeProjects: "ໂປຣເຈັກທີ່ກຳລັງດຳເນີນຢູ່",
       totalEarned: "ລາຍໄດ້ທັງໝົດ",
@@ -1544,6 +1553,30 @@ const lo = {
       respondQuickly: "ຕອບສະໜອງໄວຕໍ່ການເຊີນໂປຣເຈັກ",
       buildPortfolio: "ສ້າງຜົນງານຂອງທ່ານດ້ວຍໂປຣເຈັກທີ່ສຳເລັດແລ້ວ",
     },
+  },
+  clientDashboard: {
+    postProject: "ລົງໂປຣເຈັກໃໝ່",
+    postProjectDesc: "ເລີ່ມຕົ້ນໂດຍການລົງໂປຣເຈັກທໍາອິດຂອງທ່ານ",
+    browseFfreelancers: "ຊອກຫາຜູ້ເຮັດວຽກອິດສະລະ",
+    browseFfreelancersDesc: "ຊອກຫາ ແລະ ຈ້າງຜູ້ເຮັດວຽກອິດສະລະທີ່ມີຄວາມສາມາດ",
+    subtitle: "ຈັດການໂປຣເຈັກ ແລະ ຈ້າງຜູ້ເຮັດວຽກອິດສະລະ",
+  },
+  freelancerDashboard: {
+    browseOpportunities: "ຊອກຫາໂອກາດ",
+    browseOpportunitiesDesc: "ຊອກຫາ ແລະ ສະໝັກໂປຣເຈັກໃໝ່",
+    myProposals: "ຂໍສະເໜີຂອງຂ້ອຍ",
+    myProposalsDesc: "ຕິດຕາມຂໍສະເໜີທີ່ສົ່ງແລ້ວ",
+    subtitle: "ຊອກຫາໂອກາດ ແລະ ຈັດການຂໍສະເໜີຂອງທ່ານ",
+    pendingProposals: "ຂໍສະເໜີທີ່ລໍຖ້າ",
+    activeProjects: "ໂປຣເຈັກທີ່ກຳລັງດຳເນີນຢູ່",
+    completedProjects: "ໂປຣເຈັກທີ່ສຳເລັດ",
+    totalEarned: "ລາຍໄດ້ທັງໝົດ",
+    completeProfile: "ສຳເລັດໂປຣໄຟລ໌ຂອງທ່ານ",
+    completeProfileDesc:
+      "ເພີ່ມຊີວະປະຫວັດ ແລະ ທັກສະເພື່ອດຶງດູດຜູ້ວ່າຈ້າງຫຼາຍຂຶ້ນ",
+    recentProposals: "ຂໍສະເໜີຫຼ້າສຸດ",
+    noProposals: "ຍັງບໍ່ມີຂໍສະເໜີ",
+    browseNow: "ຊອກຫາໂອກາດ",
   },
   // Project detail page translations
   projectDetail: {
@@ -2051,6 +2084,7 @@ const lo = {
         description: "ຮັບສະຫຼຸບປະຈຳອາທິດຂອງກິດຈະກຳຂອງທ່ານ",
       },
     },
+    notificationsDesc: "ຈັດການວິທີຮັບການແຈ້ງເຕືອນ ແລະ ຂໍ້ຄວາມອັບເດດ.",
     privacySecurity: {
       title: "ຄວາມເປັນສ່ວນຕົວ & ຄວາມປອດໄພ",
       profileVisibility: {
@@ -3042,7 +3076,7 @@ const lo = {
       posting_fee_adjust: "ປັບຄ່າທຳນຽມລົງໂປຣເຈັກ",
       posting_fee_refund: "ຄືນຄ່າທຳນຽມລົງໂປຣເຈັກ",
       proposal_fee: "ຄ່າທຳນຽມສະເໜີງານ",
-      proposal_refund: "ຄືນຄ່າທຳນຽມສະເໜີງານ"
+      proposal_refund: "ຄືນຄ່າທຳນຽມສະເໜີງານ",
     },
 
     status: {
@@ -3144,6 +3178,7 @@ const lo = {
   },
   myProjects: {
     title: "ໂປຣເຈັກທີ່ຖືຢູ່",
+    subtitle: "ເບິ່ງແລະຈັດການໂປຣເຈັກທີ່ທ່ານຖືຢູ່",
     stepper: {
       rateClient: "ໃຫ້ຄະແນນຜູ້ວ່າຈ້າງ",
       rateFreelancer: "ໃຫ້ຄະແນນຟຣີແລນຊ໌",
@@ -3212,6 +3247,14 @@ const lo = {
         noFiles: "ບໍ່ມີໄຟລ໌ໃຫ້ດາວໂຫຼດ.",
       },
     },
+    filters: {
+      all: "ໂປຣເຈັກທັງໝົດ",
+      open: "ໂປຣເຈັກເປີດ",
+      inProgress: "ໂປຣເຈັກທີ່ກຳລັງດໍາເນີນຢູ່",
+      completed: "ໂປຣເຈັກທີ່ສຳເລັດແລ້ວ",
+      awaitingReview: "ໂປຣເຈັກທີ່ລໍຖ້າການປະເມີນ",
+    },
+    noProjectsInFilter: "ບໍ່ມີໂປຣເຈັກໃນການຕັ້ງຄ່ານີ້.",
   },
   payout: {
     title: "ການຈ່າຍເງິນໂຄງການ",

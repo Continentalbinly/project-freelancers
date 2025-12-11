@@ -10,7 +10,7 @@ export default function BenefitsSection({ userRoles }: BenefitsSectionProps) {
   if (userRoles.length === 0) return null;
 
   return (
-    <div className="bg-gradient-to-r from-primary-light/20 to-secondary-light/20 rounded-xl p-4 sm:p-6 border border-primary/20">
+    <div className="bg-gradient-to-r from-primary/15 to-secondary/15 rounded-xl p-4 sm:p-6 border border-border">
       <h3 className="font-semibold text-primary mb-3 sm:mb-4 text-base sm:text-lg">
         {userRoles.length === 1
           ? userRoles[0] === "freelancer"
@@ -21,7 +21,7 @@ export default function BenefitsSection({ userRoles }: BenefitsSectionProps) {
       <div className="space-y-3 sm:space-y-4">
         {userRoles.includes("freelancer") && (
           <div className="space-y-2">
-            <h4 className="font-medium text-text-primary">
+            <h4 className="font-medium  ">
               {t("auth.signup.step1.benefits.freelancer.subtitle")}
             </h4>
             <ul className="text-sm text-text-secondary space-y-1">
@@ -34,7 +34,7 @@ export default function BenefitsSection({ userRoles }: BenefitsSectionProps) {
         )}
         {userRoles.includes("client") && (
           <div className="space-y-2">
-            <h4 className="font-medium text-text-primary">
+            <h4 className="font-medium  ">
               {t("auth.signup.step1.benefits.client.subtitle")}
             </h4>
             <ul className="text-sm text-text-secondary space-y-1">
@@ -47,7 +47,7 @@ export default function BenefitsSection({ userRoles }: BenefitsSectionProps) {
         )}
         {userRoles.length > 1 && (
           <div className="space-y-2">
-            <h4 className="font-medium text-text-primary">
+            <h4 className="font-medium  ">
               {t("auth.signup.step1.benefits.dual.subtitle")}
             </h4>
             <ul className="text-sm text-text-secondary space-y-1">

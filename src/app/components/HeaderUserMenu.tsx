@@ -27,16 +27,14 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
   };
 
   // 🌀 Show shimmer skeleton while auth is loading
-  if (loading) {
+    if (loading) {
     return (
       <div className="flex items-center space-x-4 animate-pulse">
         <div className="w-5 h-5 bg-background-tertiary rounded-lg" />
         <div className="w-8 h-8 bg-background-tertiary rounded-full" />
       </div>
     );
-  }
-
-  return (
+  }  return (
     <div className="flex items-center space-x-4">
       {user ? (
         <>
@@ -83,7 +81,7 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="md:hidden p-2 rounded-lg hover:bg-background-secondary transition-colors bu"
+            className="md:hidden p-2 rounded-lg hover:bg-background-secondary transition-colors"
             title={t("header.menu")}
           >
             <svg

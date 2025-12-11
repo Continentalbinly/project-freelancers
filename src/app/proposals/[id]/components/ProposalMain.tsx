@@ -14,10 +14,10 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
   return (
     <div className="lg:col-span-2 space-y-8">
       {/* ==== Project Info ==== */}
-      <section className="border border-border bg-white/60 backdrop-blur rounded-lg p-6 hover:shadow-sm transition-all">
+      <section className="border border-border bg-background p-6 hover:shadow-sm transition-all">
         <header className="flex flex-wrap justify-between items-start gap-3 mb-4">
           <div className="flex-1 min-w-[250px]">
-            <h2 className="text-xl font-semibold text-text-primary mb-1">
+            <h2 className="text-xl font-semibold mb-1">
               {proposal.project?.title || "Untitled Project"}
             </h2>
             <p className="text-sm text-text-secondary leading-relaxed mb-3">
@@ -28,7 +28,7 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
                 (skill: string, index: number) => (
                   <span
                     key={index}
-                    className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-medium rounded-md"
+                    className="px-2 py-0.5 bg-primary-light text-primary text-xs font-medium rounded-md"
                   >
                     {skill}
                   </span>
@@ -52,8 +52,8 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
 
       {/* ==== Cover Letter ==== */}
       {proposal.coverLetter && (
-        <section className="border border-border bg-white/60 backdrop-blur rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-text-primary mb-3 flex items-center gap-2">
+        <section className="border border-border bg-background backdrop-blur rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <DocumentTextIcon className="w-5 h-5 text-primary" />
             {t("proposals.detail.coverLetter")}
           </h3>
@@ -65,7 +65,7 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
 
       {/* ==== Milestones ==== */}
       {proposal.milestones?.length > 0 && (
-        <section className="border border-border bg-white/60 backdrop-blur rounded-lg p-6">
+        <section className="border border-border bg-background backdrop-blur rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <FlagIcon className="w-5 h-5 text-secondary" />
             {t("proposals.detail.milestones")}{" "}
@@ -79,7 +79,7 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
               <li key={index} className="py-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-medium text-sm text-text-primary mb-1">
+                    <p className="font-medium text-sm mb-1">
                       {m.title}
                     </p>
                     {m.description && (
@@ -100,7 +100,7 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
 
       {/* ==== Work Samples ==== */}
       {proposal.workSamples?.length > 0 && (
-        <section className="border border-border bg-white/60 backdrop-blur rounded-lg p-6">
+        <section className="border border-border bg-background backdrop-blur rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-5 flex items-center gap-2">
             <PhotoIcon className="w-5 h-5 text-secondary" />
             {t("proposals.detail.workSamples")}
@@ -114,7 +114,7 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
               <div
                 key={index}
                 onClick={() => setSelectedImage(sample.url)}
-                className="group relative overflow-hidden rounded-md border border-border bg-gray-50 hover:border-primary/40 transition-all cursor-pointer"
+                className="group relative overflow-hidden rounded-md border border-border bg-background-secondary hover:border-primary/40 transition-all cursor-pointer"
               >
                 <div className="aspect-square overflow-hidden">
                   <ProposalImage

@@ -14,8 +14,8 @@ export default function ProjectActions({ project, t }: any) {
     profile?.userCategory === "freelancer";
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-border p-6">
-      <h3 className="text-lg font-semibold text-text-primary mb-4">
+    <div className="rounded-lg shadow-sm border border-border dark:border-gray-800 p-6">
+      <h3 className="text-lg font-semibold   mb-4">
         {t("projectDetail.actions")}
       </h3>
 
@@ -32,7 +32,7 @@ export default function ProjectActions({ project, t }: any) {
 
         {/* 🚫 Cannot propose own project */}
         {user && project.status === "open" && isOwner && (
-          <div className="p-3 bg-background-secondary rounded-lg border border-border">
+          <div className="p-3 bg-background-secondary rounded-lg border border-border dark:border-gray-700">
             <p className="text-sm text-text-secondary text-center">
               {t("projectDetail.ownProjectMessage")}
             </p>
@@ -41,7 +41,7 @@ export default function ProjectActions({ project, t }: any) {
 
         {/* 🚫 Not a freelancer */}
         {user && project.status === "open" && !isOwner && !isFreelancer && (
-          <div className="p-3 bg-background-secondary rounded-lg border border-border">
+          <div className="p-3 bg-background-secondary rounded-lg border border-border dark:border-gray-700">
             <p className="text-sm text-text-secondary text-center">
               {t("projectDetail.onlyFreelancerMessage")}
             </p>

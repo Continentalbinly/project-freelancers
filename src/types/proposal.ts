@@ -61,6 +61,8 @@ export interface ProposalWithDetails extends Proposal {
     budget?: number;
     clientId: string;
     skillsRequired?: string[];
+    status?: string;
+    acceptedFreelancerId?: string;
   };
   freelancer?: {
     id: string;

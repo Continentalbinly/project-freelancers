@@ -20,8 +20,8 @@ export default function SearchBar({ t }: any) {
       onSubmit={handleSubmit}
       className="
         flex items-center justify-between
-        bg-white/95 backdrop-blur-lg
-        border border-gray-200 shadow-md
+        bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg
+        border border-gray-200 dark:border-gray-700 shadow-md
         rounded-full
         w-[95%] sm:w-[85%] md:w-[75%] lg:w-[70%] xl:w-[60%] 2xl:w-[55%]
         mx-auto mt-8
@@ -30,7 +30,7 @@ export default function SearchBar({ t }: any) {
         focus-within:ring-2 focus-within:ring-primary
       "
     >
-      <Search className="text-gray-500 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+      <Search className="text-gray-500 dark:text-gray-400 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
 
       <input
         type="text"
@@ -44,8 +44,8 @@ export default function SearchBar({ t }: any) {
           flex-1 bg-transparent border-none outline-none
           text-sm sm:text-base lg:text-lg
           px-3 sm:px-4
-          placeholder:text-gray-400
-          text-text-primary
+          placeholder:text-gray-400 dark:placeholder:text-gray-500
+          text-text-primary dark:text-gray-100
         "
       />
 

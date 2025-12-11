@@ -53,7 +53,7 @@ export default function GlobalStatus({ type, message }: GlobalStatusProps) {
           </div>
         )}
 
-        <h1 className="text-lg font-semibold text-text-primary">{title}</h1>
+        <h1 className="text-lg font-semibold  ">{title}</h1>
         <p className="text-sm text-text-secondary mt-1 max-w-sm">{subtitle}</p>
       </motion.div>
     </div>

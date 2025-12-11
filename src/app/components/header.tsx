@@ -17,7 +17,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-white border-b border-border sticky top-0 z-40">
+      <header className="bg-background border-b border-border sticky top-0 z-40 shadow-sm">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Left: Logo */}
           <div className="flex items-center">
@@ -25,8 +25,8 @@ export default function Header() {
               <Image
                 src="/favicon.svg"
                 alt="UniJobs logo"
-                width={60}
-                height={60}
+                width={50}
+                height={50}
                 className="rounded-md"
                 priority
               />

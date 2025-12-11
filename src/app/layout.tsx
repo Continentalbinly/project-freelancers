@@ -5,6 +5,7 @@ import CookieConsent from "./components/CookieConsent";
 import LanguageProvider from "./components/LanguageProvider";
 import LayoutWrapper from "./components/LayoutWrapper";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -58,26 +59,50 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth light">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        {/* Theme initialization script to prevent flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const savedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
+                
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                } else {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.style.colorScheme = 'light';
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansLao.variable} antialiased bg-background text-text-primary min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansLao.variable} antialiased    min-h-screen flex flex-col`}
       >
         <AuthProvider>
-          <LanguageProvider>
-            <LayoutWrapper>{children}</LayoutWrapper>
-            <CookieConsent />
-            <ToastContainer
-              position="top-right"
-              autoClose={2500}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="colored"
-            />
-          </LanguageProvider>
+          <ThemeProvider>
+            <LanguageProvider>
+              <LayoutWrapper>{children}</LayoutWrapper>
+              <CookieConsent />
+              <ToastContainer
+                position="top-right"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+              />
+            </LanguageProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

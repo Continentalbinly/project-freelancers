@@ -47,8 +47,8 @@ export default function UpdateProposalsCountPage() {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-sm border border-border p-6">
-          <h1 className="text-2xl font-bold text-text-primary mb-6">
+        <div className="rounded-lg shadow-sm border border-border p-6">
+          <h1 className="text-2xl font-bold   mb-6">
             Update Proposals Count
           </h1>
           

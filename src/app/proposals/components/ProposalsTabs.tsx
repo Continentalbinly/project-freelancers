@@ -11,16 +11,16 @@ export default function ProposalsTabs({
   t: any;
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-border mb-4">
+    <div className="bg-background rounded-xl shadow-sm border border-border mb-4">
       <nav className="flex px-4">
         {["submitted", "received"].map((tab) => (
           <button
             key={tab}
             onClick={() => onChange(tab as any)}
-            className={`flex-1 py-3 font-medium text-sm border-b-2 transition ${
+            className={`flex-1 py-3.5 font-semibold text-sm border-b-2 transition-all ${
               activeTab === tab
                 ? "border-primary text-primary"
-                : "border-transparent text-text-secondary hover:text-text-primary"
+                : "border-transparent text-text-secondary hover:text-primary"
             }`}
           >
             {t(`proposals.tabs.${tab}`)}

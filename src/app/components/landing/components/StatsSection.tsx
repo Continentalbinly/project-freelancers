@@ -18,7 +18,7 @@ export default function StatsSection({
   return (
     <section className="py-12 sm:py-16 lg:py-20 bg-background-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-4">
+        <h2 className="text-3xl sm:text-4xl font-bold mb-4">
           {t("landingPage.stats.title")}
         </h2>
 
@@ -29,7 +29,7 @@ export default function StatsSection({
                 className={`text-3xl sm:text-4xl font-bold text-${color} mb-2`}
               >
                 {loading ? (
-                  <div className="animate-pulse bg-gray-300 h-8 w-16 mx-auto rounded" />
+                  <div className="animate-pulse bg-background-tertiary h-8 w-16 mx-auto rounded" />
                 ) : (
                   value
                 )}

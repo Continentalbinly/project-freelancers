@@ -14,7 +14,7 @@ export default function SettingsTabs({ activeTab, onChange }: Props) {
   ];
 
   return (
-    <nav className="flex border-b border-border space-x-8 px-6">
+    <nav className="flex border-b border-border space-x-8 px-6 ">
       {tabs.map((tab) => (
         <button suppressHydrationWarning
           key={tab.id}

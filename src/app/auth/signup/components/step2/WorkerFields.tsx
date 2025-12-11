@@ -47,9 +47,13 @@ export default function WorkerFields({
 
   // Dynamic styling based on colorScheme prop
   const bgColor =
-    colorScheme === "primary" ? "bg-primary-light/10" : "bg-secondary-light/10";
+    colorScheme === "primary"
+      ? "bg-primary/10"
+      : "bg-secondary/10";
   const borderColor =
-    colorScheme === "primary" ? "border-primary/20" : "border-secondary/20";
+    colorScheme === "primary"
+      ? "border-primary/20"
+      : "border-secondary/20";
   const textColor =
     colorScheme === "primary" ? "text-primary" : "text-secondary";
   const focusRing =
@@ -60,8 +64,8 @@ export default function WorkerFields({
       : "bg-secondary hover:bg-secondary-hover";
   const badgeBg =
     colorScheme === "primary"
-      ? "bg-primary-light text-primary"
-      : "bg-secondary-light text-secondary";
+      ? "bg-primary/10 text-primary"
+      : "bg-secondary/10 text-secondary";
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -90,7 +94,7 @@ export default function WorkerFields({
           <div>
             <label
               htmlFor="institution"
-              className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+              className="block text-sm font-semibold   mb-2 sm:mb-3"
             >
               {labels?.company || t("auth.signup.step2.workerInfo.company")}
             </label>
@@ -101,7 +105,7 @@ export default function WorkerFields({
               type="text"
               value={formData.institution}
               onChange={handleChange}
-              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
               placeholder={
                 labels?.companyPlaceholder ||
                 t("auth.signup.step2.workerInfo.companyPlaceholder")
@@ -111,7 +115,7 @@ export default function WorkerFields({
           <div>
             <label
               htmlFor="department"
-              className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+              className="block text-sm font-semibold   mb-2 sm:mb-3"
             >
               {t("auth.signup.step2.workerInfo.department")}
             </label>
@@ -122,7 +126,7 @@ export default function WorkerFields({
               type="text"
               value={formData.department}
               onChange={handleChange}
-              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
               placeholder={t(
                 "auth.signup.step2.workerInfo.departmentPlaceholder"
               )}
@@ -135,7 +139,7 @@ export default function WorkerFields({
           <div>
             <label
               htmlFor="position"
-              className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+              className="block text-sm font-semibold   mb-2 sm:mb-3"
             >
               {t("auth.signup.step2.workerInfo.position")}
             </label>
@@ -146,7 +150,7 @@ export default function WorkerFields({
               type="text"
               value={formData.position}
               onChange={handleChange}
-              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
               placeholder={t(
                 "auth.signup.step2.workerInfo.positionPlaceholder"
               )}
@@ -155,7 +159,7 @@ export default function WorkerFields({
           <div>
             <label
               htmlFor="yearsOfExperience"
-              className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+              className="block text-sm font-semibold   mb-2 sm:mb-3"
             >
               {t("auth.signup.step2.workerInfo.yearsOfExperience")}
             </label>
@@ -167,7 +171,7 @@ export default function WorkerFields({
               min="0"
               value={formData.yearsOfExperience}
               onChange={handleChange}
-              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
               placeholder={t(
                 "auth.signup.step2.workerInfo.yearsOfExperiencePlaceholder"
               )}
@@ -179,7 +183,7 @@ export default function WorkerFields({
         <div className="mt-4 sm:mt-6">
           <label
             htmlFor="bio"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.workerInfo.bio")}
           </label>
@@ -189,14 +193,14 @@ export default function WorkerFields({
             rows={3}
             value={formData.bio}
             onChange={handleChange}
-            className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+            className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
             placeholder={t("auth.signup.step2.workerInfo.bioPlaceholder")}
           />
         </div>
 
         {/* Skills */}
         <div className="mt-4 sm:mt-6">
-          <label className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3">
+          <label className="block text-sm font-semibold   mb-2 sm:mb-3">
             {t("auth.signup.step2.workerInfo.skills")}
           </label>
           <div className="flex gap-2 mb-3">
@@ -208,7 +212,7 @@ export default function WorkerFields({
               onKeyPress={(e) =>
                 e.key === "Enter" && (e.preventDefault(), addSkill())
               }
-              className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+              className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
               placeholder={t("auth.signup.step2.workerInfo.addSkill")}
             />
             <button

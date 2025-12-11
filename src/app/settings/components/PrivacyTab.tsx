@@ -51,10 +51,10 @@ export default function PrivacyTab() {
         return (
           <div
             key={item.field}
-            className="flex items-center justify-between p-4 rounded-lg"
+            className="flex items-center justify-between p-4 rounded-lg bg-background border border-border shadow-sm"
           >
             <div>
-              <h4 className="font-medium text-text-primary">{item.title}</h4>
+              <h4 className="font-medium">{item.title}</h4>
               <p className="text-sm text-text-secondary">{item.desc}</p>
             </div>
 
@@ -62,7 +62,7 @@ export default function PrivacyTab() {
               suppressHydrationWarning
               onClick={() => toggle(item.field, fieldValue)}
               className={`w-12 h-6 rounded-full relative transition-colors ${
-                fieldValue ? "bg-primary" : "bg-gray-300"
+                fieldValue ? "bg-primary" : "bg-gray-300 dark:bg-gray-600"
               }`}
             >
               <div

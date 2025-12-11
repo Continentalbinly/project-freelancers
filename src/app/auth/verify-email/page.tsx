@@ -117,9 +117,9 @@ export default function VerifyEmailPage() {
 
   // ✅ UI for unverified users
   return (
-    <div className="bg-white py-6 px-5 sm:py-8 sm:px-8 shadow-lg rounded-lg border border-border w-full max-w-md mx-auto">
+    <div className="py-6 px-5 sm:py-8 sm:px-8 shadow-lg rounded-2xl border border-border bg-background w-full max-w-md mx-auto">
       <div className="text-center mb-6 sm:mb-8">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg
             className="w-7 h-7 sm:w-8 sm:h-8 text-primary"
             fill="none"
@@ -135,7 +135,7 @@ export default function VerifyEmailPage() {
           </svg>
         </div>
 
-        <h2 className="text-xl sm:text-2xl font-bold text-text-primary">
+        <h2 className="text-xl sm:text-2xl font-bold  ">
           {t("auth.verifyEmail.title") || "Verify your email"}
         </h2>
         <p className="text-text-secondary mt-2 text-sm sm:text-base">
@@ -161,7 +161,7 @@ export default function VerifyEmailPage() {
           </div>
         )}
 
-        <div className="bg-primary-light/10 p-4 rounded-md">
+        <div className="bg-primary/10 p-4 rounded-md border border-border">
           <h3 className="font-medium text-primary mb-2 text-sm sm:text-base">
             {t("auth.verifyEmail.whatsNextTitle") || "What happens next?"}
           </h3>

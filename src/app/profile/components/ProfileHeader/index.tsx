@@ -21,7 +21,7 @@ export default function ProfileHeader({
   };
 
   return (
-    <div className="bg-white rounded-sm shadow-sm border border-border p-6 sm:p-8">
+    <div className="rounded-sm shadow-sm border border-border dark:border-gray-800 p-6 sm:p-8">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Avatar Upload */}
         <AvatarSection

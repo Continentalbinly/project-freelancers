@@ -31,6 +31,7 @@ export default function PricingFuturePlans() {
   useEffect(() => {
     async function verifyUserProfileAndPlan() {
       if (!user?.uid) {
+        setProfileExists(false);
         setInitializing(false);
         return;
       }
@@ -41,45 +42,26 @@ export default function PricingFuturePlans() {
 
         if (!snapshot.exists()) {
           setProfileExists(false);
-
-          toast.error(
-            currentLanguage === "lo"
-              ? "ບັນຊີຂອງທ່ານຍັງບໍ່ສົມບູນ, ກະລຸນາລົງທະບຽນໃຫ້ສົມບູນ!"
-              : "Your account setup is incomplete. Please complete your registration!",
-            {
-              position: "top-right",
-              autoClose: 2500,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              theme: "colored",
-            }
-          );
-
-          setTimeout(() => router.push("/complete-profile"), 2000);
-          return;
-        }
-
-        setProfileExists(true);
-
-        const data = snapshot.data();
-        const plan = data.plan || null;
-
-        if (!plan) {
-          await updateDoc(profileRef, {
-            plan: "basic",
-            planStatus: "active",
-            planStartDate: serverTimestamp(),
-            planEndDate: null,
-            updatedAt: serverTimestamp(),
-          });
-          setUserPlan("basic");
         } else {
-          setUserPlan(plan);
+          setProfileExists(true);
+
+          const data = snapshot.data();
+          const plan = data.plan || null;
+
+          if (!plan) {
+            await updateDoc(profileRef, {
+              plan: "basic",
+              planStatus: "active",
+              planStartDate: serverTimestamp(),
+              planEndDate: null,
+              updatedAt: serverTimestamp(),
+            });
+            setUserPlan("basic");
+          } else {
+            setUserPlan(plan);
+          }
         }
       } catch (err) {
-        //console.error("Error verifying user profile:", err);
         toast.error(
           currentLanguage === "lo"
             ? "ມີບັນຫາໃນການກວດສອບບັນຊີ."
@@ -105,20 +87,15 @@ export default function PricingFuturePlans() {
   /** ✅ Handle subscription navigation */
   const goToSubscriptionPage = (plan: "pro") => {
     if (!user) {
-      toast.warn(
-        currentLanguage === "lo"
-          ? "⚠️ ກະລຸນາເຂົ້າລະບົບກ່ອນ!"
-          : "⚠️ Please sign in first to subscribe!",
-        { position: "top-right", autoClose: 3000, theme: "colored" }
-      );
+      router.push("/auth/login");
       return;
     }
 
     if (!profileExists) {
       toast.error(
         currentLanguage === "lo"
-          ? "ບັນຊີຂອງທ່ານຍັງບໍ່ມີໃນຖານຂໍ້ມູນ."
-          : "Your account profile is missing in database!",
+          ? "ກະລຸນາເຕີມຂໍ້ມູນໂປຣໄຟລ໌ກ່ອນເຂົ້າສະໝັກ."
+          : "Please complete your profile before subscribing.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -129,6 +106,7 @@ export default function PricingFuturePlans() {
           theme: "colored",
         }
       );
+      router.push("/complete-profile");
       return;
     }
 
@@ -136,24 +114,11 @@ export default function PricingFuturePlans() {
     router.push(`/billing/subscribe?plan=${plan}`);
   };
 
-  /** 🕐 Loading state */
-  if (initializing) {
+  /** 🕐 Loading state for signed-in users only */
+  if (initializing && user) {
     return (
-      <section className="py-20 text-center text-text-secondary">
+      <section className="py-20 text-center text-gray-600 dark:text-gray-300">
         <p>{t("common.loading") || "Loading subscription info..."}</p>
-      </section>
-    );
-  }
-
-  /** 🚫 Block UI if profile missing */
-  if (!profileExists) {
-    return (
-      <section className="py-20 text-center text-error">
-        <p>
-          {currentLanguage === "lo"
-            ? "ກຳລັງເປີດທາງໄປຫາໜ້າລົງທະບຽນ..."
-            : "Redirecting to registration..."}
-        </p>
       </section>
     );
   }
@@ -164,7 +129,7 @@ export default function PricingFuturePlans() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             {t("pricing.futurePlans.title")}
           </h2>
           <p className="text-lg text-text-secondary max-w-3xl mx-auto">
@@ -175,22 +140,22 @@ export default function PricingFuturePlans() {
         {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* ---------- BASIC (Free) ---------- */}
-          <div className="bg-white rounded-xl shadow-sm border border-border p-6 flex flex-col">
+          <div className="rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
             <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold text-text-primary mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {t("pricing.futurePlans.basic.title")}
               </h3>
-              <div className="text-3xl font-bold text-text-primary">Free</div>
-              <div className="text-text-secondary">
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">Free</div>
+              <div className="text-gray-600 dark:text-gray-300">
                 {t("pricing.futurePlans.basic.period")}
               </div>
             </div>
             <ul className="space-y-3 mb-6 flex-1">
               {translations.pricing.futurePlans.basic.features.map(
                 (feature: string, i: number) => (
-                  <li key={i} className="flex items-center text-text-secondary">
+                  <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
                     <svg
-                      className="w-4 h-4 text-success mr-2"
+                      className="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -207,7 +172,7 @@ export default function PricingFuturePlans() {
                 )
               )}
             </ul>
-            <div className="text-center text-success font-medium">
+            <div className="text-center text-green-700 dark:text-green-400 font-medium">
               {userPlan === "basic"
                 ? "You have the Basic plan"
                 : "Free plan included"}
@@ -215,29 +180,29 @@ export default function PricingFuturePlans() {
           </div>
 
           {/* ---------- PRO (50 000 ₭) ---------- */}
-          <div className="bg-white rounded-xl shadow-sm border border-primary p-6 relative flex flex-col">
+          <div className="rounded-xl shadow-sm border border-blue-500 dark:border-blue-400 p-6 relative flex flex-col">
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-              <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+              <span className="bg-blue-600 dark:bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                 {t("pricing.futurePlans.pro.badge")}
               </span>
             </div>
             <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold text-text-primary mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {t("pricing.futurePlans.pro.title")}
               </h3>
-              <div className="text-3xl font-bold text-text-primary">
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
                 ₭ 50,000
               </div>
-              <div className="text-text-secondary">
+              <div className="text-gray-600 dark:text-gray-300">
                 {t("pricing.futurePlans.pro.period")}
               </div>
             </div>
             <ul className="space-y-3 mb-6 flex-1">
               {translations.pricing.futurePlans.pro.features.map(
                 (feature: string, i: number) => (
-                  <li key={i} className="flex items-center text-text-secondary">
+                  <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
                     <svg
-                      className="w-4 h-4 text-success mr-2"
+                      className="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -264,28 +229,28 @@ export default function PricingFuturePlans() {
                 ? "Processing..."
                 : t("pricing.futurePlans.pro.cta")}
             </button>
-            <p className="text-xs text-text-secondary text-center mt-2">
+            <p className="text-xs text-gray-600 dark:text-gray-300 text-center mt-2">
               {t("pricing.futurePlans.pro.ctaNote")}
             </p>
           </div>
 
           {/* ---------- ENTERPRISE (Contact Admin) ---------- */}
-          <div className="bg-white rounded-xl shadow-sm border border-border p-6 flex flex-col">
+          <div className="rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
             <div className="text-center mb-6">
-              <h3 className="text-xl font-semibold text-text-primary mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {t("pricing.futurePlans.enterprise.title")}
               </h3>
-              <div className="text-3xl font-bold text-text-primary">Custom</div>
-              <div className="text-text-secondary">
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">Custom</div>
+              <div className="text-gray-600 dark:text-gray-300">
                 {t("pricing.futurePlans.enterprise.period")}
               </div>
             </div>
             <ul className="space-y-3 mb-6 flex-1">
               {translations.pricing.futurePlans.enterprise.features.map(
                 (feature: string, i: number) => (
-                  <li key={i} className="flex items-center text-text-secondary">
+                  <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
                     <svg
-                      className="w-4 h-4 text-success mr-2"
+                      className="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -310,7 +275,7 @@ export default function PricingFuturePlans() {
             >
               💬 Contact Admin
             </a>
-            <p className="text-xs text-text-secondary text-center mt-2">
+            <p className="text-xs text-gray-600 dark:text-gray-300 text-center mt-2">
               For enterprise access, please message our admin.
             </p>
           </div>

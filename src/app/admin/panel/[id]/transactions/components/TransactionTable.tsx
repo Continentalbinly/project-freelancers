@@ -17,7 +17,7 @@ export default function TransactionTable({
 }) {
   if (transactions.length === 0)
     return (
-      <div className="py-20 text-center text-gray-500">
+      <div className="py-20 text-center text-text-secondary">
         No transactions found.
       </div>
     );
@@ -26,10 +26,10 @@ export default function TransactionTable({
     <section className="py-10">
       <div className="max-w-8xl mx-auto px-4">
         {/* DESKTOP TABLE */}
-        <div className="hidden sm:block overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="hidden sm:block overflow-x-auto rounded-xl border border-border shadow-sm bg-background">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-border">
-              <tr className="text-left text-gray-700">
+            <thead className="border-b border-border">
+              <tr className="text-left text-text-secondary">
                 <th className="py-3.5 px-4 font-semibold">User</th>
                 <th className="py-3.5 px-4 font-semibold">Type</th>
                 <th className="py-3.5 px-4 font-semibold">Plan</th>

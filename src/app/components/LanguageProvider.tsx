@@ -34,14 +34,11 @@ function LanguageProviderInner({ children }: { children: React.ReactNode }) {
   );
 }
 
-// 🔹 Simple shimmer loading UI
+// 🔹 Lightweight, non-blocking loading bar tucked under the header
 function LanguageLoadingScreen() {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-white dark:from-slate-950 dark:to-slate-900 z-[9999]">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mb-4"></div>
-      <p className="text-text-secondary font-medium tracking-wide">
-        Loading language settings…
-      </p>
+    <div className="pointer-events-none fixed inset-x-0 top-16 z-[9999] h-0.5">
+      <div className="h-full w-full bg-gradient-to-r from-primary via-secondary to-primary animate-[shimmer_1.4s_linear_infinite] opacity-90 shadow-sm" />
     </div>
   );
 }

@@ -52,10 +52,10 @@ export default function NotificationsTab() {
       {items.map((item) => (
         <div
           key={item.field}
-          className="flex items-center justify-between p-4 rounded-lg"
+          className="flex items-center justify-between p-4 rounded-lg border border-border shadow-sm bg-background"
         >
           <div>
-            <h4 className="font-medium">{item.title}</h4>
+            <h4 className="font-medium  ">{item.title}</h4>
             <p className="text-sm text-text-secondary">{item.desc}</p>
           </div>
 
@@ -69,11 +69,11 @@ export default function NotificationsTab() {
             className={`w-12 h-6 rounded-full relative ${
               profile?.[item.field as keyof Profile]
                 ? "bg-primary"
-                : "bg-gray-300"
+                : "bg-gray-300 dark:bg-gray-600"
             }`}
           >
             <div
-              className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-transform ${
+              className={`w-4 h-4 rounded-full absolute top-1 transition-transform ${
                 profile?.[item.field as keyof Profile] ? "right-1" : "left-1"
               }`}
             />

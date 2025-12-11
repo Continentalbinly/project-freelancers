@@ -297,7 +297,7 @@ export default function AdminTransactionsPage() {
   // 🎨 RENDER
   // -------------------------------------------------------
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="min-h-screen">
       <TransactionHeader />
       <TransactionTabs currentStatus={statusParam} />
       <TransactionTable

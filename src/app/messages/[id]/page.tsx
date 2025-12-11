@@ -119,7 +119,7 @@ export default function ChatRoomPage() {
   );
   const statusColor =
     projectStatusLabels[projectStatus || "open"]?.color ||
-    "bg-gray-100 text-gray-600";
+    "text-gray-600";
 
   /** ------------------- 🔹 NO CHAT ROOM YET ------------------- */
   if (!chatRoom)
@@ -131,13 +131,13 @@ export default function ChatRoomPage() {
 
   /** ------------------- 💬 MAIN CHAT UI ------------------- */
   return (
-    <main className="flex flex-col h-screen bg-background-secondary">
+    <main className="flex flex-col h-screen bg-background">
       {/* 🔹 Header */}
-      <div className="lg:hidden sticky top-0 z-20 flex flex-col border-b border-border bg-white shadow-sm">
+      <div className="lg:hidden sticky top-0 z-20 flex flex-col border-b border-border bg-background shadow-sm">
         <div className="flex items-center gap-3 h-16 px-4">
           <button
             onClick={() => router.back()}
-            className="p-2 rounded-full hover:bg-background-secondary"
+            className="p-2 rounded-full hover:bg-background-secondary transition"
           >
             <ArrowLeftIcon className="w-5 h-5 text-text-secondary" />
           </button>
@@ -147,7 +147,7 @@ export default function ChatRoomPage() {
             size="lg"
           />
           <div className="flex flex-col truncate">
-            <span className="font-semibold text-text-primary truncate">
+            <span className="font-semibold   truncate">
               {receiver?.fullName || "User"}
             </span>
             <span className="text-xs text-text-secondary truncate">
@@ -158,18 +158,33 @@ export default function ChatRoomPage() {
 
         {/* 🟢 Status bar under header */}
         {chatRoom?.projectId && (
-          <div className="flex items-center justify-between px-4 py-2 bg-background-secondary border-t border-border">
-            <span
-              className={`text-xs font-medium px-3 py-1 rounded-full ${statusColor}`}
-            >
-              {statusLabel}
-            </span>
+          <div className="flex flex-col gap-3 px-4 py-3 bg-background-secondary border-t border-border shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 flex-shrink-0">
+                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex flex-col flex-1">
+                <span className="text-xs text-text-secondary font-medium">
+                  {currentLanguage === "lo" ? "ສະຖານະໂຄງການ" : "Project Status"}
+                </span>
+                <span
+                  className={`text-sm font-semibold px-3 py-1 rounded-full inline-flex items-center w-fit mt-1 ${statusColor}`}
+                >
+                  {statusLabel}
+                </span>
+              </div>
+            </div>
 
             {projectStatus !== "completed" && (
               <Link
                 href={`/my-projects/${chatRoom.projectId}/progress`}
-                className="text-xs font-medium text-primary hover:underline"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 hover:border-primary/40 rounded-lg transition-all duration-200 justify-center active:scale-98"
               >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
                 {currentLanguage === "lo" ? "ເບິ່ງຄວາມຄືບໜ້າ" : "View Progress"}
               </Link>
             )}
@@ -178,7 +193,7 @@ export default function ChatRoomPage() {
       </div>
 
       {/* 🔹 Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div className="flex-1 overflow-y-auto px-4 py-3 bg-background-secondary">
         {messages.map((m) => {
           const isMe = m.senderId === user?.uid;
           return (
@@ -197,7 +212,7 @@ export default function ChatRoomPage() {
                 className={`max-w-[75%] px-3 py-2 rounded-2xl ${
                   isMe
                     ? "bg-primary text-white"
-                    : "bg-white text-text-primary border border-border"
+                    : "bg-background border border-border"
                 }`}
               >
                 <p className="text-sm break-words">{m.message}</p>
@@ -210,7 +225,7 @@ export default function ChatRoomPage() {
 
       {/* 🔹 Input or Disabled Notice */}
       {projectStatus === "completed" ? (
-        <div className="text-center py-3 text-sm text-gray-500 border-t border-border bg-white">
+        <div className="text-center py-3 text-sm text-text-secondary border-t border-border bg-background-secondary">
           {currentLanguage === "lo"
             ? "ໂຄງການນີ້ສຳເລັດແລ້ວ — ບໍ່ສາມາດສົ່ງຂໍ້ຄວາມໄດ້."
             : "This project is completed — messaging is disabled."}

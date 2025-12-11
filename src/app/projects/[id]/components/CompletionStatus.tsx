@@ -78,18 +78,21 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
     if (clientDone && freelancerDone)
       return {
         label: t("projectDetail.projectCompleted"),
-        color: "bg-success-light text-success",
+        color:
+          "bg-success-light text-success dark:bg-emerald-900/30 dark:text-emerald-200",
         desc: t("projectDetail.projectCompletedDesc"),
       };
     if (freelancerDone)
       return {
         label: t("projectDetail.projectInReview"),
-        color: "bg-warning-light text-warning",
+        color:
+          "bg-warning-light text-warning dark:bg-amber-900/30 dark:text-amber-200",
         desc: t("projectDetail.projectInReviewDesc"),
       };
     return {
       label: t("projectDetail.noCompletionYet"),
-      color: "bg-background-secondary text-text-secondary",
+      color:
+        "bg-background-secondary text-text-secondary dark:text-gray-200",
       desc: t("projectDetail.noCompletionYetDesc"),
     };
   };
@@ -292,7 +295,9 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
     onChange: (val: number) => void;
   }) => (
     <div className="mb-3">
-      <p className="text-sm font-medium text-text-primary mb-1">{label}</p>
+      <p className="text-sm font-medium   mb-1">
+        {label}
+      </p>
       <div className="flex justify-center gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <StarIcon
@@ -308,8 +313,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-border p-6">
-      <h3 className="text-lg font-semibold text-text-primary mb-4">
+    <div className="rounded-lg shadow-sm border border-border dark:border-gray-800 p-6">
+      <h3 className="text-lg font-semibold   mb-4">
         {t("projectDetail.completionStatus")}
       </h3>
 
@@ -335,8 +340,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       {/* ⭐ Rating Modal */}
       {showRatingModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-[90%] text-center shadow-xl">
-            <h4 className="text-lg font-semibold text-text-primary mb-3">
+          <div className="rounded-xl p-6 max-w-sm w-[90%] text-center shadow-xl border border-border dark:border-gray-800">
+            <h4 className="text-lg font-semibold   mb-3">
               {isClient ? t("rating.rateFreelancer") : t("rating.rateClient")}
             </h4>
             <p className="text-sm text-text-secondary mb-4">
@@ -368,13 +373,13 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
               placeholder={t("rating.placeholder")}
               value={review}
               onChange={(e) => setReview(e.target.value)}
-              className="w-full border border-border rounded-md p-2 text-sm mb-4 focus:ring-2 focus:ring-primary"
+              className="w-full border border-border dark:border-gray-700 rounded-md p-2 text-sm mb-4 focus:ring-2 focus:ring-primary"
             />
 
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => setShowRatingModal(false)}
-                className="px-4 py-2.5 text-sm border border-border rounded-md"
+                className="px-4 py-2.5 text-sm border border-border dark:border-gray-700 rounded-md "
               >
                 {t("common.cancel")}
               </button>
@@ -394,8 +399,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       <div
         className={`mt-4 p-3 rounded-lg border ${
           freelancerDone
-            ? "border-primary bg-primary-light"
-            : "border-border bg-background"
+            ? "border-primary bg-primary-light dark:border-primary/60 dark:bg-primary/15"
+            : "border-border dark:border-gray-800 bg-background "
         }`}
       >
         <div className="flex justify-between mb-2">
@@ -428,8 +433,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       <div
         className={`mt-4 p-3 rounded-lg border ${
           clientDone
-            ? "border-success bg-success-light"
-            : "border-border bg-background"
+            ? "border-success bg-success-light dark:border-emerald-700 dark:bg-emerald-900/20"
+            : "border-border dark:border-gray-800 bg-background "
         }`}
       >
         <div className="flex justify-between mb-2">
@@ -462,13 +467,13 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       {/* ⚠️ Confirmation Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-[90%] text-center shadow-xl">
+          <div className="rounded-xl p-6 max-w-sm w-[90%] text-center shadow-xl border border-border dark:border-gray-800">
             <ExclamationTriangleIcon
               className={`w-10 h-10 mx-auto mb-3 ${
                 showModal === "freelancer" ? "text-primary" : "text-success"
               }`}
             />
-            <h4 className="text-lg font-semibold text-text-primary mb-2">
+            <h4 className="text-lg font-semibold   mb-2">
               {showModal === "freelancer"
                 ? t("projectDetail.confirmFreelancerTitle")
                 : t("projectDetail.confirmClientTitle")}
@@ -481,7 +486,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => setShowModal(null)}
-                className="px-4 py-2.5 text-sm border border-border rounded-md"
+                className="px-4 py-2.5 text-sm border border-border dark:border-gray-700 rounded-md "
               >
                 {t("common.cancel")}
               </button>

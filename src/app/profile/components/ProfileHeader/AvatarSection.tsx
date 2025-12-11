@@ -131,7 +131,7 @@ export default function AvatarSection({
           </div>
 
           {uploading ? (
-            <div className="w-full bg-gray-200 rounded-lg h-3 overflow-hidden">
+            <div className="w-full bg-gray-300 rounded-lg h-3 overflow-hidden">
               <div
                 className="bg-primary h-3 transition-all"
                 style={{ width: `${progress}%` }}

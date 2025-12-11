@@ -19,10 +19,10 @@ export default function AccountTab() {
 
   return (
     <div className="space-y-6">
-      <div className="p-4 rounded-lg">
-        <h4 className="font-medium mb-2">Email</h4>
+      <div className="p-4 rounded-lg border border-border shadow-sm bg-background">
+        <h4 className="font-medium mb-2  ">Email</h4>
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm font-mono">{user?.email}</span>
+          <span className="text-sm font-mono text-text-primary">{user?.email}</span>
           {user?.emailVerified ? (
             <span className="text-success text-xs font-semibold bg-success/10 px-2 py-1 rounded">
               Verified
@@ -36,10 +36,10 @@ export default function AccountTab() {
         {!user?.emailVerified && <EmailVerificationButton />}
       </div>
 
-      <div className="p-4 rounded-lg">
+      <div className="p-4 rounded-lg border border-border shadow-sm bg-background">
         <div className="flex items-center gap-2 mb-4">
           <LockClosedIcon className="w-5 h-5 text-primary" />
-          <h4 className="font-medium">
+          <h4 className="font-medium  ">
             {t("settings.accountSettings.accountSecurity.title")}
           </h4>
         </div>

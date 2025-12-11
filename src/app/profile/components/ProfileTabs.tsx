@@ -8,8 +8,8 @@ export default function ProfileTabs({ activeTab, setActiveTab, t }: any) {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-border">
-      <nav className="flex space-x-8 px-6 border-b border-border">
+    <div className="rounded-xl shadow-sm border border-border dark:border-gray-800">
+      <nav className="flex space-x-8 px-6 border-b border-border dark:border-gray-800">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -17,7 +17,7 @@ export default function ProfileTabs({ activeTab, setActiveTab, t }: any) {
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === tab.id
                 ? "border-primary text-primary"
-                : "border-transparent text-text-secondary hover:text-text-primary"
+                : "border-transparent text-text-secondary dark:hover:text-gray-100"
             }`}
           >
             <span className="mr-2">{tab.icon}</span>

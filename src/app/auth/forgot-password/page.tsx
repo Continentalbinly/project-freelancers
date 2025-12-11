@@ -33,9 +33,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="bg-white py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full max-w-md mx-auto">
+    <div className="py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-2xl border border-border bg-background w-full max-w-md mx-auto">
       <div className="text-center mb-4 sm:mb-6">
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-text-primary">Forgot Password</h2>
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold  ">Forgot Password</h2>
         <p className="text-text-secondary mt-2 text-sm sm:text-base">
           Enter your email address and we'll send you a password reset link.
         </p>
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
           </div>
         )}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
+          <label htmlFor="email" className="block text-sm font-medium   mb-2">
             Email Address
           </label>
           <input suppressHydrationWarning
@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full px-3 sm:px-3 py-2 sm:py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-3 sm:px-3 py-2 sm:py-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="Enter your email"
           />
         </div>

@@ -16,10 +16,18 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function MobileNavBar() {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const { t } = useTranslationContext();
 
-  const isActive = (href: string) => pathname === href;
+  const isFreelancer = profile?.userType?.includes("freelancer");
+  const isClient = profile?.userType?.includes("client");
+
+  const isActive = (href: string) => {
+    if (href === "/" && (pathname === "/" || pathname === "/dashboard")) {
+      return true;
+    }
+    return pathname === href;
+  };
 
   const guestLinks = [
     { href: "/", label: t("header.home"), icon: Home },
@@ -31,11 +39,12 @@ export default function MobileNavBar() {
     { href: "/", label: t("header.home"), icon: Home },
     { href: "/my-projects", label: t("header.myProjects"), icon: Backpack },
     { href: "/proposals", label: t("header.proposals"), icon: PlusSquare },
-    {
-      href: "/transactions",
-      label: t("header.transactions"),
-      icon: ArrowLeftRight,
-    },
+    // Role-based 4th link
+    isFreelancer
+      ? { href: "/projects", label: t("header.findWork"), icon: Folder }
+      : isClient
+      ? { href: "/freelancers", label: t("header.hireFreelancer"), icon: User }
+      : { href: "/transactions", label: t("header.transactions"), icon: ArrowLeftRight },
     { href: "/profile", label: t("header.profile"), icon: User },
   ];
 

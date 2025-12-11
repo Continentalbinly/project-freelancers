@@ -19,7 +19,7 @@ export default function ProjectSamples({
   return (
     <div className="mt-6">
       {/* 🏷️ Section Title */}
-      <h3 className="text-lg font-semibold mb-3">
+      <h3 className="text-lg font-semibold   mb-3">
         {t("projectDetail.projectSamples") || "Project Samples"}
       </h3>
 
@@ -28,7 +28,7 @@ export default function ProjectSamples({
         {sampleImages.map((url, i) => (
           <div
             key={i}
-            className="relative w-full aspect-square overflow-hidden rounded-lg border border-border bg-gray-50 cursor-pointer"
+            className="relative w-full aspect-square overflow-hidden rounded-lg border border-border dark:border-gray-800 cursor-pointer"
             onClick={() => setPreviewUrl(url)}
           >
             <img

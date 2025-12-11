@@ -15,10 +15,10 @@ export default function CategoryRow({
   onDelete: () => void;
 }) {
   return (
-    <tr className="hover:bg-gray-50 transition-colors duration-150">
-      <td className="py-3 px-4 text-gray-500">{index + 1}</td>
-      <td className="py-3 px-4 text-gray-800 font-medium">{cat.name_en}</td>
-      <td className="py-3 px-4 text-gray-600">{cat.name_lo || "—"}</td>
+    <tr className="hover:transition-colors duration-150">
+      <td className="py-3 px-4 text-text-muted">{index + 1}</td>
+      <td className="py-3 px-4 text-text-primary">{cat.name_en}</td>
+      <td className="py-3 px-4 text-text-secondary">{cat.name_lo || "—"}</td>
       <td className="py-3 px-4 text-center">
         <div className="flex justify-center gap-3">
           <button

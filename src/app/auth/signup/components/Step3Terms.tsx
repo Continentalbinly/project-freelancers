@@ -21,14 +21,14 @@ export default function Step3Terms({ formData, setFormData }: Step3TermsProps) {
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center mb-6 sm:mb-8">
-        <h3 className="text-xl sm:text-2xl font-semibold text-text-primary mb-2">
+        <h3 className="text-xl sm:text-2xl font-semibold   mb-2">
           {t("auth.signup.step3.title")}
         </h3>
         <p className="text-text-secondary">{t("auth.signup.step3.subtitle")}</p>
       </div>
 
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex items-start space-x-3 sm:space-x-4 p-4 sm:p-6 bg-background-secondary rounded-lg">
+        <div className="flex items-start space-x-3 sm:space-x-4 p-4 sm:p-6 border border-border rounded-xl shadow-sm bg-background">
           <input
             suppressHydrationWarning
             id="acceptTerms"
@@ -37,7 +37,7 @@ export default function Step3Terms({ formData, setFormData }: Step3TermsProps) {
             required
             checked={formData.acceptTerms}
             onChange={handleCheckboxChange}
-            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border rounded"
+            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border bg-background rounded"
           />
           <label htmlFor="acceptTerms" className="text-sm text-text-secondary">
             {t("auth.signup.step3.termsOfService.label")
@@ -58,7 +58,7 @@ export default function Step3Terms({ formData, setFormData }: Step3TermsProps) {
           </label>
         </div>
 
-        <div className="flex items-start space-x-3 sm:space-x-4 p-4 sm:p-6 bg-background-secondary rounded-lg">
+        <div className="flex items-start space-x-3 sm:space-x-4 p-4 sm:p-6 border border-border rounded-xl shadow-sm bg-background">
           <input
             suppressHydrationWarning
             id="acceptPrivacyPolicy"
@@ -67,7 +67,7 @@ export default function Step3Terms({ formData, setFormData }: Step3TermsProps) {
             required
             checked={formData.acceptPrivacyPolicy}
             onChange={handleCheckboxChange}
-            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border rounded"
+            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border bg-background rounded"
           />
           <label
             htmlFor="acceptPrivacyPolicy"
@@ -91,7 +91,7 @@ export default function Step3Terms({ formData, setFormData }: Step3TermsProps) {
           </label>
         </div>
 
-        <div className="flex items-start space-x-3 sm:space-x-4 p-4 sm:p-6 bg-background-secondary rounded-lg">
+        <div className="flex items-start space-x-3 sm:space-x-4 p-4 sm:p-6 border border-border rounded-xl shadow-sm bg-background">
           <input
             suppressHydrationWarning
             id="acceptMarketingEmails"
@@ -99,7 +99,7 @@ export default function Step3Terms({ formData, setFormData }: Step3TermsProps) {
             type="checkbox"
             checked={formData.acceptMarketingEmails}
             onChange={handleCheckboxChange}
-            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border rounded"
+            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border bg-background rounded"
           />
           <label
             htmlFor="acceptMarketingEmails"

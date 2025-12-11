@@ -33,7 +33,7 @@ export default function Step2PersonalInfo({
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="text-center mb-6 sm:mb-8">
-        <h3 className="text-xl sm:text-2xl font-semibold text-text-primary mb-2">
+        <h3 className="text-xl sm:text-2xl font-semibold   mb-2">
           {t("auth.signup.step2.title")}
         </h3>
         <p className="text-text-secondary">{t("auth.signup.step2.subtitle")}</p>

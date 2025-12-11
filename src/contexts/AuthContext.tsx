@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
 import { auth } from '@/service/firebase'
 import { Profile } from '@/types/profile'
@@ -49,11 +49,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (user) {
       await fetchProfile(user)
     }
-  }
+  }, [user])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {

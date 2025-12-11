@@ -17,7 +17,7 @@ export default function FooterSection({
       {/* Mobile accordion header */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center justify-between w-full md:hidden text-left font-semibold text-text-primary py-2"
+        className="flex items-center justify-between w-full md:hidden text-left font-semibold   py-2 hover:text-primary transition-colors"
       >
         {title}
         <svg
@@ -36,7 +36,7 @@ export default function FooterSection({
       </button>
 
       {/* Section title for desktop */}
-      <h3 className="hidden md:block font-semibold text-text-primary mb-3">
+      <h3 className="hidden md:block font-semibold   mb-3">
         {title}
       </h3>
 

@@ -34,8 +34,8 @@ export default function SettingsOverviewPage() {
   ];
 
   return (
-    <div className="py-8 px-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
+    <div className="py-8 px-4 bg-gray-50 min-h-screen dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {t("settings.title") || "Settings"}
       </h1>
 
@@ -44,18 +44,18 @@ export default function SettingsOverviewPage() {
           <Link
             key={key}
             href={`/settings/${key}`} // ✅ Now links to /settings/privacy, etc.
-            className="block bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center justify-between hover:shadow-md active:scale-[0.99] transition-all"
+            className="bg-background rounded-xl border border-border shadow-sm p-4 flex items-center justify-between hover:shadow-md active:scale-[0.99] transition-all"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary/10 rounded-lg">
                 <Icon className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800">{title}</h3>
-                <p className="text-sm text-gray-500">{desc}</p>
+                <h3 className="font-semibold">{title}</h3>
+                <p className="text-sm text-text-secondary">{desc}</p>
               </div>
             </div>
-            <span className="text-gray-400 text-sm">›</span>
+            <span className="text-gray-400 dark:text-gray-500 text-sm">›</span>
           </Link>
         ))}
       </div>

@@ -7,12 +7,12 @@ export default function ProposalHeader({ router, t }: any) {
       <div className="flex items-center gap-4 mb-6">
         <button
           onClick={() => router.back()}
-          className="p-2 rounded-lg bg-white shadow-sm border border-border hover:shadow-md transition-all"
+          className="p-2 rounded-lg bg-background shadow-sm border border-border hover-surface"
         >
-          <ChevronLeftIcon className="w-5 h-5 text-text-primary" />
+          <ChevronLeftIcon className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl sm:text-3xl font-bold">
             {t("proposals.detail.title")}
           </h1>
           <p className="text-text-secondary">

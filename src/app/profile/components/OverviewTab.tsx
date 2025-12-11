@@ -94,7 +94,7 @@ export default function OverviewTab({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Personal Info */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-text-primary">
+          <h3 className="text-lg font-semibold  ">
             {t("profile.personalInfo.title")}
           </h3>
 
@@ -132,7 +132,7 @@ export default function OverviewTab({
 
         {/* Recent Activity */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-text-primary">
+          <h3 className="text-lg font-semibold  ">
             {t("profile.recentActivity.title")}
           </h3>
 
@@ -141,10 +141,10 @@ export default function OverviewTab({
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="p-3 bg-background-secondary rounded-lg animate-pulse"
+                  className="p-3 bg-background-secondary rounded-lg animate-pulse border border-border dark:border-gray-700"
                 >
-                  <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 rounded mb-2 w-3/4"></div>
+                  <div className="h-3 rounded w-1/2"></div>
                 </div>
               ))}
             </div>
@@ -153,10 +153,10 @@ export default function OverviewTab({
               {userProjects.slice(0, 3).map((project: any) => (
                 <div
                   key={project.id}
-                  className="p-3 bg-background-secondary rounded-lg"
+                  className="p-3 bg-background-secondary rounded-lg border border-border dark:border-gray-700"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-text-primary">
+                    <h4 className="font-medium  ">
                       {project.title}
                     </h4>
                     <span
@@ -187,9 +187,9 @@ export default function OverviewTab({
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between p-3 bg-background-secondary rounded-lg">
+    <div className="flex items-center justify-between p-3 bg-background-secondary rounded-lg border border-border dark:border-gray-700">
       <span className="text-sm text-text-secondary">{label}</span>
-      <span className="text-sm font-medium text-text-primary">{value}</span>
+      <span className="text-sm font-medium  ">{value}</span>
     </div>
   );
 }

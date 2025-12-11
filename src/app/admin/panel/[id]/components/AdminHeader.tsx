@@ -28,12 +28,12 @@ export default function AdminHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-40 supports-[backdrop-filter]:backdrop-blur-sm border-b border-border bg-background shadow-sm">
       <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
         {/* 🏷️ Title */}
         <div className="flex items-center gap-2">
           <Shield className="w-6 h-6 text-primary" />
-          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent select-none">
+          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent select-none">
             Admin Panel
           </h1>
         </div>
@@ -44,7 +44,7 @@ export default function AdminHeader() {
             <Link
               key={label}
               href={href}
-              className="group flex items-center gap-2 border border-primary/20 text-primary/90 hover:text-primary bg-white hover:bg-primary/5 active:scale-[0.98] rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="group flex items-center gap-2 border border-border text-text-primary hover:text-primary hover:border-primary hover:bg-primary/5 active:scale-[0.98] rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
               <Icon className="w-4 h-4 transition-transform duration-300 group-hover:rotate-6" />
               {label}
@@ -55,25 +55,25 @@ export default function AdminHeader() {
         {/* 📱 Mobile Menu Button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="sm:hidden p-2 rounded-md border border-gray-300 hover:bg-gray-100 transition"
+          className="sm:hidden p-2 rounded-md border border-border text-text-primary transition bg-background"
         >
           {menuOpen ? (
-            <X className="w-5 h-5 text-gray-700" />
+            <X className="w-5 h-5 text-text-primary" />
           ) : (
-            <Menu className="w-5 h-5 text-gray-700" />
+            <Menu className="w-5 h-5 text-text-primary" />
           )}
         </button>
       </div>
 
       {/* 📱 Mobile Dropdown */}
       {menuOpen && (
-        <div className="sm:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md">
+        <div className="sm:hidden border-t border-border supports-[backdrop-filter]:backdrop-blur-sm bg-background">
           <nav className="flex flex-col items-start px-4 py-3 space-y-2">
             {links.map(({ label, href, icon: Icon }) => (
               <Link
                 key={label}
                 href={href}
-                className="flex items-center gap-2 w-full text-sm font-medium text-gray-700 hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2 transition-all"
+                className="flex items-center gap-2 w-full text-sm font-medium text-text-primary hover:text-primary hover:bg-primary/5 rounded-lg px-3 py-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                 onClick={() => setMenuOpen(false)}
               >
                 <Icon className="w-4 h-4 text-primary" />

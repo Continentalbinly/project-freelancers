@@ -165,7 +165,7 @@ export default function SignupPage() {
   // ✅ render redirecting state AFTER all hooks
   if (showRedirecting) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="flex items-center justify-center min-h-[50vh] ">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3"></div>
           <p className="text-text-secondary">
@@ -178,9 +178,9 @@ export default function SignupPage() {
 
   // ✅ Regular render
   return (
-    <div className="bg-white py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full max-w-4xl mx-auto">
+    <div className="py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-xl rounded-2xl border border-border bg-background w-full max-w-4xl mx-auto">
       <div className="text-center mb-4 sm:mb-6 lg:mb-8">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-text-primary mb-2">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold   mb-2">
           {t("auth.signup.title")}
         </h2>
         <p className="text-text-secondary text-sm sm:text-base lg:text-lg">
