@@ -19,16 +19,16 @@ export default function SettingsDetailPage() {
   };
 
   return (
-    <div className="">
+    <div className="bg-background-secondary min-h-screen">
       {/* 🧭 Header */}
-      <div className="sticky top-16 bg-white shadow-sm px-4 py-3 flex items-center gap-2 z-40">
+      <div className="sticky top-16 bg-background shadow-sm border-b border-border px-4 py-3 flex items-center gap-2 z-20">
         <button
           onClick={() => router.push("/settings")}
-          className="p-2 rounded-md hover:bg-gray-100 transition"
+          className="p-2 rounded-md hover:bg-background-secondary transition"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <ChevronLeft className="w-5 h-5 text-text-secondary" />
         </button>
-        <h2 className="text-lg font-semibold text-gray-800">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           {titleMap[tab as string] || "Settings"}
         </h2>
       </div>

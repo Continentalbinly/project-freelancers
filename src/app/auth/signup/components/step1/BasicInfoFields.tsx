@@ -33,7 +33,7 @@ export default function BasicInfoFields({
       <div>
         <label
           htmlFor="fullName"
-          className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+          className="block text-sm font-semibold   mb-2 sm:mb-3"
         >
           {t("auth.signup.step1.fullName")}
         </label>
@@ -45,9 +45,7 @@ export default function BasicInfoFields({
           required
           value={formData.fullName}
           onChange={handleChange}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg 
-                     focus:outline-none focus:ring-2 focus:ring-primary 
-                     focus:border-transparent transition-all duration-200"
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
           placeholder={t("auth.signup.step1.fullNamePlaceholder")}
         />
       </div>
@@ -56,7 +54,7 @@ export default function BasicInfoFields({
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+          className="block text-sm font-semibold   mb-2 sm:mb-3"
         >
           {t("auth.signup.step1.email")}
         </label>
@@ -68,9 +66,7 @@ export default function BasicInfoFields({
           required
           value={formData.email}
           onChange={handleChange}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg 
-                     focus:outline-none focus:ring-2 focus:ring-primary 
-                     focus:border-transparent transition-all duration-200"
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
           placeholder={t("auth.signup.step1.emailPlaceholder")}
         />
       </div>
@@ -79,7 +75,7 @@ export default function BasicInfoFields({
       <div>
         <label
           htmlFor="password"
-          className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+          className="block text-sm font-semibold   mb-2 sm:mb-3"
         >
           {t("auth.signup.step1.password")}
         </label>
@@ -94,10 +90,10 @@ export default function BasicInfoFields({
             handleChange(e);
             setPasswordMatchError(e.target.value !== confirmPassword);
           }}
-          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg 
+          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg bg-background 
             ${
               passwordMatchError
-                ? "border-red-500 focus:ring-red-500"
+                ? "border-error focus:ring-error"
                 : "border-border focus:ring-primary"
             } 
             focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200`}
@@ -109,7 +105,7 @@ export default function BasicInfoFields({
       <div>
         <label
           htmlFor="confirmPassword"
-          className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+          className="block text-sm font-semibold   mb-2 sm:mb-3"
         >
           {t("auth.signup.step1.confirmPassword") || "Confirm Password"}
         </label>
@@ -121,10 +117,10 @@ export default function BasicInfoFields({
           required
           value={confirmPassword}
           onChange={handleConfirmChange}
-          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg 
+          className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg bg-background 
             ${
               passwordMatchError
-                ? "border-red-500 focus:ring-red-500"
+                ? "border-error focus:ring-error"
                 : "border-border focus:ring-primary"
             } 
             focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200`}
@@ -134,7 +130,7 @@ export default function BasicInfoFields({
           }
         />
         {passwordMatchError && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-error text-sm mt-1">
             {t("auth.signup.step1.passwordsDoNotMatch") ||
               "Passwords do not match"}
           </p>

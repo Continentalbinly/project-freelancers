@@ -20,7 +20,9 @@ export default function ProgressSteps({ currentStep }: ProgressStepsProps) {
             {step < 3 && (
               <div
                 className={`w-4 sm:w-8 lg:w-16 h-1 mx-1 sm:mx-2 lg:mx-4 rounded-full transition-all duration-300 ${
-                  currentStep > step ? "bg-primary" : "bg-background-secondary"
+                  currentStep > step
+                    ? "bg-primary"
+                    : "bg-background-secondary "
                 }`}
               />
             )}

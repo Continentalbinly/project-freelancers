@@ -28,8 +28,8 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-border p-6">
-      <h3 className="text-lg font-semibold text-text-primary mb-4">
+    <div className="rounded-lg shadow-sm border border-border dark:border-gray-800 p-6">
+      <h3 className="text-lg font-semibold   mb-4">
         {t("projectDetail.projectDetails")}
       </h3>
 
@@ -39,7 +39,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
           <span className="text-text-secondary">
             {t("projectDetail.budget")}:
           </span>
-          <span className="font-semibold text-text-primary">
+          <span className="font-semibold  ">
             {formatBudget(project.budget, project.budgetType)}
           </span>
         </div>
@@ -49,7 +49,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
           <span className="text-text-secondary">
             {t("projectDetail.category")}:
           </span>
-          <span className="font-semibold text-text-primary">
+          <span className="font-semibold  ">
             {getLocalizedCategoryName(project.category)}
           </span>
         </div>
@@ -60,7 +60,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
             <span className="text-text-secondary">
               {t("projectDetail.timeline")}:
             </span>
-            <span className="font-semibold text-text-primary">
+            <span className="font-semibold  ">
               {project.timeline}
             </span>
           </div>
@@ -71,7 +71,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
           <span className="text-text-secondary">
             {t("projectDetail.posted")}:
           </span>
-          <span className="font-semibold text-text-primary">
+          <span className="font-semibold  ">
             {timeAgo(project.createdAt, currentLanguage)}
           </span>
         </div>
@@ -81,7 +81,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
           <span className="text-text-secondary">
             {t("projectDetail.lastUpdated")}:
           </span>
-          <span className="font-semibold text-text-primary">
+          <span className="font-semibold  ">
             {timeAgo(project.updatedAt, currentLanguage)}
           </span>
         </div>

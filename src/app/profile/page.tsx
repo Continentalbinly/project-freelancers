@@ -75,7 +75,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
+    <div className="min-h-screen bg-background ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* === Profile Header === */}
         <ProfileHeader
@@ -90,8 +90,8 @@ export default function ProfilePage() {
         />
 
         {/* === Tabs === */}
-        <div className="bg-white rounded-xl shadow-sm border border-border">
-          <div className="border-b border-border flex space-x-8 px-6">
+        <div className="rounded-xl shadow-sm border border-border dark:border-gray-800">
+          <div className="border-b border-border dark:border-gray-800 flex space-x-8 px-6">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -99,7 +99,7 @@ export default function ProfilePage() {
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === tab.id
                     ? "border-primary text-primary"
-                    : "border-transparent text-text-secondary hover:text-text-primary"
+                    : "border-transparent text-text-secondary dark:hover:text-gray-100"
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>

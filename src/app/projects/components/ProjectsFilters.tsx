@@ -61,7 +61,7 @@ export default function ProjectsFilters({
 
   return (
     <section
-      className="sticky top-16 z-30 bg-white/90 backdrop-blur-md border-b border-border 
+      className="sticky top-16 z-30 /80 backdrop-blur-md border-b border-border dark:border-gray-800
                  shadow-sm transition-all duration-300 ease-in-out"
     >
       {/* ✅ Balanced vertical padding for perfect centering */}
@@ -74,7 +74,7 @@ export default function ProjectsFilters({
               placeholder={t("projects.search.placeholder")}
               value={filters.search}
               onChange={(e) => update("search", e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg   dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +93,7 @@ export default function ProjectsFilters({
           </div>
           <button
             onClick={() => setMobileOpen((p) => !p)}
-            className="px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium hover:border-primary hover:text-primary transition-all"
+            className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium   dark:text-gray-100 hover:border-primary hover:text-primary transition-all"
           >
             {mobileOpen ? t("common.hideFilters") : t("common.filters")}
           </button>
@@ -108,7 +108,7 @@ export default function ProjectsFilters({
               placeholder={t("projects.search.placeholder")}
               value={filters.search}
               onChange={(e) => update("search", e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
+              className="w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg   dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm transition-all"
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -133,7 +133,7 @@ export default function ProjectsFilters({
               value={filters.category}
               onChange={(e) => update("category", e.target.value)}
               disabled={loading}
-              className="px-3 py-2.5 border border-gray-300 rounded-lg cursor-pointer bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+              className="px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer   dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
             >
               <option value="all">{t("projects.filters.allCategories")}</option>
               {categories.map((cat) => (
@@ -149,7 +149,7 @@ export default function ProjectsFilters({
             <select
               value={filters.status}
               onChange={(e) => update("status", e.target.value)}
-              className="px-3 py-2.5 border border-gray-300 rounded-lg cursor-pointer bg-white focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
+              className="px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer   dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary text-sm shadow-sm"
             >
               <option value="all">{t("projects.filters.allStatus")}</option>
               <option value="open">{t("projects.statuses.open")}</option>
@@ -164,7 +164,7 @@ export default function ProjectsFilters({
             {/* Reset */}
             <button
               onClick={onReset || reset}
-              className="px-4 py-2 text-sm font-medium rounded-lg border cursor-pointer border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
+              className="px-4 py-2 text-sm font-medium rounded-lg border cursor-pointer border-gray-300 dark:border-gray-700   dark:text-gray-100 hover:border-primary hover:text-primary transition-all shadow-sm"
             >
               {t("projects.search.clearFilters")}
             </button>
@@ -187,7 +187,7 @@ export default function ProjectsFilters({
                   value={filters.category}
                   onChange={(e) => update("category", e.target.value)}
                   disabled={loading}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary text-sm shadow-sm"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg   dark:text-gray-100 focus:ring-2 focus:ring-primary text-sm shadow-sm"
                 >
                   <option value="all">
                     {t("projects.filters.allCategories")}
@@ -205,7 +205,7 @@ export default function ProjectsFilters({
                 <select
                   value={filters.status}
                   onChange={(e) => update("status", e.target.value)}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary text-sm shadow-sm"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg   dark:text-gray-100 focus:ring-2 focus:ring-primary text-sm shadow-sm"
                 >
                   <option value="all">{t("projects.filters.allStatus")}</option>
                   <option value="open">{t("projects.statuses.open")}</option>
@@ -221,7 +221,7 @@ export default function ProjectsFilters({
               {/* ❌ Clear Filters button */}
               <button
                 onClick={onReset || reset}
-                className="w-full px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white hover:border-primary hover:text-primary transition-all shadow-sm"
+                className="w-full px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-700   dark:text-gray-100 hover:border-primary hover:text-primary transition-all shadow-sm"
               >
                 {t("projects.search.clearFilters")}
               </button>

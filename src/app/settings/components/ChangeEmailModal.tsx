@@ -77,7 +77,7 @@ export default function ChangeEmailModal({ onClose, user }: Props) {
       {!submitted && (
         <form onSubmit={handleChangeEmail} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1  ">
               {t("modal.changeEmail.currentPassword")}
             </label>
             <input suppressHydrationWarning
@@ -85,11 +85,11 @@ export default function ChangeEmailModal({ onClose, user }: Props) {
               required
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-medium mb-1  ">
               {t("modal.changeEmail.newEmail")}
             </label>
             <input suppressHydrationWarning
@@ -97,7 +97,7 @@ export default function ChangeEmailModal({ onClose, user }: Props) {
               required
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
 

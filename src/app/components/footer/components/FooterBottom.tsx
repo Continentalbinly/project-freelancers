@@ -7,7 +7,7 @@ export default function FooterBottom() {
   const { t } = useTranslationContext();
 
   return (
-    <div className="border-t border-border mt-10 pt-6">
+    <div className="border-t border-border dark:border-gray-800 mt-10 pt-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-secondary">
         <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
           <Link

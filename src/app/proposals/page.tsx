@@ -14,7 +14,6 @@ import {
 import { db } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import Link from "next/link";
 
 import ProposalsTabs from "./components/ProposalsTabs";
 import ProposalsFilter from "./components/ProposalsFilter";
@@ -119,14 +118,14 @@ export default function ProposalsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">
+            <h1 className="text-2xl sm:text-3xl font-bold">
               {t("proposals.title")}
             </h1>
-            <p className="text-text-secondary text-sm">
+            <p className="text-text-secondary text-sm mt-1">
               {t("proposals.subtitle")}
             </p>
           </div>

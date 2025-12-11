@@ -34,7 +34,7 @@ export default function FooterSocial() {
         <a
           key={i}
           href={s.href}
-          className="text-text-secondary hover:text-primary transition-colors"
+          className="text-text-secondary dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
         >
           {s.icon}
         </a>

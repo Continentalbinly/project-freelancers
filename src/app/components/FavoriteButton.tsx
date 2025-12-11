@@ -107,8 +107,8 @@ export default function FavoriteButton({
       disabled={loading}
       className={`flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
         isFavorited 
-          ? 'bg-red-100 text-red-500 hover:bg-red-200' 
-          : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-500'
+          ? 'bg-error/10 text-error hover:bg-error/20' 
+          : 'text-text-muted hover:text-text-secondary'
       } ${getSizeClasses()} ${className}`}
       title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
     >

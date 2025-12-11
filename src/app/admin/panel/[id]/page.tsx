@@ -13,7 +13,7 @@ export default function AdminDashboardPage() {
   const userId = id || user?.uid;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-background">
       <AdminHeader />
 
       <main className="max-w-6xl mx-auto px-6 py-10 space-y-10">
@@ -21,14 +21,14 @@ export default function AdminDashboardPage() {
         <AdminStatsOverview />
 
         {/* 📈 Chart Section */}
-        <section className="bg-white rounded-2xl shadow-sm border border-border p-6">
+        <section className="rounded-2xl shadow-sm border border-border p-6 bg-background-secondary">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">
+            <h2 className="text-lg font-semibold text-text-primary">
               Monthly Overview
             </h2>
-            <BarChart3 className="w-5 h-5 text-gray-500" />
+            <BarChart3 className="w-5 h-5 text-text-secondary" />
           </div>
-          <div className="h-56 flex items-center justify-center text-gray-400 text-sm border border-dashed rounded-xl">
+          <div className="h-56 flex items-center justify-center text-text-secondary text-sm border border-dashed border-border rounded-xl">
             📊 Chart integration coming soon (Recharts or Chart.js)
           </div>
         </section>

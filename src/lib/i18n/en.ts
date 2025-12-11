@@ -1,5 +1,5 @@
 import { sign } from "crypto";
-import { mark } from "framer-motion/client";
+import { filter, mark } from "framer-motion/client";
 import { redirect } from "next/dist/server/api-utils";
 
 const en = {
@@ -58,6 +58,9 @@ const en = {
     credits: "Credits",
     currncyLAK: "KIP",
     copy: "Copy",
+    viewAll: "View All",
+    editProfile: "Edit Profile",
+    postProject: "Post Your First Project",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -138,11 +141,13 @@ const en = {
     withdraw: "Withdraw",
     balance: "Balance",
     adminPanel: "Admin Panel",
-    myProjects: "My Projects",
+    myProjects: "My Work",
     account: "Account",
     projectManage: "Manage Projects",
     finance: "Finance",
     subscription: "Subscription",
+    findWork: "Find Work",
+    hireFreelancer: "Hire Freelancer",
   },
   // Footer translations
   footer: {
@@ -1359,6 +1364,10 @@ const en = {
     title: "Dashboard",
     subtitle: "Welcome back! Here's what's happening with your projects.",
     loading: "Loading your dashboard...",
+    activeProjects: "Active Projects",
+    completedProjects: "Completed",
+    credits: "Account Credit",
+    recentProjects: "Recent Projects",
     stats: {
       activeProjects: "Active Projects",
       totalEarned: "Total Earned",
@@ -1473,6 +1482,29 @@ const en = {
       respondQuickly: "Respond quickly to project invitations",
       buildPortfolio: "Build your portfolio with completed projects",
     },
+  },
+  clientDashboard: {
+    postProject: "Post New Project",
+    postProjectDesc: "Get started by posting your first project",
+    browseFfreelancers: "Browse Freelancers",
+    browseFfreelancersDesc: "Find and hire talented freelancers",
+    subtitle: "Manage your projects and hire freelancers",
+  },
+  freelancerDashboard: {
+    browseOpportunities: "Browse Opportunities",
+    browseOpportunitiesDesc: "Find and apply for new projects",
+    myProposals: "My Proposals",
+    myProposalsDesc: "Track your submitted proposals",
+    subtitle: "Find opportunities and manage your proposals",
+    pendingProposals: "Pending Proposals",
+    activeProjects: "Active Projects",
+    completedProjects: "Completed Projects",
+    totalEarned: "Total Earned",
+    completeProfile: "Complete Your Profile",
+    completeProfileDesc: "Add a bio and skills to attract more clients",
+    recentProposals: "Recent Proposals",
+    noProposals: "No proposals yet",
+    browseNow: "Browse Opportunities",
   },
   // Project detail page translations
   projectDetail: {
@@ -1985,6 +2017,7 @@ const en = {
         description: "Receive a weekly summary of your activity",
       },
     },
+    notificationsDesc: "Manage how you receive alerts, messages, and updates.",
     privacySecurity: {
       title: "Privacy & Security",
       profileVisibility: {
@@ -3092,7 +3125,7 @@ const en = {
       posting_fee_adjust: "Posting Fee Adjustment",
       posting_fee_refund: "Posting Fee Refund",
       proposal_fee: "Proposal Fee",
-      proposal_refund: "Proposal Fee Refund"
+      proposal_refund: "Proposal Fee Refund",
     },
 
     status: {
@@ -3194,6 +3227,7 @@ const en = {
   },
   myProjects: {
     title: "My Project Handler",
+    subtitle: "Manage and track your projects easily",
     stepper: {
       rateClient: "Rate your client",
       rateFreelancer: "Rate your freelancer",
@@ -3263,6 +3297,14 @@ const en = {
         noFiles: "No files available for download.",
       },
     },
+    filters: {
+      all: "All Projects",
+      open: "Open",
+      inProgress: "In Progress",
+      completed: "Completed",
+      awaitingReview: "Awaiting Review",
+    },
+    noProjectsInFilter: "No projects found in this category.",
   },
   payout: {
     title: "Project Payment",

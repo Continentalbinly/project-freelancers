@@ -69,9 +69,9 @@ export default function EditModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="rounded-lg p-6 w-full max-w-md mx-4 border border-border dark:border-gray-800">
+        <h3 className="text-lg font-semibold   mb-4">
           {t("profile.editModal.title")} {editField}
         </h3>
 
@@ -79,7 +79,7 @@ export default function EditModal({
           type="text"
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
-          className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent mb-4"
+          className="w-full px-3 py-2 border border-border rounded-lg dark:border-gray-700   focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent mb-4"
         />
 
         <div className="flex gap-2">

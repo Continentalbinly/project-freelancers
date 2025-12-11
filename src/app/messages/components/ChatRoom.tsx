@@ -104,12 +104,12 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
   );
   const statusColor =
     projectStatusLabels[projectStatus || "open"]?.color ||
-    "bg-gray-100 text-gray-600";
+    "text-gray-600";
 
   /** ------------------- 🔹 AUTH CHECK ------------------- */
   if (!user)
     return (
-      <main className="flex-1 flex items-center justify-center text-text-secondary">
+      <main className="flex-1 flex items-center justify-center text-text-secondary bg-background">
         <div className="text-center">
           <p>{t("dashboard.messagesPage.signInFirst")}</p>
         </div>
@@ -119,7 +119,7 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
   /** ------------------- 🔹 CHAT NOT SELECTED ------------------- */
   if (!chatRoom)
     return (
-      <main className="flex-1 flex items-center justify-center text-text-secondary">
+      <main className="flex-1 flex items-center justify-center text-text-secondary bg-background">
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-1">
             {t("dashboard.messagesPage.selectConversation")}
@@ -133,25 +133,25 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
 
   /** ------------------- 💬 MAIN CHAT UI ------------------- */
   return (
-    <main className="flex flex-col flex-1">
+    <main className="flex flex-col flex-1 bg-background">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-border bg-white px-4 py-3">
+      <div className="h-16 flex items-center gap-3 border-b border-border bg-background px-4 shadow-sm">
         <button
           onClick={onBack}
-          className="lg:hidden p-2 rounded-full hover:bg-background-secondary"
+          className="lg:hidden p-2 rounded-full hover:bg-background-secondary hover:text-primary transition-all duration-200"
         >
-          <ArrowLeftIcon className="w-5 h-5 text-text-secondary" />
+          <ArrowLeftIcon className="w-5 h-5" />
         </button>
         <Avatar
           src={receiver?.avatarUrl || ""}
           name={receiver?.fullName || "User"}
           size="lg"
         />
-        <div className="flex flex-col">
-          <span className="font-semibold text-text-primary">
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="font-semibold text-text-primary truncate">
             {receiver?.fullName || "User"}
           </span>
-          <span className="text-xs text-text-secondary">
+          <span className="text-xs text-text-secondary truncate">
             {chatRoom?.projectTitle || "Direct Chat"}
           </span>
         </div>
@@ -159,19 +159,34 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
 
       {/* 🟢 Project status bar */}
       {chatRoom?.projectId && (
-        <div className="bg-background-secondary border-b border-border px-4 py-2 flex items-center justify-between">
-          <span
-            className={`text-xs font-medium px-3 py-1 rounded-full ${statusColor}`}
-          >
-            {statusLabel}
-          </span>
+        <div className="bg-background-secondary border-b border-border px-4 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-text-secondary font-medium">
+                {currentLanguage === "lo" ? "ສະຖານະໂຄງການ" : "Project Status"}
+              </span>
+              <span
+                className={`text-sm font-semibold px-3 py-1 rounded-full inline-flex items-center w-fit mt-1 ${statusColor}`}
+              >
+                {statusLabel}
+              </span>
+            </div>
+          </div>
 
           {/* Go to progress button */}
           {projectStatus !== "completed" && (
             <Link
               href={`/my-projects/${chatRoom.projectId}/progress`}
-              className="text-xs font-medium text-primary hover:underline"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 hover:border-primary/40 rounded-lg transition-all duration-200 w-full sm:w-auto justify-center"
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
               {currentLanguage === "lo" ? "ເບິ່ງຄວາມຄືບໜ້າ" : "View Progress"}
             </Link>
           )}
@@ -197,8 +212,8 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
               <div
                 className={`max-w-xs lg:max-w-md px-3 py-2 rounded-2xl ${
                   isMe
-                    ? "bg-primary text-white"
-                    : "bg-white text-text-primary border border-border"
+                    ? "bg-primary text-white shadow-sm"
+                    : "bg-background border border-border shadow-sm"
                 }`}
               >
                 <p className="text-sm">{m.message}</p>
@@ -211,7 +226,7 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
 
       {/* Input / Disabled */}
       {projectStatus === "completed" ? (
-        <div className="text-center py-3 text-sm text-gray-500 border-t border-border bg-white">
+        <div className="text-center py-3 text-sm text-text-secondary border-t border-border bg-background-secondary">
           {currentLanguage === "lo"
             ? "ໂຄງການນີ້ສຳເລັດແລ້ວ — ບໍ່ສາມາດສົ່ງຂໍ້ຄວາມໄດ້."
             : "This project is completed — messaging is disabled."}

@@ -75,16 +75,16 @@ export default function CookieConsent() {
     return (
         <>
             {/* Cookie Banner */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border shadow-lg z-50">
+            <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border shadow-lg z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                         <div className="flex-1">
                             <div className="flex items-center gap-4">
-                                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
                                     <Image src={cookiesImage} alt="Cookies" width={40} height={40} className="w-8 h-8 sm:w-10 sm:h-10" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-2">
+                                    <h3 className="text-base sm:text-lg font-semibold   mb-2">
                                         {t('cookieConsent.bannerTitle')}
                                     </h3>
                                     <p className="text-xs sm:text-sm text-text-secondary mb-4 lg:mb-0">
@@ -122,21 +122,21 @@ export default function CookieConsent() {
 
             {/* Cookie Preferences Modal */}
             {showPreferences && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-background rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border">
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                                    <div className="w-8 h-8 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
                                         <Image src={cookiesImage} alt="Cookies" width={30} height={30} />
                                     </div>
-                                    <h2 className="text-2xl font-bold text-text-primary">
+                                    <h2 className="text-2xl font-bold  ">
                                         {t('cookieConsent.preferences')}
                                     </h2>
                                 </div>
                                 <button suppressHydrationWarning
                                     onClick={() => setShowPreferences(false)}
-                                    className="text-text-secondary hover:text-text-primary transition-colors"
+                                    className="text-text-secondary hover:  transition-colors"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -146,10 +146,10 @@ export default function CookieConsent() {
 
                             <div className="space-y-6">
                                 {/* Essential Cookies */}
-                                <div className="border border-border rounded-lg p-4">
+                                <div className="border border-border dark:border-gray-800 rounded-lg p-4 bg-background-secondary dark:bg-gray-800">
                                     <div className="flex items-center justify-between mb-2">
                                         <div>
-                                            <h3 className="font-semibold text-text-primary">
+                                            <h3 className="font-semibold  ">
                                                 {t('cookieConsent.essentialCookies')}
                                             </h3>
                                             <p className="text-sm text-text-secondary">
@@ -161,7 +161,7 @@ export default function CookieConsent() {
                                                 type="checkbox"
                                                 checked={preferences.essential}
                                                 disabled
-                                                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary"
+                                                className="w-4 h-4 text-primary bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -171,10 +171,10 @@ export default function CookieConsent() {
                                 </div>
 
                                 {/* Performance Cookies */}
-                                <div className="border border-border rounded-lg p-4">
+                                <div className="border border-border dark:border-gray-800 rounded-lg p-4 bg-background-secondary dark:bg-gray-800">
                                     <div className="flex items-center justify-between mb-2">
                                         <div>
-                                            <h3 className="font-semibold text-text-primary">
+                                            <h3 className="font-semibold  ">
                                                 {t('cookieConsent.performanceCookies')}
                                             </h3>
                                             <p className="text-sm text-text-secondary">
@@ -186,7 +186,7 @@ export default function CookieConsent() {
                                                 type="checkbox"
                                                 checked={preferences.performance}
                                                 onChange={() => togglePreference('performance')}
-                                                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary"
+                                                className="w-4 h-4 text-primary bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -196,10 +196,10 @@ export default function CookieConsent() {
                                 </div>
 
                                 {/* Functionality Cookies */}
-                                <div className="border border-border rounded-lg p-4">
+                                <div className="border border-border dark:border-gray-800 rounded-lg p-4 bg-background-secondary dark:bg-gray-800">
                                     <div className="flex items-center justify-between mb-2">
                                         <div>
-                                            <h3 className="font-semibold text-text-primary">
+                                            <h3 className="font-semibold  ">
                                                 {t('cookieConsent.functionalityCookies')}
                                             </h3>
                                             <p className="text-sm text-text-secondary">
@@ -211,7 +211,7 @@ export default function CookieConsent() {
                                                 type="checkbox"
                                                 checked={preferences.functionality}
                                                 onChange={() => togglePreference('functionality')}
-                                                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary"
+                                                className="w-4 h-4 text-primary bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -221,10 +221,10 @@ export default function CookieConsent() {
                                 </div>
 
                                 {/* Targeting Cookies */}
-                                <div className="border border-border rounded-lg p-4">
+                                <div className="border border-border dark:border-gray-800 rounded-lg p-4 bg-background-secondary dark:bg-gray-800">
                                     <div className="flex items-center justify-between mb-2">
                                         <div>
-                                            <h3 className="font-semibold text-text-primary">
+                                            <h3 className="font-semibold  ">
                                                 {t('cookieConsent.targetingCookies')}
                                             </h3>
                                             <p className="text-sm text-text-secondary">
@@ -236,7 +236,7 @@ export default function CookieConsent() {
                                                 type="checkbox"
                                                 checked={preferences.targeting}
                                                 onChange={() => togglePreference('targeting')}
-                                                className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary"
+                                                className="w-4 h-4 text-primary bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary"
                                             />
                                         </div>
                                     </div>
@@ -246,7 +246,7 @@ export default function CookieConsent() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-border">
+                            <div className="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-border dark:border-gray-800">
                                 <button suppressHydrationWarning
                                     onClick={handleRejectAll}
                                     className="btn btn-outline flex-1"

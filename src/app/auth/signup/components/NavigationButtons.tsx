@@ -26,7 +26,7 @@ export default function NavigationButtons({
           suppressHydrationWarning
           type="button"
           onClick={prevStep}
-          className="btn btn-outline px-6 sm:px-8 py-2 sm:py-3 order-2 sm:order-1"
+          className="btn btn-outline px-6 sm:px-8 py-2 sm:py-3 order-2 sm:order-1 border border-border text-text-primary"
         >
           {t("auth.signup.navigation.previous")}
         </button>

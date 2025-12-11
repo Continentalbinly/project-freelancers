@@ -6,7 +6,7 @@ export default function ProjectAttachments({ attachments, t }: any) {
 
   return (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold text-text-primary mb-3">
+      <h3 className="text-lg font-semibold   mb-3">
         {t("projectDetail.attachments")}
       </h3>
 

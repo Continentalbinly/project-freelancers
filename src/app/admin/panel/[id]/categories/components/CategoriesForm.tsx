@@ -20,8 +20,8 @@ export default function CategoriesForm({
   cancelEdit: () => void;
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+    <div className="rounded-xl shadow-sm border border-border bg-background p-6">
+      <h2 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
         <FolderPlus className="w-5 h-5 text-primary" />{" "}
         {editingId ? "Edit Category" : "Add New Category"}
       </h2>
@@ -32,14 +32,14 @@ export default function CategoriesForm({
           placeholder="Category Name (English)"
           value={form.name_en}
           onChange={(e) => setForm({ ...form, name_en: e.target.value })}
-          className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+          className="px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-sm"
         />
         <input
           type="text"
           placeholder="Category Name (Lao)"
           value={form.name_lo}
           onChange={(e) => setForm({ ...form, name_lo: e.target.value })}
-          className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+          className="px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary text-sm"
         />
       </div>
 
@@ -58,7 +58,7 @@ export default function CategoriesForm({
             </button>
             <button
               onClick={cancelEdit}
-              className="border border-gray-200 px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-50"
+              className="border border-border px-5 py-2 rounded-lg text-sm font-medium text-text-primary"
             >
               Cancel
             </button>

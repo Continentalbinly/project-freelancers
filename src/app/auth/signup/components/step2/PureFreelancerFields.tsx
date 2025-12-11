@@ -41,9 +41,13 @@ export default function PureFreelancerFields({
 
   // Dynamic styling based on colorScheme prop
   const bgColor =
-    colorScheme === "primary" ? "bg-primary-light/10" : "bg-secondary-light/10";
+    colorScheme === "primary"
+      ? "bg-primary/10"
+      : "bg-secondary/10";
   const borderColor =
-    colorScheme === "primary" ? "border-primary/20" : "border-secondary/20";
+    colorScheme === "primary"
+      ? "border-primary/20"
+      : "border-secondary/20";
   const textColor =
     colorScheme === "primary" ? "text-primary" : "text-secondary";
   const focusRing =
@@ -54,8 +58,8 @@ export default function PureFreelancerFields({
       : "bg-secondary hover:bg-secondary-hover";
   const badgeBg =
     colorScheme === "primary"
-      ? "bg-primary-light text-primary"
-      : "bg-secondary-light text-secondary";
+      ? "bg-primary/10 text-primary"
+      : "bg-secondary/10 text-secondary";
   const iconColor =
     colorScheme === "primary" ? "text-primary" : "text-secondary";
 
@@ -85,7 +89,7 @@ export default function PureFreelancerFields({
         <div className="mt-4 sm:mt-6">
           <label
             htmlFor="bio"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.pureFreelancerInfo.bio")}
           </label>
@@ -95,7 +99,7 @@ export default function PureFreelancerFields({
             rows={3}
             value={formData.bio}
             onChange={handleChange}
-            className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+            className={`w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
             placeholder={t(
               "auth.signup.step2.pureFreelancerInfo.bioPlaceholder"
             )}
@@ -104,7 +108,7 @@ export default function PureFreelancerFields({
 
         {/* Skills */}
         <div className="mt-4 sm:mt-6">
-          <label className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3">
+          <label className="block text-sm font-semibold   mb-2 sm:mb-3">
             {t("auth.signup.step2.pureFreelancerInfo.skills")}
           </label>
           <div className="flex gap-2 mb-3">
@@ -116,7 +120,7 @@ export default function PureFreelancerFields({
               onKeyPress={(e) =>
                 e.key === "Enter" && (e.preventDefault(), addSkill())
               }
-              className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
+              className={`flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 ${focusRing} focus:border-transparent transition-all duration-200`}
               placeholder={t("auth.signup.step2.pureFreelancerInfo.addSkill")}
             />
             <button

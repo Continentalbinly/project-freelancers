@@ -6,13 +6,17 @@ export default function ProjectHeader({ project, user, t }: any) {
   // 🎨 Status color mapping
   const getStatusColor = (status: string) => {
     const colors = {
-      open: "bg-success-light text-success",
-      in_progress: "bg-warning-light text-warning",
-      in_review: "bg-amber-100 text-amber-700 border border-amber-300",
-      completed: "bg-primary-light text-primary",
-      cancelled: "bg-error-light text-error",
+      open: "bg-success-light text-success dark:bg-emerald-900/30 dark:text-emerald-200",
+      in_progress: "bg-warning-light text-warning dark:bg-amber-900/30 dark:text-amber-200",
+      in_review:
+        "bg-amber-100 text-amber-700 border border-amber-300 dark:bg-amber-900/30 dark:text-amber-200 dark:border-amber-700",
+      completed: "bg-primary-light text-primary dark:bg-primary/20 dark:text-primary-100",
+      cancelled: "bg-error-light text-error dark:bg-red-900/30 dark:text-red-200",
     };
-    return colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    return (
+      colors[status as keyof typeof colors] ||
+      "text-gray-800 dark:text-gray-200"
+    );
   };
 
   // 🏷️ Status label mapping
@@ -37,7 +41,7 @@ export default function ProjectHeader({ project, user, t }: any) {
   return (
     <div className="mb-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary flex-1">
+        <h1 className="text-2xl sm:text-3xl font-bold   flex-1">
           {project.title}
         </h1>
         <FavoriteButton

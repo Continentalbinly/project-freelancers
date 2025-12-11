@@ -36,7 +36,7 @@ export default function TransactionRow({
   }
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors duration-150">
+    <tr className="hover:transition-colors duration-150">
       {/* USER INFO */}
       <td className="py-3 px-4 align-top">
         <div className="flex items-center gap-3">
@@ -46,20 +46,20 @@ export default function TransactionRow({
             alt={profile?.fullName}
             name={profile?.fullName || "Unknown"}
             size="lg"
-            className="shadow-sm border border-gray-200"
+            className="shadow-sm border border-border"
           />
 
           {/* USER DETAILS */}
           <div className="leading-tight max-w-[80px] md:max-w-[130px] truncate">
             <div
-              className="font-semibold text-gray-800 text-xs truncate"
+              className="font-semibold text-text-primary text-xs truncate"
               title={profile?.fullName || "Unknown User"}
             >
               {profile?.fullName || "Unknown User"}
             </div>
 
             <div
-              className="text-[10px] text-gray-500 font-mono mt-0.5 truncate"
+              className="text-[10px] text-text-secondary font-mono mt-0.5 truncate"
               title={profile?.email || tx.userId}
             >
               {profile?.email || tx.userId}
@@ -69,7 +69,7 @@ export default function TransactionRow({
       </td>
 
       {/* Type */}
-      <td className="py-3 px-4 text-gray-600 capitalize">
+      <td className="py-3 px-4 text-text-secondary capitalize">
         <div className="flex items-center gap-2">
           {isWithdraw ? (
             <Wallet className="w-4 h-4 text-purple-600" />
@@ -83,7 +83,7 @@ export default function TransactionRow({
       </td>
 
       {/* Plan / Source */}
-      <td className="py-3 px-4 text-gray-600">
+      <td className="py-3 px-4 text-text-secondary">
         {isWithdraw ? tx.source || "—" : tx.plan || "—"}
       </td>
 
@@ -101,7 +101,7 @@ export default function TransactionRow({
       </td>
 
       {/* Method / Account */}
-      <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">
+      <td className="py-3 px-4 text-sm text-text-secondary whitespace-nowrap">
         {isWithdraw ? (
           <div className="text-xs">
             <p className="font-medium">{tx.accountName || "—"}</p>
@@ -115,7 +115,7 @@ export default function TransactionRow({
                   >
                     {tx.accountNumber}
                   </button>
-                  <Copy className="w-3.5 h-3.5 text-gray-400" />
+                  <Copy className="w-3.5 h-3.5 text-text-muted" />
                   {copied && (
                     <span className="absolute bg-black text-white text-[10px] px-2 py-1 rounded-md -top-5 left-1/2 -translate-x-1/2">
                       Copied!
@@ -133,12 +133,12 @@ export default function TransactionRow({
       </td>
 
       {/* Date */}
-      <td className="py-3 px-4 text-gray-600 whitespace-nowrap">
+      <td className="py-3 px-4 text-text-secondary whitespace-nowrap">
         {tx.createdAt ? new Date(tx.createdAt.toDate()).toLocaleString() : "—"}
       </td>
 
       {/* Transaction ID */}
-      <td className="py-3 px-4 font-mono text-xs text-gray-600">
+      <td className="py-3 px-4 font-mono text-xs text-text-secondary">
         {tx.transactionId || tx.id}
       </td>
 

@@ -7,7 +7,6 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
-import ProposalHeader from "./components/ProposalHeader";
 import ProposalMain from "./components/ProposalMain";
 import ProposalSidebar from "./components/ProposalSidebar";
 import ProposalImageModal from "./components/ProposalImageModal";
@@ -101,7 +100,7 @@ export default function ProposalDetailPage() {
   const isFreelancer = user?.uid === proposal.freelancerId;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
+    <div className="rounded-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

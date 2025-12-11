@@ -18,7 +18,7 @@ export default function FreelancerCategorySelection({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="bg-primary-light/10 rounded-xl p-4 sm:p-6 border border-primary/20">
+      <div className="bg-primary/10 rounded-xl p-4 sm:p-6 border border-primary/20">
         <h4 className="font-semibold text-primary mb-3 sm:mb-4 flex items-center">
           <svg
             className="w-4 h-4 sm:w-5 sm:h-5 mr-2"
@@ -41,7 +41,7 @@ export default function FreelancerCategorySelection({
           <label
             className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
               formData.userCategory === "student"
-                ? "border-primary bg-primary-light/20"
+                ? "border-primary bg-primary/10"
                 : "border-border hover:border-primary/50"
             }`}
           >
@@ -52,7 +52,7 @@ export default function FreelancerCategorySelection({
               value="student"
               checked={formData.userCategory === "student"}
               onChange={handleChange}
-              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border"
+              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border bg-background"
             />
             <div className="ml-3 sm:ml-4 flex-1">
               <div className="flex items-center mb-2">
@@ -71,7 +71,7 @@ export default function FreelancerCategorySelection({
                     />
                   </svg>
                 </div>
-                <span className="text-base sm:text-lg font-semibold text-text-primary">
+                <span className="text-base sm:text-lg font-semibold  ">
                   {t("auth.signup.step2.userCategory.student.title")}
                 </span>
               </div>
@@ -85,7 +85,7 @@ export default function FreelancerCategorySelection({
           <label
             className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
               formData.userCategory === "worker"
-                ? "border-primary bg-primary-light/20"
+                ? "border-primary bg-primary/10"
                 : "border-border hover:border-primary/50"
             }`}
           >
@@ -96,7 +96,7 @@ export default function FreelancerCategorySelection({
               value="worker"
               checked={formData.userCategory === "worker"}
               onChange={handleChange}
-              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border"
+              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border bg-background"
             />
             <div className="ml-3 sm:ml-4 flex-1">
               <div className="flex items-center mb-2">
@@ -115,7 +115,7 @@ export default function FreelancerCategorySelection({
                     />
                   </svg>
                 </div>
-                <span className="text-base sm:text-lg font-semibold text-text-primary">
+                <span className="text-base sm:text-lg font-semibold  ">
                   {t("auth.signup.step2.userCategory.worker.title")}
                 </span>
               </div>
@@ -129,7 +129,7 @@ export default function FreelancerCategorySelection({
           <label
             className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
               formData.userCategory === "freelancer"
-                ? "border-primary bg-primary-light/20"
+                ? "border-primary bg-primary/10"
                 : "border-border hover:border-primary/50"
             }`}
           >
@@ -140,7 +140,7 @@ export default function FreelancerCategorySelection({
               value="freelancer"
               checked={formData.userCategory === "freelancer"}
               onChange={handleChange}
-              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border"
+              className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border bg-background"
             />
             <div className="ml-3 sm:ml-4 flex-1">
               <div className="flex items-center mb-2">
@@ -159,7 +159,7 @@ export default function FreelancerCategorySelection({
                     />
                   </svg>
                 </div>
-                <span className="text-base sm:text-lg font-semibold text-text-primary">
+                <span className="text-base sm:text-lg font-semibold  ">
                   {t("auth.signup.step2.userCategory.freelancer.title")}
                 </span>
               </div>

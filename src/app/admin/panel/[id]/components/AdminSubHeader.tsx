@@ -13,18 +13,18 @@ export default function AdminSubHeader({
   const { id } = useParams();
 
   return (
-    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-40 supports-[backdrop-filter]:backdrop-blur-sm border-b border-border bg-background shadow-sm">
       <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push(`/admin/panel/${id}`)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition"
+            className="p-2 rounded-lg transition text-text-primary"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
+            <ChevronLeft className="w-5 h-5 text-text-secondary" />
           </button>
 
           <div>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2">
+            <h1 className="text-lg sm:text-xl font-bold text-text-primary flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" /> {title}
             </h1>
           </div>

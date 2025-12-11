@@ -40,7 +40,7 @@ export default function ProfileStats({ profile, t }: any) {
       {items.map((it, i) => (
         <div key={i} className="flex flex-col items-center lg:items-start">
           <div className={`text-lg font-semibold ${it.color}`}>{it.value}</div>
-          <div className="text-sm text-gray-500">{it.label}</div>
+          <div className="text-sm text-text-secondary">{it.label}</div>
         </div>
       ))}
     </div>

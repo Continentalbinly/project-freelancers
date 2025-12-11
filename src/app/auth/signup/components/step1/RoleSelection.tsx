@@ -28,7 +28,7 @@ export default function RoleSelection({
 
   return (
     <div>
-      <label className="block text-sm font-semibold text-text-primary mb-3 sm:mb-4">
+      <label className="block text-sm font-semibold   mb-3 sm:mb-4">
         {t("auth.signup.step1.roleTitle")}
       </label>
 
@@ -37,7 +37,7 @@ export default function RoleSelection({
         <label
           className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
             selectedRole === "freelancer"
-              ? "border-primary bg-primary-light/20"
+              ? "border-primary bg-primary/10"
               : "border-border hover:border-primary/50"
           }`}
           onClick={() => handleRoleChange("freelancer")}
@@ -47,7 +47,7 @@ export default function RoleSelection({
             name="role"
             checked={selectedRole === "freelancer"}
             onChange={() => handleRoleChange("freelancer")}
-            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border"
+            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-primary focus:ring-primary border-border bg-background"
           />
           <div className="ml-3 sm:ml-4 flex-1">
             <div className="flex items-center mb-2">
@@ -66,7 +66,7 @@ export default function RoleSelection({
                   />
                 </svg>
               </div>
-              <span className="text-base sm:text-lg font-semibold text-text-primary">
+              <span className="text-base sm:text-lg font-semibold  ">
                 {t("auth.signup.step1.freelancer.title")}
               </span>
             </div>
@@ -80,7 +80,7 @@ export default function RoleSelection({
         <label
           className={`relative flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
             selectedRole === "client"
-              ? "border-secondary bg-secondary-light/20"
+              ? "border-secondary bg-secondary/10"
               : "border-border hover:border-secondary/50"
           }`}
           onClick={() => handleRoleChange("client")}
@@ -90,7 +90,7 @@ export default function RoleSelection({
             name="role"
             checked={selectedRole === "client"}
             onChange={() => handleRoleChange("client")}
-            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border"
+            className="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-secondary focus:ring-secondary border-border bg-background"
           />
           <div className="ml-3 sm:ml-4 flex-1">
             <div className="flex items-center mb-2">
@@ -109,7 +109,7 @@ export default function RoleSelection({
                   />
                 </svg>
               </div>
-              <span className="text-base sm:text-lg font-semibold text-text-primary">
+              <span className="text-base sm:text-lg font-semibold  ">
                 {t("auth.signup.step1.client.title")}
               </span>
             </div>

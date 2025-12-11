@@ -9,7 +9,6 @@ export default function ProjectDetailLayout({
 }) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Simple universal back button */}
       <BackButton />
 
       <div>{children}</div>

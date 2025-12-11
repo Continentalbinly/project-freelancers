@@ -31,6 +31,6 @@ export function getProjectStatusLabel(
   return (projectStatusLabels[status] || {
     en: status,
     lo: status,
-    color: "bg-gray-100 text-gray-600",
+    color: "text-gray-600",
   })[lang];
 }

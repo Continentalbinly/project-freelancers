@@ -3,14 +3,18 @@ import SearchBar from "./SearchBar";
 
 export default function HeroSection({ t }: any) {
   return (
-    <section className="relative bg-gradient-to-br from-primary-light to-secondary-light py-20 sm:py-24 lg:py-28">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center">
+    <section className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950/20 py-20 sm:py-24 lg:py-28 overflow-hidden">
+      {/* 🎨 Decorative background elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-secondary/5 dark:bg-secondary/10 rounded-full blur-3xl -ml-40 -mb-40"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center relative z-10">
         {/* 🎯 Headline */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary mb-6 leading-tight drop-shadow-sm">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
           {t("landingPage.hero.title")}
         </h1>
 
-        <p className="text-lg sm:text-xl lg:text-2xl text-text-secondary mb-10 max-w-4xl mx-auto leading-relaxed">
+        <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-4xl mx-auto leading-relaxed font-medium">
           {t("landingPage.hero.subtitle")}
         </p>
 
@@ -18,24 +22,21 @@ export default function HeroSection({ t }: any) {
         <SearchBar t={t} />
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 relative z-20">
           <Link
             href="/auth/signup?type=freelancer"
-            className="btn btn-primary px-8 py-4 text-lg"
+            className="btn btn-primary px-8 py-4 text-lg font-semibold hover:shadow-lg transition-all duration-300"
           >
             {t("landingPage.hero.startEarning")}
           </Link>
           <Link
             href="/how-it-works"
-            className="btn btn-outline px-8 py-4 text-lg"
+            className="btn btn-outline px-8 py-4 text-lg font-semibold hover:shadow-lg transition-all duration-300 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             {t("landingPage.hero.learnHow")}
           </Link>
         </div>
       </div>
-
-      {/* 🌤️ Decorative gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/50 pointer-events-none"></div>
     </section>
   );
 }

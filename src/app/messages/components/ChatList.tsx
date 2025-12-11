@@ -33,38 +33,49 @@ export default function ChatList({
 
   return (
     <aside
-      className={`w-full lg:w-80 flex flex-col bg-white border-r border-border ${
+      className={`w-full lg:w-80 flex flex-col border-r border-border bg-background ${
         selectedRoom ? "hidden lg:flex" : "flex"
       }`}
     >
       {/* === Header === */}
-      <div className="p-4 border-b border-border bg-white sticky top-0 z-10 shadow-sm">
-        <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+      <div className="h-16 flex items-center px-4 border-b border-border bg-background sticky top-0 z-10 shadow-sm">
+        <div className="relative w-full">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
           <input
             type="text"
             placeholder={t("dashboard.messagesPage.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-full border border-border bg-background-secondary focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            className="w-full pl-9 pr-4 py-2 text-sm rounded-full border border-border bg-background-secondary text-text-primary placeholder-text-secondary focus:ring-2 focus:ring-primary focus:border-primary transition-all"
           />
         </div>
       </div>
 
       {/* === Chat List === */}
-      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-1 bg-gradient-to-b from-background-secondary to-white">
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2 bg-background">
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-full text-text-secondary py-16">
-            <div className="animate-spin h-6 w-6 border-b-2 border-primary mb-3 rounded-full" />
-            <p>{t("dashboard.messagesPage.loadingConversations")}</p>
+          <div className="space-y-2">
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border bg-background shadow-sm"
+              >
+                <div className="h-12 w-12 rounded-full-tertiary flex-shrink-0" />
+                <div className="flex-1 space-y-2 min-w-0">
+                  <div className="h-4 w-32 bg-background-tertiary rounded" />
+                  <div className="h-3 w-44 bg-background-tertiary rounded" />
+                  <div className="h-3 w-24 bg-background-tertiary rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-text-secondary py-20 px-6 text-center">
-            <ChatBubbleOvalLeftEllipsisIcon className="w-10 h-10 text-text-muted mb-3" />
+            <ChatBubbleOvalLeftEllipsisIcon className="w-10 h-10 text-text-secondary mb-3" />
             <p className="font-medium">
               {t("dashboard.messagesPage.noConversations")}
             </p>
-            <p className="text-sm text-text-muted mt-1">
+            <p className="text-sm text-text-secondary mt-1">
               {t("dashboard.messagesPage.noConversationsHint") ||
                 "Start chatting by accepting a project!"}
             </p>
@@ -98,28 +109,32 @@ export default function ChatList({
               <div
                 key={room.id}
                 onClick={() => onSelect(room)}
-                className={`group flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all ${
+                className={`group flex items-center gap-3 px-4 py-3 rounded-lg border bg-background transition-all duration-200 cursor-pointer ${
                   isActive
-                    ? "bg-primary/10 border-l-4 border-primary shadow-sm"
-                    : "hover:bg-background-secondary border-l-4 border-transparent"
+                    ? "bg-primary/10 border-primary shadow-md"
+                    : "border-border hover:border-primary/40 hover:shadow-sm"
                 }`}
               >
                 <Avatar src={avatar} name={name} size="lg" />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-text-primary truncate group-hover:text-primary transition-colors">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className={`font-semibold truncate transition-colors duration-200 ${
+                      isActive
+                        ? "text-primary"
+                        : "text-text-primary group-hover:text-primary"
+                    }`}>
                       {name}
                     </p>
-                    <span className="text-[11px] text-text-muted">
+                    <span className="text-[11px] text-text-secondary whitespace-nowrap flex-shrink-0">
                       {timeLabel}
                     </span>
                   </div>
 
-                  <p className="text-sm text-text-secondary truncate">{last}</p>
+                  <p className="text-sm text-text-secondary truncate group-hover:text-text-primary/80 transition-colors duration-200">{last}</p>
 
                   {room.projectTitle && (
-                    <p className="text-[11px] text-primary font-medium mt-0.5 truncate">
-                      {room.projectTitle}
+                    <p className="text-[11px] text-primary font-medium mt-1 truncate">
+                      📌 {room.projectTitle}
                     </p>
                   )}
                 </div>

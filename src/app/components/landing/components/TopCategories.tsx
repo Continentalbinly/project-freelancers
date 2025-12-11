@@ -67,9 +67,9 @@ export default function TopCategories({ t }: any) {
   };
 
   return (
-    <section className="py-10 sm:py-12 bg-background">
+    <section className="py-10 sm:py-12 bg-white dark:bg-gray-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h3 className="text-xl sm:text-2xl font-semibold text-text-primary mb-8">
+        <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-8">
           {t("landingPage.categories.title") || "Popular Categories"}
         </h3>
 
@@ -79,7 +79,7 @@ export default function TopCategories({ t }: any) {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="h-24 bg-gray-100 animate-pulse rounded-xl"
+                className="h-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-xl"
               />
             ))}
           </div>
@@ -99,11 +99,13 @@ export default function TopCategories({ t }: any) {
                     key={cat.id}
                     onClick={() => handleClick(cat)}
                     className="flex-shrink-0 snap-center w-28 h-24 flex flex-col items-center justify-center 
-                               bg-background-secondary rounded-xl hover:bg-primary/10 focus:ring-2 focus:ring-primary/50 
-                               transition cursor-pointer shadow-sm hover:shadow-md focus:outline-none"
+                               bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl 
+                               hover:border-primary dark:hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 
+                               hover:shadow-md dark:hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-primary/50 
+                               transition-all duration-300 cursor-pointer focus:outline-none"
                   >
-                    <Icon className="text-primary w-6 h-6 mb-1" />
-                    <span className="text-xs font-medium text-text-primary text-center leading-tight">
+                    <Icon className="text-primary w-6 h-6 mb-1 transition-transform duration-300 group-hover:scale-110" />
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
                       {name}
                     </span>
                   </button>
@@ -132,12 +134,14 @@ export default function TopCategories({ t }: any) {
                   <button
                     key={cat.id}
                     onClick={() => handleClick(cat)}
-                    className="flex flex-col items-center justify-center p-5 bg-background-secondary rounded-xl 
-                               hover:bg-primary/10 transition cursor-pointer shadow-sm hover:shadow-md min-w-[120px]
-                               focus:ring-2 focus:ring-primary/50 focus:outline-none"
+                    className="group flex flex-col items-center justify-center p-5 bg-white dark:bg-gray-800 
+                               border border-gray-200 dark:border-gray-700 rounded-xl min-w-[120px]
+                               hover:border-primary dark:hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 
+                               hover:shadow-lg dark:hover:shadow-xl hover:-translate-y-2 focus:ring-2 focus:ring-primary/50 
+                               transition-all duration-300 cursor-pointer focus:outline-none"
                   >
-                    <Icon className="text-primary w-7 h-7 mb-2" />
-                    <span className="text-sm font-medium text-text-primary truncate w-full text-center">
+                    <Icon className="text-primary w-7 h-7 mb-2 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-6" />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate w-full text-center">
                       {name}
                     </span>
                   </button>

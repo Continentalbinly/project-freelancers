@@ -45,7 +45,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="bg-background">
+    <div>
       {/* 🏠 Hero */}
       <HeroSection t={t} />
 

@@ -10,7 +10,7 @@ export default function ProjectsGrid({
   if (!projects.length) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-lg font-semibold text-text-primary mb-2">
+        <h3 className="text-lg font-semibold   mb-2">
           {t("projects.results.noResults")}
         </h3>
         <p className="text-text-secondary">

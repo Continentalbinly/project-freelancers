@@ -39,7 +39,7 @@ export default function StudentFields({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="bg-primary-light/10 rounded-xl p-4 sm:p-6 border border-primary/20">
+      <div className="bg-primary/10 rounded-xl p-4 sm:p-6 border border-primary/20">
         <h4 className="font-semibold text-primary mb-3 sm:mb-4 flex items-center">
           <svg
             className="w-4 h-4 sm:w-5 sm:h-5 mr-2"
@@ -62,7 +62,7 @@ export default function StudentFields({
           <div>
             <label
               htmlFor="university"
-              className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+              className="block text-sm font-semibold   mb-2 sm:mb-3"
             >
               {t("auth.signup.step2.studentInfo.university")}
             </label>
@@ -73,7 +73,7 @@ export default function StudentFields({
               type="text"
               value={formData.university}
               onChange={handleChange}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
               placeholder={t(
                 "auth.signup.step2.studentInfo.universityPlaceholder"
               )}
@@ -83,7 +83,7 @@ export default function StudentFields({
           <div>
             <label
               htmlFor="fieldOfStudy"
-              className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+              className="block text-sm font-semibold   mb-2 sm:mb-3"
             >
               {t("auth.signup.step2.studentInfo.fieldOfStudy")}
             </label>
@@ -94,19 +94,20 @@ export default function StudentFields({
               type="text"
               value={formData.fieldOfStudy}
               onChange={handleChange}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
               placeholder={t(
                 "auth.signup.step2.studentInfo.fieldOfStudyPlaceholder"
               )}
             />
           </div>
+
         </div>
 
         {/* Graduation Year */}
         <div className="mt-4 sm:mt-6">
           <label
             htmlFor="graduationYear"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.studentInfo.graduationYear")}
           </label>
@@ -119,7 +120,7 @@ export default function StudentFields({
             max="2030"
             value={formData.graduationYear}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
             placeholder={t(
               "auth.signup.step2.studentInfo.graduationYearPlaceholder"
             )}
@@ -130,7 +131,7 @@ export default function StudentFields({
         <div className="mt-4 sm:mt-6">
           <label
             htmlFor="bio"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.studentInfo.bio")}
           </label>
@@ -140,14 +141,14 @@ export default function StudentFields({
             rows={3}
             value={formData.bio}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
             placeholder={t("auth.signup.step2.studentInfo.bioPlaceholder")}
           />
         </div>
 
         {/* Skills */}
         <div className="mt-4 sm:mt-6">
-          <label className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3">
+          <label className="block text-sm font-semibold   mb-2 sm:mb-3">
             {t("auth.signup.step2.studentInfo.skills")}
           </label>
           <div className="flex gap-2 mb-3">
@@ -159,7 +160,7 @@ export default function StudentFields({
               onKeyPress={(e) =>
                 e.key === "Enter" && (e.preventDefault(), addSkill())
               }
-              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
               placeholder={t("auth.signup.step2.studentInfo.addSkill")}
             />
             <button
@@ -175,7 +176,7 @@ export default function StudentFields({
             {formData.skills?.map((skill, index) => (
               <span
                 key={index}
-                className="px-2 sm:px-3 py-1 sm:py-2 bg-primary-light text-primary rounded-full text-sm flex items-center gap-1 sm:gap-2 font-medium"
+                className="px-2 sm:px-3 py-1 sm:py-2 bg-primary/10 text-primary rounded-full text-sm flex items-center gap-1 sm:gap-2 font-medium"
               >
                 {skill}
                 <button

@@ -6,18 +6,26 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useEffect, useRef, useState } from "react";
 
 export default function HeaderNav({ pathname }: { pathname: string }) {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const { t } = useTranslationContext();
+
+  const isFreelancer = profile?.userType?.includes("freelancer");
+  const isClient = profile?.userType?.includes("client");
 
   const [openFinance, setOpenFinance] = useState(false);
   const financeRef = useRef<HTMLDivElement>(null);
 
-  const linkClasses = (path: string) =>
-    `text-sm font-medium transition-colors ${
-      pathname === path
+  const linkClasses = (path: string) => {
+    const isActiveHome = path === "/" && (pathname === "/" || pathname === "/dashboard");
+    const isActivePath = pathname === path;
+    const isActive = isActiveHome || isActivePath;
+    
+    return `text-sm font-medium transition-colors ${
+      isActive
         ? "text-primary border-b-2 border-primary"
         : "text-text-primary hover:text-primary"
     }`;
+  };
 
   // 🌀 outside click handler
   useEffect(() => {
@@ -62,74 +70,19 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
             {t("header.proposals")}
           </Link>
 
-          {/* ----- FINANCE DROPDOWN (CLICK TO OPEN) ----- */}
-          <div className="relative" ref={financeRef}>
-            <button
-              onClick={() => setOpenFinance((prev) => !prev)}
-              className={`text-sm font-medium transition-colors flex items-center gap-1 ${
-                pathname.startsWith("/transactions") ||
-                pathname.startsWith("/topup") ||
-                pathname.startsWith("/withdraw") ||
-                pathname.startsWith("/subscription")
-                  ? "text-primary border-b-2 border-primary cursor-pointer"
-                  : "text-text-primary hover:text-primary cursor-pointer"
-              }`}
-            >
-              {t("header.finance") || "Finance"}
-              <svg
-                className={`w-4 h-4 transition-transform ${
-                  openFinance ? "rotate-180" : ""
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
+          {/* Freelancer: Find Work link */}
+          {isFreelancer && (
+            <Link href="/projects" className={linkClasses("/projects")}>
+              {t("header.findWork")}
+            </Link>
+          )}
 
-            {/* DROPDOWN */}
-            {openFinance && (
-              <div className="absolute left-0 mt-2 w-44 bg-white border border-border rounded-md shadow-lg py-2 z-50">
-                <Link
-                  href="/transactions"
-                  onClick={() => setOpenFinance(false)}
-                  className="block px-4 py-2 text-sm text-text-primary hover:bg-primary/10 hover:text-primary"
-                >
-                  {t("header.transactions")}
-                </Link>
-
-                <Link
-                  href="/topup"
-                  onClick={() => setOpenFinance(false)}
-                  className="block px-4 py-2 text-sm text-text-primary hover:bg-primary/10 hover:text-primary"
-                >
-                  {t("header.topUp")}
-                </Link>
-
-                <Link
-                  href="/withdraw"
-                  onClick={() => setOpenFinance(false)}
-                  className="block px-4 py-2 text-sm text-text-primary hover:bg-primary/10 hover:text-primary"
-                >
-                  {t("header.withdraw")}
-                </Link>
-
-                <Link
-                  href="/pricing"
-                  onClick={() => setOpenFinance(false)}
-                  className="block px-4 py-2 text-sm text-text-primary hover:bg-primary/10 hover:text-primary"
-                >
-                  {t("header.subscription") || "Subscription"}
-                </Link>
-              </div>
-            )}
-          </div>
+          {/* Client: Hire Freelancer link */}
+          {isClient && (
+            <Link href="/freelancers" className={linkClasses("/freelancers")}>
+              {t("header.hireFreelancer")}
+            </Link>
+          )}
         </>
       ) : (
         <>

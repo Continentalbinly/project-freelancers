@@ -171,11 +171,11 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
     <aside className="space-y-5 relative">
       {/* Disable entire sidebar while loading */}
       {loadingAction && (
-        <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-50 cursor-not-allowed"></div>
+        <div className="absolute inset-0 backdrop-blur-sm z-50 cursor-not-allowed"></div>
       )}
 
       {/* === Profile === */}
-      <section className="border border-border bg-white/70 rounded-md p-5">
+      <section className="border border-border  rounded-md p-5">
         <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
           <UserIcon className="w-4 h-4 text-primary" />
           {isClient
@@ -185,9 +185,9 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
 
         {loadingProfile ? (
           <div className="animate-pulse">
-            <div className="w-14 h-14 bg-gray-200 rounded-full mb-3"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
-            <div className="h-2 bg-gray-200 rounded w-1/3"></div>
+            <div className="w-14 h-14 rounded-full mb-3"></div>
+            <div className="h-3 rounded w-1/2 mb-2"></div>
+            <div className="h-2 rounded w-1/3"></div>
           </div>
         ) : (
           <div className="flex items-start gap-3">
@@ -214,7 +214,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
       </section>
 
       {/* === Proposal Details === */}
-      <section className="border border-border bg-white/70 rounded-md p-5 text-sm">
+      <section className="border border-border  rounded-md p-5 text-sm">
         <h3 className="font-semibold mb-3 flex items-center gap-2">
           <CurrencyDollarIcon className="w-4 h-4 text-primary" />
           {t("proposals.detail.details")}
@@ -246,7 +246,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
       </section>
 
       {/* === Actions === */}
-      <section className="border border-border bg-white/70 rounded-md p-5 space-y-3">
+      <section className="border border-border  rounded-md p-5 space-y-3">
         {proposal.status === "pending" && isClient && (
           <>
             <button
@@ -272,7 +272,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
         {proposal.status === "accepted" && (
           <Link
             href={`/messages?project=${proposal.projectId}`}
-            className="w-full bg-primary text-white py-2.5 rounded-md flex justify-center hover:bg-primary-dark"
+            className="w-full bg-primary text-white py-2.5 rounded-md flex justify-center hover:bg-primary-hover"
           >
             <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1" />
             {t("proposals.detail.startChat")}
@@ -281,7 +281,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
 
         <Link
           href="/proposals"
-          className="w-full py-2.5 text-sm rounded-md border border-border text-text-primary bg-white hover:bg-gray-50 flex justify-center gap-2"
+          className="w-full py-2.5 text-sm rounded-md border border-border  flex justify-center gap-2"
         >
           ← {t("proposals.detail.backToList")}
         </Link>
@@ -289,8 +289,8 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
 
       {/* === Confirmation Modal === */}
       {confirmAction && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999]">
-          <div className="bg-white rounded-lg shadow-xl w-[90%] max-w-sm p-6 text-center">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999]">
+          <div className=" rounded-lg shadow-xl border border-border w-[90%] max-w-sm p-6 text-center">
             <ExclamationTriangleIcon className="w-10 h-10 text-warning mx-auto mb-3" />
 
             <h4 className="text-lg font-semibold mb-2">
@@ -309,7 +309,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
               <button
                 disabled={loadingAction}
                 onClick={() => !loadingAction && setConfirmAction(null)}
-                className="px-4 py-2 border border-border rounded-md text-sm hover:bg-background"
+                className="px-4 py-2 border border-border rounded-md text-sm "
               >
                 {t("common.cancel")}
               </button>

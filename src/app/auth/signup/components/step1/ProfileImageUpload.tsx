@@ -175,7 +175,7 @@ export default function ProfileImageUpload({
 
   return (
     <div>
-      <label className="block text-sm font-semibold text-text-primary mb-3 sm:mb-4">
+      <label className="block text-sm font-semibold   mb-3 sm:mb-4">
         {t("auth.signup.step1.profilePicture")}
       </label>
 
@@ -183,8 +183,8 @@ export default function ProfileImageUpload({
         <div
           className={`relative border-2 border-dashed rounded-lg p-4 sm:p-6 text-center transition-all duration-200 ${
             selectedFile
-              ? "border-primary bg-primary-light/10"
-              : "border-border hover:border-primary/50 hover:bg-primary-light/5"
+              ? "border-primary bg-primary/10"
+              : "border-border hover:border-primary/50 hover:bg-primary/5 bg-background"
           }`}
         >
           <input
@@ -229,7 +229,7 @@ export default function ProfileImageUpload({
             </div>
           ) : (
             <div className="space-y-3 sm:space-y-4">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full overflow-hidden border-4 border-border shadow-lg">
                 <img
                   src={previewUrl}
                   alt="Profile preview"
@@ -239,7 +239,7 @@ export default function ProfileImageUpload({
 
               {uploading ? (
                 <div className="flex flex-col items-center space-y-2">
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full rounded-full h-3 overflow-hidden">
                     <div
                       className="bg-primary h-3 rounded-full transition-all"
                       style={{ width: `${progress}%` }}
@@ -251,7 +251,7 @@ export default function ProfileImageUpload({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-text-primary truncate">
+                  <p className="text-sm font-medium   truncate">
                     {selectedFile?.name}
                   </p>
                   <p className="text-xs text-text-muted">

@@ -112,7 +112,7 @@ export default function SkillsTab({
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-text-primary">
+          <h3 className="text-lg font-semibold  ">
             {t("profile.skillsSection.title")}
           </h3>
           <button
@@ -145,7 +145,7 @@ export default function SkillsTab({
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4 border border-border dark:border-gray-700">
                 <svg
                   className="w-8 h-8 text-text-secondary"
                   fill="none"
@@ -160,7 +160,7 @@ export default function SkillsTab({
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-text-primary mb-2">
+              <h3 className="text-lg font-semibold   mb-2">
                 {t("profile.skillsSection.noSkills")}
               </h3>
               <p className="text-text-secondary">
@@ -173,17 +173,17 @@ export default function SkillsTab({
 
       {/* === Modal === */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="rounded-xl shadow-lg w-full max-w-md p-6 relative border border-border dark:border-gray-800">
             {/* Close Button */}
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-3 right-3 text-text-secondary hover:text-text-primary transition"
+              className="absolute top-3 right-3 text-text-secondary dark:hover:text-gray-300 transition"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
 
-            <h2 className="text-xl font-semibold text-text-primary mb-4">
+            <h2 className="text-xl font-semibold   mb-4">
               {t("profile.skillsSection.addSkill")}
             </h2>
 
@@ -193,13 +193,13 @@ export default function SkillsTab({
                 value={newSkill}
                 onChange={(e) => setNewSkill(e.target.value)}
                 placeholder={t("profile.skillsSection.enterSkillName")}
-                className="w-full px-4 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg text-sm dark:border-gray-700   focus:ring-2 focus:ring-primary focus:border-transparent"
               />
 
               <div className="flex justify-end gap-3">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg bg-gray-100 text-text-secondary hover:bg-gray-200 transition text-sm"
+                  className="px-4 py-2 rounded-lg text-text-secondary dark:transition text-sm border border-border dark:border-gray-700"
                 >
                   {t("common.cancel") || "Cancel"}
                 </button>

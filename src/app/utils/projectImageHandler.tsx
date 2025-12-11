@@ -144,7 +144,7 @@ export default function ProjectImage({
       
       {/* Image loading indicator */}
       {imageLoading && (
-        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
+        <div className="absolute top-4 right-4 backdrop-blur-sm rounded-full p-2 shadow-lg">
           <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
         </div>
       )}

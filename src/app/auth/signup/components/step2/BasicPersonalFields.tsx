@@ -23,7 +23,7 @@ export default function BasicPersonalFields({
         <div>
           <label
             htmlFor="dateOfBirth"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.dateOfBirth")}
           </label>
@@ -35,14 +35,14 @@ export default function BasicPersonalFields({
             required
             value={formData.dateOfBirth}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
           />
         </div>
 
         <div>
           <label
             htmlFor="gender"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.gender")}
           </label>
@@ -52,7 +52,7 @@ export default function BasicPersonalFields({
             required
             value={formData.gender}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
           >
             <option value="prefer_not_to_say">
               {t("auth.signup.step2.genderOptions.preferNotToSay")}
@@ -74,7 +74,7 @@ export default function BasicPersonalFields({
       <div>
         <label
           htmlFor="phone"
-          className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+          className="block text-sm font-semibold   mb-2 sm:mb-3"
         >
           {t("auth.signup.step2.phone")}
         </label>
@@ -86,7 +86,7 @@ export default function BasicPersonalFields({
           required
           value={formData.phone}
           onChange={handleChange}
-          className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
           placeholder={t("auth.signup.step2.phonePlaceholder")}
         />
       </div>
@@ -96,7 +96,7 @@ export default function BasicPersonalFields({
         <div>
           <label
             htmlFor="country"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.country")}
           </label>
@@ -107,7 +107,7 @@ export default function BasicPersonalFields({
             type="text"
             value={formData.country}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
             placeholder={t("auth.signup.step2.countryPlaceholder")}
           />
         </div>
@@ -115,7 +115,7 @@ export default function BasicPersonalFields({
         <div>
           <label
             htmlFor="city"
-            className="block text-sm font-semibold text-text-primary mb-2 sm:mb-3"
+            className="block text-sm font-semibold   mb-2 sm:mb-3"
           >
             {t("auth.signup.step2.city")}
           </label>
@@ -126,7 +126,7 @@ export default function BasicPersonalFields({
             type="text"
             value={formData.city}
             onChange={handleChange}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
             placeholder={t("auth.signup.step2.cityPlaceholder")}
           />
         </div>

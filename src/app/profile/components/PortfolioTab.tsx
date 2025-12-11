@@ -24,7 +24,7 @@ export default function PortfolioTab({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-text-primary">
+        <h3 className="text-lg font-semibold  ">
           {t("profile.portfolioSection.title")}
         </h3>
       </div>
@@ -34,16 +34,16 @@ export default function PortfolioTab({
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-background-secondary rounded-lg p-4 animate-pulse"
+              className="bg-background-secondary rounded-lg p-4 animate-pulse border border-border dark:border-gray-700"
             >
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 rounded mb-2"></div>
+              <div className="h-3 rounded mb-2"></div>
             </div>
           ))}
         </div>
       ) : completed.length === 0 ? (
         <div className="col-span-full text-center py-8">
-          <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-background-secondary rounded-full flex items-center justify-center mx-auto mb-4 border border-border dark:border-gray-700">
             <svg
               className="w-8 h-8 text-text-secondary"
               fill="none"
@@ -58,7 +58,7 @@ export default function PortfolioTab({
               />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+          <h3 className="text-lg font-semibold   mb-2">
             {t("profile.portfolioSection.noProjects")}
           </h3>
           <p className="text-text-secondary">
@@ -70,7 +70,7 @@ export default function PortfolioTab({
           {completed.map((project: any) => (
             <div
               key={project.id}
-              className="bg-white border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+              className="border border-border dark:border-gray-800 rounded-lg overflow-hidden hover:shadow-md dark:hover:shadow-xl transition-shadow"
             >
               <div className="relative h-48 overflow-hidden">
                 <ProjectImage
@@ -87,7 +87,7 @@ export default function PortfolioTab({
 
               <div className="p-4">
                 <div className="mb-3">
-                  <h4 className="font-semibold text-text-primary mb-2 line-clamp-2">
+                  <h4 className="font-semibold   mb-2 line-clamp-2">
                     {project.title}
                   </h4>
                   <p className="text-sm text-text-secondary mb-3 line-clamp-2">
@@ -100,13 +100,13 @@ export default function PortfolioTab({
                     {project.skillsRequired.slice(0, 2).map((skill: string) => (
                       <span
                         key={skill}
-                        className="px-2 py-1 bg-primary-light text-primary text-xs rounded-full"
+                        className="px-2 py-1 bg-primary/20 dark:bg-primary/30 text-primary dark:text-primary text-xs rounded-full"
                       >
                         {skill}
                       </span>
                     ))}
                     {project.skillsRequired.length > 2 && (
-                      <span className="px-2 py-1 bg-background-secondary text-text-secondary text-xs rounded-full">
+                      <span className="px-2 py-1 bg-background-secondary text-text-secondary dark:text-text-secondary text-xs rounded-full border border-border dark:border-gray-700">
                         +{project.skillsRequired.length - 2} more
                       </span>
                     )}

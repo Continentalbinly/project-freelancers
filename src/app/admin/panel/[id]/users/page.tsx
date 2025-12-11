@@ -112,14 +112,14 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-background">
       <AdminSubHeader
         title="Manage Users"
         desc="View and manage all registered accounts"
       />
       <div className="max-w-6xl mx-auto px-6 py-10">
         {users.length === 0 ? (
-          <p className="text-gray-500 text-center py-20">No users found.</p>
+          <p className="text-text-secondary text-center py-20">No users found.</p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {users.map((u) => (
@@ -133,7 +133,7 @@ export default function AdminUsersPage() {
           <button
             onClick={handlePrev}
             disabled={!hasPrev}
-            className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+            className="px-3 py-1.5 text-sm rounded-md border border-border text-text-primary bg-background disabled:opacity-40"
           >
             ‹ Prev
           </button>
@@ -146,7 +146,7 @@ export default function AdminUsersPage() {
               className={`px-3 py-1.5 text-sm rounded-md ${
                 page === i + 1
                   ? "bg-primary text-white"
-                  : "border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  : "border border-border text-text-primary bg-background"
               }`}
             >
               {i + 1}
@@ -156,7 +156,7 @@ export default function AdminUsersPage() {
           {hasNext && (
             <button
               onClick={() => loadPage(page + 1)}
-              className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+              className="px-3 py-1.5 text-sm rounded-md border border-border text-text-primary bg-background"
             >
               Next ›
             </button>

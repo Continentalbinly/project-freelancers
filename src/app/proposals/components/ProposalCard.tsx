@@ -155,7 +155,7 @@ export default function ProposalCard({
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-border p-4 sm:p-6 transition-all hover:shadow-lg hover:scale-[1.01] cursor-pointer"
+      className="bg-background rounded-xl sm:rounded-2xl shadow-sm border border-border p-4 sm:p-6 transition-all hover-surface cursor-pointer"
     >
       {/* === Header === */}
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-6 gap-4">
@@ -181,7 +181,7 @@ export default function ProposalCard({
                 .map((skill: string, i: number) => (
                   <span
                     key={i}
-                    className="px-2 py-1 bg-primary-light text-primary text-xs rounded-full"
+                    className="px-2 py-1 bg-primary-light text-primary text-xs rounded-full font-medium"
                   >
                     {skill}
                   </span>

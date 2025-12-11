@@ -23,10 +23,7 @@ import ProjectAttachments from "./components/ProjectAttachments";
 import ProjectParticipants from "./components/ProjectParticipants";
 import ProjectSidebar from "./components/ProjectSidebar";
 import ProjectActions from "./components/ProjectActions";
-import CompletionStatus from "./components/CompletionStatus";
 import ProjectImage from "@/app/utils/projectImageHandler";
-import router from "next/router";
-import { ChevronLeftIcon } from "lucide-react";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
@@ -102,7 +99,7 @@ export default function ProjectDetailPage() {
   // 🕒 Loading
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background  ">
         <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
         <p className="mt-4 text-text-secondary text-sm sm:text-base">
           {t("common.loading")}
@@ -114,7 +111,7 @@ export default function ProjectDetailPage() {
   // 🚫 Project not found
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background  ">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">
             {t("projectDetail.projectNotFound")}
@@ -129,7 +126,7 @@ export default function ProjectDetailPage() {
 
   // ✅ Page layout
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background   min-h-screen">
       <div className="py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
@@ -139,7 +136,7 @@ export default function ProjectDetailPage() {
             size="full"
           />
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-border">
+          <div className="p-6 rounded-lg shadow-sm border border-border dark:border-gray-800">
             <ProjectHeader project={project} user={user} t={t} />
             <ProjectDescription description={project.description} t={t} />
             <ProjectSkills skills={project.skillsRequired} t={t} />

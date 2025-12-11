@@ -77,8 +77,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="h-auto flex items-center justify-center bg-background">
-      <div className="py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-lg border border-border w-full">
+    <div className="h-auto flex items-center justify-center">
+      <div className="py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6 shadow-lg rounded-2xl border border-border bg-background w-full max-w-md mx-auto">
         <div className="text-center mb-4 sm:mb-6">
           <Link href="/" className="flex justify-center mb-3">
             <Image
@@ -90,7 +90,7 @@ export default function LoginPage() {
               priority
             />
           </Link>
-          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-text-primary">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold  ">
             {t("auth.login.title")}
           </h2>
           <p className="text-text-secondary mt-2 text-sm sm:text-base">
@@ -111,7 +111,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-text-primary mb-2"
+              className="block text-sm font-medium   mb-2"
             >
               {t("auth.login.email")}
             </label>
@@ -123,7 +123,7 @@ export default function LoginPage() {
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder={t("auth.login.emailPlaceholder")}
             />
           </div>
@@ -131,7 +131,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-text-primary mb-2"
+              className="block text-sm font-medium   mb-2"
             >
               {t("auth.login.password")}
             </label>
@@ -143,7 +143,7 @@ export default function LoginPage() {
               required
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder={t("auth.login.passwordPlaceholder")}
             />
           </div>

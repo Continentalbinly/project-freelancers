@@ -50,17 +50,17 @@ export default function ProjectCard({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "open":
-        return "bg-green-100 text-green-700 border border-green-200";
+        return "bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/40 dark:text-green-200 dark:border-green-700";
       case "in_progress":
-        return "bg-yellow-100 text-yellow-700 border border-yellow-200";
+        return "bg-yellow-100 text-yellow-700 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-200 dark:border-yellow-700";
       case "in_review":
-        return "bg-amber-100 text-amber-700 border border-amber-200";
+        return "bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:border-amber-700";
       case "completed":
-        return "bg-blue-100 text-blue-700 border border-blue-200";
+        return "bg-blue-100 text-blue-700 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-200 dark:border-blue-700";
       case "cancelled":
-        return "bg-red-100 text-red-700 border border-red-200";
+        return "bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-700";
       default:
-        return "bg-gray-100 text-gray-600 border border-gray-200";
+        return "text-text-secondary border border-border";
     }
   };
 
@@ -95,7 +95,7 @@ export default function ProjectCard({
   return (
     <div
       onClick={handleCardClick}
-      className="bg-white rounded-xl shadow-sm border border-border overflow-hidden flex flex-col hover:shadow-md hover:scale-[1.01] transition-all duration-300 cursor-pointer relative group"
+      className="rounded-xl shadow-sm border border-border dark:border-gray-800 overflow-hidden flex flex-col hover:shadow-md hover:scale-[1.01] transition-all duration-300 cursor-pointer relative group"
     >
       {/* 🖼️ Image */}
       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
@@ -119,7 +119,7 @@ export default function ProjectCard({
         <div>
           {/* 🏷️ Title & Status */}
           <div className="flex items-center justify-between mb-1">
-            <h3 className="font-semibold text-base sm:text-lg text-text-primary leading-snug line-clamp-2">
+            <h3 className="font-semibold text-base sm:text-lg   leading-snug line-clamp-2">
               {project.title}
             </h3>
             {project.status && (
@@ -143,7 +143,7 @@ export default function ProjectCard({
             <div className="flex items-center gap-2 mb-3">
               <Avatar {...getAvatarProps(owner)} size="sm" />
               <div className="text-xs text-text-secondary truncate">
-                <span className="font-medium text-text-primary">
+                <span className="font-medium  ">
                   {owner.fullName}
                 </span>
                 <span>
@@ -165,7 +165,7 @@ export default function ProjectCard({
             <span className="text-text-secondary">
               {t("projects.projectCard.category")}
             </span>
-            <span className="font-medium text-text-primary truncate max-w-[60%] text-right">
+            <span className="font-medium   truncate max-w-[60%] text-right">
               {categoryName}
             </span>
           </div>
@@ -173,7 +173,7 @@ export default function ProjectCard({
             <span className="text-text-secondary">
               {t("projects.projectCard.budget")}:
             </span>
-            <span className="font-medium text-text-primary">
+            <span className="font-medium  ">
               {formatBudget(project.budget, project.budgetType)}
             </span>
           </div>
@@ -181,7 +181,7 @@ export default function ProjectCard({
             <span className="text-text-secondary">
               {t("common.createdAt")}:
             </span>
-            <span className="font-medium text-text-primary">
+            <span className="font-medium  ">
               {timeAgo(project.createdAt, currentLanguage)}
             </span>
           </div>
@@ -189,7 +189,7 @@ export default function ProjectCard({
             <span className="text-text-secondary">
               {t("projects.projectCard.views")}:
             </span>
-            <span className="font-medium text-text-primary">
+            <span className="font-medium  ">
               {project.views || 0}
             </span>
           </div>

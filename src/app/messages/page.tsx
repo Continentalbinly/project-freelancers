@@ -19,6 +19,7 @@ import ChatList from "./components/ChatList";
 import ChatRoom from "./components/ChatRoom";
 import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
 import { ArrowLeftIcon } from "lucide-react";
+import MessagesSkeleton from "./components/MessagesSkeleton";
 
 export default function MessagesPage() {
   const { user } = useAuth();
@@ -86,24 +87,19 @@ export default function MessagesPage() {
     });
   }, [chatRooms, user, profileCache]);
 
-  if (!user)
-    return (
-      <div className="min-h-screen flex items-center justify-center text-text-secondary">
-        {t("common.loading") || "Loading..."}
-      </div>
-    );
+  if (loading) return <MessagesSkeleton />;
 
   return (
     <div className="h-full w-full flex flex-col lg:flex-row bg-background overflow-hidden">
       {/* 🔹 Custom Header for /messages page (mobile only) */}
-      <div className="lg:hidden sticky top-0 z-20 h-16 flex items-center justify-between px-4 border-b border-border bg-white shadow-sm">
+      <div className="lg:hidden sticky top-0 z-20 h-16 flex items-center justify-between px-4 border-b border-border bg-background shadow-sm">
         <button
           onClick={() => router.back()}
           className="p-2 rounded-full hover:bg-background-secondary transition"
         >
-          <ArrowLeftIcon className="w-5 h-5 text-text-secondary" />
+          <ArrowLeftIcon className="w-5 h-5" />
         </button>
-        <h2 className="text-base font-semibold text-text-primary">
+        <h2 className="text-base font-semibold">
           {t("dashboard.messagesPage.title")}
         </h2>
         <div className="w-5" /> {/* Placeholder for alignment */}

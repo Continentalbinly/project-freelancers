@@ -17,8 +17,8 @@ export default function ProjectParticipants({
   t,
 }: ProjectParticipantsProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-border p-6">
-      <h3 className="text-lg font-semibold text-text-primary mb-4">
+    <div className="rounded-lg shadow-sm border border-border dark:border-gray-800 p-6">
+      <h3 className="text-lg font-semibold   mb-4">
         {t("projectDetail.projectParticipants")}
       </h3>
 
@@ -30,7 +30,7 @@ export default function ProjectParticipants({
             size="lg"
           />
           <div>
-            <p className="font-medium text-text-primary">
+            <p className="font-medium  ">
               {clientProfile?.fullName || t("projectDetail.client")}
             </p>
             <span className="text-text-secondary">
@@ -54,7 +54,7 @@ export default function ProjectParticipants({
               size="lg"
             />
             <div>
-              <p className="font-medium text-text-primary">
+              <p className="font-medium  ">
                 {freelancerProfile.fullName}
               </p>
               <span className="text-text-secondary">
@@ -69,9 +69,9 @@ export default function ProjectParticipants({
           </div>
         ) : (
           <div className="flex items-center space-x-3 p-4 bg-background-secondary rounded-lg">
-            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center">
               <svg
-                className="w-6 h-6 text-gray-400"
+                className="w-6 h-6 text-gray-400 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
