@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { Plus } from "lucide-react";
+
 export default function ManageProjectsFilters({ t, filters, setFilters }: any) {
   const categories = [
     { value: "all", label: t("manageProjects.allCategories") },
@@ -20,8 +23,22 @@ export default function ManageProjectsFilters({ t, filters, setFilters }: any) {
   ];
 
   return (
-    <div className="bg-background-secondary rounded-xl shadow-sm border border-border p-6 mb-6 text-text-primary">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="mb-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-text-primary">
+          {t("manageProjects.title") || "Manage Projects"}
+        </h2>
+        <Link
+          href="/projects/create"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
+        >
+          <Plus className="w-5 h-5" />
+          {t("manageProjects.createProject") || "Create Project"}
+        </Link>
+      </div>
+      
+      <div className="bg-background-secondary rounded-xl shadow-sm border border-border p-6 text-text-primary">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="lg:col-span-2">
           <label className="block text-sm font-medium mb-2  text-text-primary">
             {t("manageProjects.searchProjects")}
@@ -67,6 +84,7 @@ export default function ManageProjectsFilters({ t, filters, setFilters }: any) {
               </option>
             ))}
           </select>
+        </div>
         </div>
       </div>
     </div>

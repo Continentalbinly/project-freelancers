@@ -37,7 +37,7 @@ function LanguageProviderInner({ children }: { children: React.ReactNode }) {
 // 🔹 Lightweight, non-blocking loading bar tucked under the header
 function LanguageLoadingScreen() {
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-16 z-[9999] h-0.5">
+    <div className="pointer-events-none fixed inset-x-0 top-0 z-[9999] h-0.5">
       <div className="h-full w-full bg-gradient-to-r from-primary via-secondary to-primary animate-[shimmer_1.4s_linear_infinite] opacity-90 shadow-sm" />
     </div>
   );

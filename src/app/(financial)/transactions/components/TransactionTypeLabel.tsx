@@ -33,6 +33,24 @@ export default function TransactionTypeLabel({ tx, t }: any) {
         {t("transactions.types.payout_received")}
       </>
     ),
+    order_payout: (
+      <>
+        <Receipt className="w-4 h-4 text-blue-600" />{" "}
+        {t("transactions.types.order_payout")}
+      </>
+    ),
+    order_payout_received: (
+      <>
+        <BanknoteArrowDown className="w-4 h-4 text-green-600" />{" "}
+        {t("transactions.types.order_payout_received")}
+      </>
+    ),
+    order_placement_fee: (
+      <>
+        <Receipt className="w-4 h-4 text-orange-600" />{" "}
+        {t("transactions.types.order_placement_fee")}
+      </>
+    ),
     escrow_payment: (
       <>
         <BanknoteArrowUp className="w-4 h-4 text-red-600" />{" "}

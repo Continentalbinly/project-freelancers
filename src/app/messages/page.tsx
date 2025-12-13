@@ -17,7 +17,7 @@ import {
 
 import ChatList from "./components/ChatList";
 import ChatRoom from "./components/ChatRoom";
-import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
+import { createOrOpenChatRoom, createOrOpenChatRoomForOrder } from "@/app/utils/chatUtils";
 import { ArrowLeftIcon } from "lucide-react";
 import MessagesSkeleton from "./components/MessagesSkeleton";
 
@@ -35,6 +35,7 @@ export default function MessagesPage() {
 
   const params = useSearchParams();
   const projectId = params.get("project");
+  const orderId = params.get("order");
 
   // Load chat rooms
   useEffect(() => {
@@ -56,12 +57,21 @@ export default function MessagesPage() {
 
   // Auto-open if project param exists
   useEffect(() => {
-    if (!user || !projectId) return;
-    (async () => {
-      const room = await createOrOpenChatRoom(projectId, user.uid);
-      if (room) setSelectedRoom(room);
-    })();
-  }, [user, projectId]);
+    if (!user) return;
+    if (projectId) {
+      (async () => {
+        const room = await createOrOpenChatRoom(projectId, user.uid);
+        if (room) setSelectedRoom(room);
+      })();
+      return;
+    }
+    if (orderId) {
+      (async () => {
+        const room = await createOrOpenChatRoomForOrder(orderId, user.uid);
+        if (room) setSelectedRoom(room);
+      })();
+    }
+  }, [user, projectId, orderId]);
 
   // Fetch profile cache
   useEffect(() => {

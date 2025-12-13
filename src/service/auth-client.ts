@@ -14,7 +14,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "./firebase"; // ✅ include db here
-import { AuthResponse } from "../types/auth";
+import { AuthResponse, type User } from "../types/auth";
 import { toast } from "react-toastify";
 
 /** ✅ LOGIN — handles Firebase + backend fetch + consistent error codes */
@@ -207,7 +207,7 @@ export async function signupUser(
 
     return {
       success: true,
-      user: { id: user.uid, email: user.email! },
+      user: { id: user.uid, email: user.email || "" } as unknown as User,
       requiresVerification: true,
     };
   } catch (error: any) {

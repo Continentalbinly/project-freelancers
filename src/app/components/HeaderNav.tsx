@@ -63,9 +63,6 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
 
       {user ? (
         <>
-          <Link href="/my-projects" className={linkClasses("/my-projects")}>
-            {t("header.myProjects")}
-          </Link>
           <Link href="/proposals" className={linkClasses("/proposals")}>
             {t("header.proposals")}
           </Link>
@@ -79,7 +76,7 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
 
           {/* Client: Hire Freelancer link */}
           {isClient && (
-            <Link href="/freelancers" className={linkClasses("/freelancers")}>
+            <Link href="/gigs" className={linkClasses("/gigs")}>
               {t("header.hireFreelancer")}
             </Link>
           )}
@@ -91,7 +88,7 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
             {t("header.projects")}
           </Link>
 
-          <Link href="/freelancers" className={linkClasses("/freelancers")}>
+          <Link href="/gigs" className={linkClasses("/gigs")}>
             {t("header.freelancers")}
           </Link>
 

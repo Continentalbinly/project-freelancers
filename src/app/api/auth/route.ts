@@ -80,7 +80,7 @@ async function createProfile(userId: string, data: any) {
       mainRole === "freelancer" ? data.userCategory : data.clientCategory;
     const occupation = category ? `${mainRole}_${category}` : mainRole;
 
-    const profileData = {
+    const profileData: Record<string, unknown> = {
       id: userId,
       email: data.email,
       fullName: data.fullName,

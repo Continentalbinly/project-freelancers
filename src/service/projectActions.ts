@@ -92,7 +92,7 @@ async function releaseFundsToFreelancer(
 
   // 🔏 Update escrow record
   const escrowRef = collection(db, "escrows");
-  const escrowSnap = await getDoc(doc(escrowRef, projectId)).catch(() => null);
+  const escrowSnap = await getDoc(doc(escrowRef, projectId)).catch((): null => null);
   if (escrowSnap?.exists()) {
     await updateDoc(doc(escrowRef, projectId), {
       status: "released",

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-export default function NotFound() {
+export default function NotFound(): React.ReactElement {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full text-center space-y-6 sm:space-y-8">

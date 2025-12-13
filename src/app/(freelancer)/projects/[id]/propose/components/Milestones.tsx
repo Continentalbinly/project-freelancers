@@ -85,7 +85,7 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
             placeholder={t("proposePage.milestoneTitlePlaceholder")}
             value={newItem.title}
             onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm bg-background focus:ring-2 focus:ring-primary"
           />
           <textarea
             placeholder={t("proposePage.milestoneDescriptionPlaceholder")}
@@ -93,7 +93,7 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
             onChange={(e) =>
               setNewItem({ ...newItem, description: e.target.value })
             }
-            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border border-border rounded-lg mb-2 text-sm bg-background focus:ring-2 focus:ring-primary"
             rows={2}
           />
           <div className="relative mb-3">
@@ -108,7 +108,7 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
                 onChange={(e) =>
                   setNewItem({ ...newItem, dueDate: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-background focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>

@@ -66,8 +66,8 @@ export interface Profile {
   emailVerificationExpires?: Date;
 
   // Portfolio fields
-  portfolio?: any;
-  sections?: any[];
+  portfolio?: Record<string, unknown>;
+  sections?: Array<Record<string, unknown>>;
   experience?: Array<{
     title: string;
     company: string;

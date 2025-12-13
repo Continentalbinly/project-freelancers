@@ -15,8 +15,8 @@ export default function ConfirmCreditModal({
       <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="rounded-lg shadow-lg p-6 max-w-sm w-full border border-border">
-          <Dialog.Title className="text-lg font-semibold   mb-2">
+        <Dialog.Panel className="rounded-lg shadow-lg p-6 max-w-sm w-full border border-border bg-background">
+          <Dialog.Title className="text-lg font-semibold text-text-primary mb-2">
             {hasEnoughCredit
               ? t("proposePage.confirmSubmission")
               : t("proposePage.notEnoughCreditsTitle")}

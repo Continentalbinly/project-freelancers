@@ -20,10 +20,10 @@ export const isFirebaseConfigured = Boolean(
   firebaseConfig.projectId
 )
 
-let app: any = null
-let auth: any = null
-let db: any = null
-let storage: any = null
+let app: ReturnType<typeof initializeApp> | null = null
+let auth: ReturnType<typeof getAuth> | null = null
+let db: ReturnType<typeof getFirestore> | null = null
+let storage: ReturnType<typeof getStorage> | null = null
 
 if (isFirebaseConfigured) {
   if (!getApps().length) {
@@ -39,14 +39,15 @@ if (isFirebaseConfigured) {
 
 export { auth, db, storage }
 
-export function handleFirebaseError(error: any) {
+export function handleFirebaseError(error: Error | unknown) {
+  const message = error instanceof Error ? error.message : 'An unexpected error occurred'
   return {
     success: false,
-    error: error.message || 'An unexpected error occurred'
+    error: message
   }
 }
 
-export function successResponse(data: any, message?: string) {
+export function successResponse<T>(data: T, message?: string) {
   return {
     success: true,
     data,
@@ -54,14 +55,14 @@ export function successResponse(data: any, message?: string) {
   }
 }
 
-export function convertTimestamp(timestamp: any): Date {
-  if (timestamp?.toDate) {
-    return timestamp.toDate()
+export function convertTimestamp(timestamp: Record<string, unknown> | Date | unknown): Date {
+  if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp) {
+    return (timestamp as { toDate(): Date }).toDate()
   }
-  if (timestamp?.seconds) {
-    return new Date(timestamp.seconds * 1000)
+  if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
+    return new Date((timestamp as { seconds: number }).seconds * 1000)
   }
-  return new Date(timestamp)
+  return new Date(timestamp as string | number)
 }
 
 

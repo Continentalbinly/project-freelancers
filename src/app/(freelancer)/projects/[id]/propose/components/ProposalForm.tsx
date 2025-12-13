@@ -157,8 +157,8 @@ export default function ProposalForm({
       <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="fixed inset-0 flex items-center justify-center px-4">
-        <Dialog.Panel className="rounded-lg p-6 max-w-sm w-full border border-border shadow-lg">
-          <Dialog.Title className="text-lg font-semibold   mb-2">
+        <Dialog.Panel className="rounded-lg p-6 max-w-sm w-full border border-border shadow-lg bg-background">
+          <Dialog.Title className="text-lg font-semibold text-text-primary mb-2">
             {canSubmit
               ? t("proposePage.confirmSubmission")
               : t("proposePage.notEnoughCreditsTitle")}
@@ -223,11 +223,11 @@ export default function ProposalForm({
 
       <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
         {/* Header */}
-        <div className="rounded-xl shadow-sm border border-border p-6 flex items-center gap-4">
+        <div className="rounded-xl shadow-sm border border-border bg-background-secondary p-6 flex items-center gap-4">
           <Avatar {...getAvatarProps(profile, user)} size="md" />
 
           <div>
-            <p className="font-semibold  ">
+            <p className="font-semibold text-text-primary">
               {t("proposePage.submittingAs")}:
             </p>
             <p className="text-text-secondary">
@@ -249,8 +249,8 @@ export default function ProposalForm({
         </div>
 
         {/* Proposal Form */}
-        <div className="rounded-xl shadow-sm border border-border p-6 space-y-6">
-          <h2 className="text-xl font-semibold  ">
+        <div className="rounded-xl shadow-sm border border-border bg-background p-6 space-y-6">
+          <h2 className="text-xl font-semibold text-text-primary">
             {t("proposePage.proposalDetails")}
           </h2>
 
@@ -269,7 +269,7 @@ export default function ProposalForm({
               rows={6}
               required
               placeholder={t("proposePage.coverLetterPlaceholder")}
-              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -283,7 +283,7 @@ export default function ProposalForm({
                 type="number"
                 value={proposedBudget}
                 readOnly
-                className="w-full px-3 py-2 border border-border rounded-lg text-text-secondary"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-background text-text-secondary"
               />
             </div>
 
@@ -297,7 +297,7 @@ export default function ProposalForm({
                   value={proposedRate}
                   onChange={(e) => setProposedRate(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary"
                 />
               </div>
             )}
@@ -312,7 +312,7 @@ export default function ProposalForm({
               value={estimatedDuration}
               onChange={(e) => setEstimatedDuration(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary"
             >
               <option value="">{t("proposePage.selectDuration")}</option>
               <option value="Less than 1 week">
@@ -346,7 +346,7 @@ export default function ProposalForm({
               onChange={(e) => setWorkPlan(e.target.value)}
               rows={4}
               placeholder={t("proposePage.workPlanPlaceholder")}
-              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 border border-border rounded-lg bg-background focus:ring-2 focus:ring-primary"
             />
           </div>
 

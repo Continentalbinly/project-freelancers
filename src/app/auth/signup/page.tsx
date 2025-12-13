@@ -77,7 +77,7 @@ export default function SignupPage() {
           : formData.clientCategory;
       const occupation = category ? `${mainRole}_${category}` : mainRole;
 
-      const initialBillingData = {
+      const initialBillingData: Record<string, unknown> = {
         credit: 0,
         plan: "free",
         planStatus: "inactive",

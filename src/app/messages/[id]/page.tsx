@@ -36,6 +36,7 @@ export default function ChatRoomPage() {
   const [receiver, setReceiver] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [projectStatus, setProjectStatus] = useState<string | null>(null);
+  const [orderStatus, setOrderStatus] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   /** ------------------- 🔹 LOAD CHAT ROOM + MESSAGES ------------------- */
@@ -80,21 +81,29 @@ export default function ChatRoomPage() {
     if (endRef.current) endRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /** ------------------- 🔹 TRACK PROJECT STATUS LIVE ------------------- */
+  /** ------------------- 🔹 TRACK PROJECT/ORDER STATUS LIVE ------------------- */
   useEffect(() => {
-    if (!chatRoom?.projectId) return;
-    const unsub = onSnapshot(
-      doc(db, "projects", chatRoom.projectId),
-      (snap) => {
+    if (chatRoom?.projectId) {
+      const unsub = onSnapshot(doc(db, "projects", chatRoom.projectId), (snap) => {
         if (snap.exists()) setProjectStatus(snap.data().status);
-      }
-    );
-    return () => unsub();
-  }, [chatRoom?.projectId]);
+      });
+      return () => unsub();
+    }
+    if (chatRoom?.orderId) {
+      const unsub = onSnapshot(doc(db, "orders", chatRoom.orderId), (snap) => {
+        if (snap.exists()) setOrderStatus(snap.data().status);
+      });
+      return () => unsub();
+    }
+  }, [chatRoom?.projectId, chatRoom?.orderId]);
 
   /** ------------------- 🔹 SEND MESSAGE ------------------- */
   const handleSend = async (text: string) => {
-    if (!user || !chatRoom || projectStatus === "completed") return;
+    if (!user || !chatRoom) return;
+    // Project: disable when pending OR completed
+    if (projectStatus === "pending" || projectStatus === "completed") return;
+    // Order: disable only when completed
+    if (orderStatus === "completed") return;
     try {
       await addDoc(collection(db, "chatMessages"), {
         chatRoomId: chatRoom.id,
@@ -190,6 +199,37 @@ export default function ChatRoomPage() {
             )}
           </div>
         )}
+
+        {/* 🟢 Order status bar under header */}
+        {chatRoom?.orderId && (
+          <div className="flex items-center gap-3 px-4 py-3 bg-background-secondary border-t border-border shadow-sm">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 flex-shrink-0">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-text-secondary font-medium">
+                {currentLanguage === "lo" ? "ສະຖານະຄຳສັ່ງ" : "Order Status"}
+              </span>
+              <span className={`text-sm font-semibold px-3 py-1 rounded-full inline-flex items-center w-fit mt-1 ${
+                orderStatus === "completed"
+                  ? "text-success"
+                  : orderStatus === "delivered"
+                  ? "text-green-600"
+                  : orderStatus === "in_progress"
+                  ? "text-purple-600"
+                  : orderStatus === "accepted"
+                  ? "text-blue-600"
+                  : orderStatus === "pending"
+                  ? "text-amber-600"
+                  : "text-text-secondary"
+              }`}>
+                {(orderStatus || "pending").replace("_", " ")}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 🔹 Messages Area */}
@@ -224,11 +264,15 @@ export default function ChatRoomPage() {
       </div>
 
       {/* 🔹 Input or Disabled Notice */}
-      {projectStatus === "completed" ? (
+      {(projectStatus === "pending" || projectStatus === "completed") || orderStatus === "completed" ? (
         <div className="text-center py-3 text-sm text-text-secondary border-t border-border bg-background-secondary">
           {currentLanguage === "lo"
-            ? "ໂຄງການນີ້ສຳເລັດແລ້ວ — ບໍ່ສາມາດສົ່ງຂໍ້ຄວາມໄດ້."
-            : "This project is completed — messaging is disabled."}
+            ? projectStatus === "pending" 
+              ? "ໂຄງການຍັງລໍຖ້າການອະນຸມັດ — ການສົ່ງຂໍ້ຄວາມຖືກປິດ."
+              : "ຄຳສັ່ງ/ໂຄງການນີ້ສຳເລັດແລ້ວ — ການສົ່ງຂໍ້ຄວາມຖືກປິດ."
+            : projectStatus === "pending"
+            ? "Project is pending approval — messaging is disabled."
+            : "This order/project is completed — messaging is disabled."}
         </div>
       ) : (
         <MessageInput

@@ -37,13 +37,12 @@ export default function MobileNavBar() {
 
   const userLinks = [
     { href: "/", label: t("header.home"), icon: Home },
-    { href: "/my-projects", label: t("header.myProjects"), icon: Backpack },
     { href: "/proposals", label: t("header.proposals"), icon: PlusSquare },
     // Role-based 4th link
     isFreelancer
       ? { href: "/projects", label: t("header.findWork"), icon: Folder }
       : isClient
-      ? { href: "/freelancers", label: t("header.hireFreelancer"), icon: User }
+      ? { href: "/gigs", label: t("header.hireFreelancer"), icon: User }
       : { href: "/transactions", label: t("header.transactions"), icon: ArrowLeftRight },
     { href: "/profile", label: t("header.profile"), icon: User },
   ];

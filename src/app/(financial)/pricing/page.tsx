@@ -14,20 +14,6 @@ export default function PricingPage() {
 
   return (
     <div className="bg-background text-text-primary">
-      {/* Hero Section */}
-      <section className="bg-background-secondary py-12 sm:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary mb-6">
-              {t("pricing.hero.title")}
-            </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl text-text-secondary mb-8 max-w-4xl mx-auto">
-              {t("pricing.hero.subtitle")}
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Current Phase - Free Launch */}
       <section className="py-12 sm:py-16 lg:py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -159,7 +145,7 @@ export default function PricingPage() {
       <PricingFuturePlans />
 
       {/* FAQ Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-background-secondary">
+      <section className="py-12 sm:py-16 lg:py-20 bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-4">
