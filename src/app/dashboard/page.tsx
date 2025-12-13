@@ -7,7 +7,7 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import ClientDashboard from "./components/client";
 import FreelancerDashboard from "./components/freelancer";
 
-export default function Dashboard() {
+export default function Dashboard(): React.ReactElement {
   const { user, profile, loading } = useAuth();
   const { t } = useTranslationContext();
   const router = useRouter();

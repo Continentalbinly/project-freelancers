@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { db } from "@/service/firebase";
 import {
   doc,
@@ -27,7 +27,8 @@ import ProjectImage from "@/app/utils/projectImageHandler";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, profile, loading: authLoading } = useAuth();
   const { t } = useTranslationContext();
 
   const [project, setProject] = useState<any>(null);
@@ -97,7 +98,7 @@ export default function ProjectDetailPage() {
   }
 
   // 🕒 Loading
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background  ">
         <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>

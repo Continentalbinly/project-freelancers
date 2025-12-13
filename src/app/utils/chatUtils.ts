@@ -83,3 +83,83 @@ export async function createOrOpenChatRoom(
 
   return { id: roomRef.id, ...newRoom };
 }
+
+/**
+ * Ensures a chat room exists for the order (creates one if missing)
+ * and returns the room data.
+ */
+export async function createOrOpenChatRoomForOrder(
+  orderId: string,
+  currentUserId: string
+) {
+  if (!orderId || !currentUserId) return null;
+
+  // Get order data
+  const orderRef = doc(db, "orders", orderId);
+  const orderSnap = await getDoc(orderRef);
+  if (!orderSnap.exists()) return null;
+
+  const order = orderSnap.data() as any;
+  const buyerId = order.buyerId;
+  const sellerId = order.sellerId;
+  const title = order.catalogTitle || order.packageName || "Order";
+
+  if (!buyerId || !sellerId) return null;
+
+  // Check existing chat room for this order
+  const roomQuery = query(
+    collection(db, "chatRooms"),
+    where("orderId", "==", orderId)
+  );
+  const existing = await getDocs(roomQuery);
+  if (!existing.empty) {
+    const existingDoc = existing.docs[0];
+    return { id: existingDoc.id, ...existingDoc.data() };
+  }
+
+  // Load both profiles
+  const buyerSnap = await getDoc(doc(db, "profiles", buyerId));
+  const sellerSnap = await getDoc(doc(db, "profiles", sellerId));
+  const buyer = buyerSnap.exists() ? buyerSnap.data() : {};
+  const seller = sellerSnap.exists() ? sellerSnap.data() : {};
+
+  // Create new chat room
+  const newRoom = {
+    orderId,
+    projectTitle: title,
+    participants: [buyerId, sellerId],
+    participantNames: {
+      [buyerId]: (buyer as any).fullName || "Client",
+      [sellerId]: (seller as any).fullName || "Freelancer",
+    },
+    participantAvatars: {
+      [buyerId]: (buyer as any).avatarUrl || "",
+      [sellerId]: (seller as any).avatarUrl || "",
+    },
+    lastMessage: "Hi, Welcome!",
+    lastMessageTime: serverTimestamp(),
+    unreadCount: 0,
+  };
+
+  const roomRef = await addDoc(collection(db, "chatRooms"), newRoom);
+
+  // Add first welcome message
+  await addDoc(collection(db, "chatMessages"), {
+    chatRoomId: roomRef.id,
+    message: "Hi, Welcome!",
+    senderId: currentUserId,
+    receiverId: currentUserId === buyerId ? sellerId : buyerId,
+    senderName:
+      currentUserId === buyerId
+        ? (buyer as any).fullName || "Client"
+        : (seller as any).fullName || "Freelancer",
+    senderAvatar:
+      currentUserId === buyerId
+        ? (buyer as any).avatarUrl || ""
+        : (seller as any).avatarUrl || "",
+    read: false,
+    timestamp: serverTimestamp(),
+  });
+
+  return { id: roomRef.id, ...newRoom };
+}

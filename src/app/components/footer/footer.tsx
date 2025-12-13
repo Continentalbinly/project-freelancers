@@ -13,7 +13,7 @@ export default function Footer() {
       title: t("footer.platform"),
       links: [
         { href: "/projects", label: t("footer.browseProjects") },
-        { href: "/freelancers", label: t("footer.findFreelancers") },
+        { href: "/gigs", label: t("footer.findFreelancers") },
         { href: "/clients", label: t("footer.forClients") },
         { href: "/how-it-works", label: t("footer.howItWorks") },
         { href: "/pricing", label: t("footer.pricing") },

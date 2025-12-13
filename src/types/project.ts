@@ -24,7 +24,7 @@ export interface Project {
   timeline?: string;
   acceptedFreelancerId?: string;
   acceptedProposalId?: string;
-  attachments?: any[];
+  attachments?: Array<Record<string, unknown>>;
   imageUrl?: string;
   clientCompleted?: {
     completedAt?: Date;

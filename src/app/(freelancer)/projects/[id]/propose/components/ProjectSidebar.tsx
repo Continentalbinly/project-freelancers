@@ -21,24 +21,24 @@ export default function ProjectSidebar({ project, t }: any) {
   return (
     <aside
       className="
-        
         rounded-xl
         shadow-sm
         border border-border
+        bg-background-secondary
         p-6
         lg:sticky
         lg:top-[100px]
         self-start
       "
     >
-      <h2 className="text-xl font-semibold   mb-4">
+      <h2 className="text-xl font-semibold text-text-primary mb-4">
         {t("proposePage.projectDetails")}
       </h2>
 
       <div className="space-y-4">
         {/* Title + Description */}
         <div>
-          <h3 className="font-medium   mb-1">
+          <h3 className="font-medium text-text-primary mb-1">
             {project.title}
           </h3>
           <p className="text-sm text-text-secondary line-clamp-3">
@@ -54,7 +54,7 @@ export default function ProjectSidebar({ project, t }: any) {
             size="md"
           />
           <div>
-            <p className="font-medium  ">
+            <p className="font-medium text-text-primary">
               {project.client?.fullName}
             </p>
             <p className="text-xs text-text-secondary">
@@ -88,14 +88,14 @@ export default function ProjectSidebar({ project, t }: any) {
         {/* Skills */}
         {project.skills?.length > 0 && (
           <div>
-            <h4 className="font-medium   mb-1">
+            <h4 className="font-medium text-text-primary mb-1">
               {t("proposePage.requiredSkills")}
             </h4>
             <div className="flex flex-wrap gap-2">
               {project.skills.map((skill: string, i: number) => (
                 <span
                   key={i}
-                  className="px-2 py-1 bg-primary-light text-primary text-xs rounded-full"
+                  className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
                 >
                   {skill}
                 </span>
@@ -106,7 +106,7 @@ export default function ProjectSidebar({ project, t }: any) {
 
         {/* 🔥 Proposal Fee Requirement */}
         <div className="border-t border-border pt-4 mt-4">
-          <h4 className="font-medium   mb-1">
+          <h4 className="font-medium text-text-primary mb-1">
             {t("proposePage.applicationFee")}
           </h4>
 

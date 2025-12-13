@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       description: oldTx.description,
       tag1: oldTx.userId,
       tag2: oldTx.type,
-      tag3: oldTx.tag3, // projectId
+      tag3: oldTx.tag3, // projectId or orderId depending on type
     };
 
     const res = await fetch(QR_URL, {
@@ -84,11 +84,20 @@ export async function POST(req: Request) {
       expiredAt: serverTimestamp(),
     });
 
-    // ⭐ CRITICAL: update project with new transactionId
-    await updateDoc(doc(db, "projects", oldTx.tag3), {
-      transactionId: newTxId,
-      updatedAt: serverTimestamp(),
-    });
+    // Update related entity with new transactionId (projects or orders)
+    if (oldTx.tag3) {
+      const isOrder = oldTx.type === "order_payout" || oldTx.tag2 === "order_payout";
+      const targetCollection = isOrder ? "orders" : "projects";
+      const targetRef = doc(db, targetCollection, oldTx.tag3);
+      const targetSnap = await getDoc(targetRef);
+
+      if (targetSnap.exists()) {
+        await updateDoc(targetRef, {
+          transactionId: newTxId,
+          updatedAt: serverTimestamp(),
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true,

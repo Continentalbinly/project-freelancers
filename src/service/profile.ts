@@ -13,8 +13,8 @@ export async function getUserProfile(userId: string) {
     } else {
       return null;
     }
-  } catch (err) {
-    //console.error("❌ getUserProfile failed:", err);
+  } catch (_err) {
+    //console.error("❌ getUserProfile failed:", _err);
     return null;
   }
 }

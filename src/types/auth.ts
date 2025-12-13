@@ -1,7 +1,7 @@
 // Auth types for authentication system
 export interface AuthResponse {
   success: boolean;
-  user?: any;
+  user?: User;
   requiresVerification?: boolean;
   error?: string; // human-readable message
   errorCode?: string; // firebase error code like "auth/wrong-password"

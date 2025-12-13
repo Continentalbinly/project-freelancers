@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import LandingPage from "./components/landing/LandingPage";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
-export default function Home() {
+export default function Home(): React.ReactElement {
   const { user, profile, loading, refreshProfile } = useAuth();
   const { t } = useTranslationContext();
   const router = useRouter();

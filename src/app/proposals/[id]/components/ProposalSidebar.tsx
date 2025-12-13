@@ -38,6 +38,16 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
   const [confirmAction, setConfirmAction] = useState<
     "accept" | "reject" | null
   >(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
+
+  /** Detect screen size **/
+  useEffect(() => {
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
   /** Fetch profile info **/
   useEffect(() => {
@@ -80,22 +90,41 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
         updatedAt: serverTimestamp(),
       });
 
-      const userId = isClient
-        ? proposal.project?.clientId
-        : proposal.freelancerId;
-
-      const room = await createOrOpenChatRoom(proposal.projectId, userId);
-
       toast.success(t("common.acceptSuccess"));
-
-      router.push(
-        room ? `/messages?project=${proposal.projectId}` : "/proposals"
-      );
+      router.push(`/messages?project=${proposal.projectId}`);
     } catch (err) {
       toast.error(t("common.acceptFailed"));
     } finally {
       setLoadingAction(false);
       setConfirmAction(null);
+    }
+  };
+
+  /** =============================
+   *  START CHAT
+   * ============================= */
+  const handleStartChat = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const chatUrl = `/messages?project=${proposal.projectId}`;
+
+    if (!isMobile) {
+      window.open(chatUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    try {
+      setLoadingChat(true);
+      const userId = isClient
+        ? proposal.project?.clientId
+        : proposal.freelancerId;
+      const room = await createOrOpenChatRoom(proposal.projectId, userId);
+      if (room?.id) {
+        router.push(`/messages/${room.id}`);
+      }
+    } catch (err) {
+      //console.error("❌ Error opening chat:", err);
+    } finally {
+      setLoadingChat(false);
     }
   };
 
@@ -270,13 +299,16 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
         )}
 
         {proposal.status === "accepted" && (
-          <Link
-            href={`/messages?project=${proposal.projectId}`}
-            className="w-full bg-primary text-white py-2.5 rounded-md flex justify-center hover:bg-primary-hover"
+          <button
+            onClick={handleStartChat}
+            disabled={loadingChat}
+            className={`w-full bg-primary text-white py-2.5 rounded-md flex justify-center hover:bg-primary-hover ${
+              loadingChat ? "opacity-70 pointer-events-none" : ""
+            }`}
           >
             <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1" />
-            {t("proposals.detail.startChat")}
-          </Link>
+            {loadingChat ? (t("proposals.proposalCard.openingChat") || "Opening...") : t("proposals.detail.startChat")}
+          </button>
         )}
 
         <Link

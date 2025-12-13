@@ -232,6 +232,145 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
+    // ────────────────────────────────────────────────
+    // 3) ORDER PAYOUT FLOW
+    // ────────────────────────────────────────────────
+    if (safeTag2 === "order_payout") {
+      const orderId = safeTag3;
+
+      if (!orderId) {
+        console.error("❌ Missing orderId (tag3)");
+        await updateDoc(txRef, {
+          status: "failed",
+          errorReason: "missing_orderId",
+          updatedAt: serverTimestamp(),
+        });
+        return NextResponse.json({ error: true });
+      }
+
+      const amountPaid = Number(txnAmount);
+
+      const orderRef = doc(db, "orders", orderId);
+      const orderSnap = await getDoc(orderRef);
+      if (!orderSnap.exists()) return NextResponse.json({ error: true });
+
+      const order = orderSnap.data();
+      const freelancerId = order.sellerId;
+      const clientId = order.buyerId;
+
+      // RELEASE ESCROW
+      const escrowQuery = query(
+        collection(db, "escrows"),
+        where("orderId", "==", orderId),
+        where("status", "==", "held")
+      );
+      const escrowSnap = await getDocs(escrowQuery);
+
+      if (!escrowSnap.empty) {
+        const escrowDoc = escrowSnap.docs[0];
+        await updateDoc(doc(db, "escrows", escrowDoc.id), {
+          status: "released",
+          freelancerId,
+          releasedAt: serverTimestamp(),
+        });
+      }
+
+      // UPDATE FREELANCER EARNINGS
+      const freelancerRef = doc(db, "profiles", freelancerId);
+      const freelancerSnap = await getDoc(freelancerRef);
+
+      if (freelancerSnap.exists()) {
+        const f = freelancerSnap.data() || {};
+
+        const oldTotal = Number(f.totalEarned ?? 0);
+        const oldOrders = Number(f.ordersCompleted ?? 0);
+
+        await updateDoc(freelancerRef, {
+          totalEarned: oldTotal + amountPaid,
+          ordersCompleted: oldOrders + 1,
+          updatedAt: serverTimestamp(),
+        });
+      }
+
+      // UPDATE CLIENT STATS
+      const clientRef = doc(db, "profiles", clientId);
+      const clientSnap = await getDoc(clientRef);
+
+      if (clientSnap.exists()) {
+        const clientData = clientSnap.data() || {};
+
+        const clientTotalSpent = Number(clientData.totalSpent ?? 0);
+        const clientOrdersCompleted = Number(clientData.ordersCompleted ?? 0);
+
+        await updateDoc(clientRef, {
+          totalSpent: clientTotalSpent + amountPaid,
+          ordersCompleted: clientOrdersCompleted + 1,
+          updatedAt: serverTimestamp(),
+        });
+      }
+
+      // INTERNAL TRANSACTION LOGS
+      await addDoc(collection(db, "transactions_internal"), {
+        userId: freelancerId,
+        orderId,
+        type: "escrow_release",
+        amount: amountPaid,
+        direction: "in",
+        createdAt: serverTimestamp(),
+      });
+
+      await addDoc(collection(db, "transactions_internal"), {
+        userId: clientId,
+        orderId,
+        type: "escrow_payment",
+        amount: amountPaid,
+        direction: "out",
+        createdAt: serverTimestamp(),
+      });
+
+      // MARK ORDER AS COMPLETED
+      await updateDoc(orderRef, {
+        status: "completed",
+        paidAmount: amountPaid,
+        completedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      // CREATE FREELANCER TRANSACTION LOG
+      await addDoc(collection(db, "transactions"), {
+        transactionId: transactionId,
+
+        userId: freelancerId,
+        orderId,
+
+        type: "order_payout_received",
+        direction: "in",
+        paymentMethod: "escrow_release",
+
+        amount: amountPaid,
+        amountPaid: amountPaid,
+
+        status: "confirmed",
+        description: `Received payout for order ${order.catalogTitle || order.packageName}`,
+
+        tag1: freelancerId,
+        tag2: "order_payout_received",
+        tag3: orderId,
+
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        confirmedAt: serverTimestamp(),
+      });
+
+      // CONFIRM THE TRANSACTION
+      await updateDoc(txRef, {
+        status: "confirmed",
+        confirmedAt: serverTimestamp(),
+      });
+
+      return NextResponse.json({ ok: true });
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Webhook error:", err);

@@ -1,22 +1,42 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import WithdrawForm from "./components/WithdrawForm";
 import WithdrawSummary from "./components/WithdrawSummary";
-import WithdrawHistory from "./components/WithdrawHistory";
+import ClientWithdrawForm from "./components/ClientWithdrawForm";
+import FreelancerWithdrawForm from "./components/FreelancerWithdrawForm";
 import { useAuth } from "@/contexts/AuthContext";
 import { getUserProfile } from "@/service/profile";
+import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function WithdrawPage() {
   const { user } = useAuth();
+  const { t } = useTranslationContext();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<"client" | "freelancer" | null>(null);
 
   useEffect(() => {
     if (!user?.uid) return;
     getUserProfile(user.uid).then((data) => {
+      if (!data) {
+        setLoading(false);
+        return;
+      }
+      
       setProfile(data);
       setLoading(false);
+
+      // Detect user role
+      const roles = (data as any).userRoles || [];
+      const types = (data as any).userType || [];
+      const isFreelancer = roles.includes("freelancer") || types.includes("freelancer");
+      const isClient = roles.includes("client") || types.includes("client");
+
+      if (isFreelancer) {
+        setUserRole("freelancer");
+      } else if (isClient) {
+        setUserRole("client");
+      }
     });
   }, [user]);
 
@@ -34,9 +54,18 @@ export default function WithdrawPage() {
 
         {!loading && profile && (
           <>
-            <WithdrawSummary profile={profile} />
-            <WithdrawForm user={user} profile={profile} />
-            <WithdrawHistory userId={user?.uid || ""} />
+            <WithdrawSummary profile={profile} userRole={userRole} />
+            {userRole === "client" && (
+              <ClientWithdrawForm user={user} profile={profile} />
+            )}
+            {userRole === "freelancer" && (
+              <FreelancerWithdrawForm user={user} profile={profile} />
+            )}
+            {!userRole && (
+              <div className="backdrop-blur-xl border border-border bg-background rounded-2xl p-6 text-center text-text-secondary">
+                {t("common.accessRestrictedTitle")}
+              </div>
+            )}
           </>
         )}
       </div>

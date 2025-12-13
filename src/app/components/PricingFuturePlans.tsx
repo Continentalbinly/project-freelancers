@@ -125,7 +125,7 @@ export default function PricingFuturePlans() {
 
   /** ✅ Normal pricing UI */
   return (
-    <section className="py-12 sm:py-16 lg:py-20 bg-background-secondary">
+    <section className="py-12 sm:py-16 lg:py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16">
@@ -145,7 +145,9 @@ export default function PricingFuturePlans() {
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {t("pricing.futurePlans.basic.title")}
               </h3>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">Free</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                Free
+              </div>
               <div className="text-gray-600 dark:text-gray-300">
                 {t("pricing.futurePlans.basic.period")}
               </div>
@@ -153,7 +155,10 @@ export default function PricingFuturePlans() {
             <ul className="space-y-3 mb-6 flex-1">
               {translations.pricing.futurePlans.basic.features.map(
                 (feature: string, i: number) => (
-                  <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
+                  <li
+                    key={i}
+                    className="flex items-center text-gray-600 dark:text-gray-300"
+                  >
                     <svg
                       className="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
                       fill="none"
@@ -200,7 +205,10 @@ export default function PricingFuturePlans() {
             <ul className="space-y-3 mb-6 flex-1">
               {translations.pricing.futurePlans.pro.features.map(
                 (feature: string, i: number) => (
-                  <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
+                  <li
+                    key={i}
+                    className="flex items-center text-gray-600 dark:text-gray-300"
+                  >
                     <svg
                       className="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
                       fill="none"
@@ -221,16 +229,13 @@ export default function PricingFuturePlans() {
             </ul>
             <button
               suppressHydrationWarning
-              onClick={() => goToSubscriptionPage("pro")}
-              disabled={loadingPlan === "pro"}
-              className="btn btn-primary w-full"
+              disabled={true}
+              className="btn btn-primary w-full opacity-50 cursor-not-allowed"
             >
-              {loadingPlan === "pro"
-                ? "Processing..."
-                : t("pricing.futurePlans.pro.cta")}
+              {t("pricing.futurePlans.pro.comingSoon")}
             </button>
             <p className="text-xs text-gray-600 dark:text-gray-300 text-center mt-2">
-              {t("pricing.futurePlans.pro.ctaNote")}
+              {t("pricing.futurePlans.pro.availableAfterLaunch")}
             </p>
           </div>
 
@@ -240,7 +245,9 @@ export default function PricingFuturePlans() {
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 {t("pricing.futurePlans.enterprise.title")}
               </h3>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">Custom</div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                Custom
+              </div>
               <div className="text-gray-600 dark:text-gray-300">
                 {t("pricing.futurePlans.enterprise.period")}
               </div>
@@ -248,7 +255,10 @@ export default function PricingFuturePlans() {
             <ul className="space-y-3 mb-6 flex-1">
               {translations.pricing.futurePlans.enterprise.features.map(
                 (feature: string, i: number) => (
-                  <li key={i} className="flex items-center text-gray-600 dark:text-gray-300">
+                  <li
+                    key={i}
+                    className="flex items-center text-gray-600 dark:text-gray-300"
+                  >
                     <svg
                       className="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
                       fill="none"

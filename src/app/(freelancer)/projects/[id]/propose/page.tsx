@@ -56,7 +56,7 @@ export default function ProposePage() {
   // LOADING
   if (loading || loadingProject)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background-secondary">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -66,18 +66,20 @@ export default function ProposePage() {
   const proposalFee = project.postingFee ?? 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
-      <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <ProjectSidebar project={project} t={t} />
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <ProjectSidebar project={project} t={t} />
 
-        <div className="lg:col-span-2">
-          <ProposalForm
-            project={project}
-            profile={profile}
-            user={user}
-            t={t}
-            proposalFee={proposalFee}
-          />
+          <div className="lg:col-span-2">
+            <ProposalForm
+              project={project}
+              profile={profile}
+              user={user}
+              t={t}
+              proposalFee={proposalFee}
+            />
+          </div>
         </div>
       </div>
     </div>

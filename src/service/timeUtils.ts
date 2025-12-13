@@ -4,12 +4,12 @@
  * Safely converts Firestore Timestamp, string, number, or Date
  * into a JavaScript Date object.
  */
-export function convertTimestampToDate(value: any): Date {
+export function convertTimestampToDate(value: Record<string, unknown> | Date | string | number | null | undefined): Date {
   if (!value) return new Date();
 
   // Firestore Timestamp
-  if (value.toDate && typeof value.toDate === "function") {
-    return value.toDate();
+  if (typeof value === 'object' && 'toDate' in value && typeof value.toDate === "function") {
+    return (value as { toDate(): Date }).toDate();
   }
 
   // Already a Date
@@ -18,7 +18,7 @@ export function convertTimestampToDate(value: any): Date {
   }
 
   // String or number
-  return new Date(value);
+  return new Date(value as string | number);
 }
 
 /**
@@ -26,7 +26,7 @@ export function convertTimestampToDate(value: any): Date {
  * Works with Date, Timestamp, or string inputs.
  * Supports "en" and "lo" locales.
  */
-export function timeAgo(input: any, lang: "en" | "lo" = "en"): string {
+export function timeAgo(input: Record<string, unknown> | Date | string | number | null | undefined, lang: "en" | "lo" = "en"): string {
   const date = convertTimestampToDate(input);
   const now = new Date();
 

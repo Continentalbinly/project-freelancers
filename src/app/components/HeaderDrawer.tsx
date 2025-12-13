@@ -83,7 +83,7 @@ export default function HeaderDrawer({
   ];
 
   const guestLinks = [
-    { href: "/freelancers", label: t("header.freelancers"), icon: Users },
+    { href: "/gigs", label: t("header.freelancers"), icon: Users },
     { href: "/clients", label: t("header.clients"), icon: Briefcase },
     { href: "/about", label: t("header.about"), icon: Info },
   ];
@@ -285,20 +285,6 @@ export default function HeaderDrawer({
                       </div>
                     )}
                   </div>
-
-                  {/* Project Management */}
-                  {canManageProjects && (
-                    <Link
-                      href="/projects/manage"
-                      onClick={() => setIsDrawerOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all"
-                    >
-                      <FolderOpen className="w-5 h-5" />
-                      <span className="text-sm font-medium">
-                        {t("header.projectManage")}
-                      </span>
-                    </Link>
-                  )}
 
                   {/* Settings */}
                   <Link
