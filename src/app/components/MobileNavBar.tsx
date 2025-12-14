@@ -6,10 +6,11 @@ import {
   Home,
   Folder,
   LogIn,
-  Backpack,
   PlusSquare,
   ArrowLeftRight,
   User,
+  UserRoundCheck,
+  ListCheck,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -31,7 +32,8 @@ export default function MobileNavBar() {
 
   const guestLinks = [
     { href: "/", label: t("header.home"), icon: Home },
-    { href: "/projects", label: t("header.projects"), icon: Folder },
+    { href: "/projects", label: t("header.findWork"), icon: ListCheck },
+    { href: "/gigs", label: t("header.hireFreelancer"), icon: UserRoundCheck },
     { href: "/auth/login", label: t("common.signIn"), icon: LogIn },
   ];
 
@@ -43,7 +45,11 @@ export default function MobileNavBar() {
       ? { href: "/projects", label: t("header.findWork"), icon: Folder }
       : isClient
       ? { href: "/gigs", label: t("header.hireFreelancer"), icon: User }
-      : { href: "/transactions", label: t("header.transactions"), icon: ArrowLeftRight },
+      : {
+          href: "/transactions",
+          label: t("header.transactions"),
+          icon: ArrowLeftRight,
+        },
     { href: "/profile", label: t("header.profile"), icon: User },
   ];
 
