@@ -46,7 +46,8 @@ export default function LoginPage() {
       const result = await loginUser(formData.email, formData.password);
 
       if (result.success) {
-        router.push("/");
+        // Force full page reload to clear all state
+        window.location.href = "/";
       } else {
         const code =
           result.errorCode ||

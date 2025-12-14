@@ -3,6 +3,7 @@
 import { timeAgo } from "@/service/timeUtils";
 import { formatLAK } from "@/service/currencyUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { getTimelineLabelFromData } from "@/service/timelineUtils";
 
 interface ProjectSidebarProps {
   project: any;
@@ -61,7 +62,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
               {t("projectDetail.timeline")}:
             </span>
             <span className="font-semibold  ">
-              {project.timeline}
+              {getTimelineLabelFromData(project.timeline, currentLanguage)}
             </span>
           </div>
         )}

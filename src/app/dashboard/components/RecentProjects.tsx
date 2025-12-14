@@ -32,7 +32,7 @@ export default function RecentProjects({ projects, isLoading }: RecentProjectsPr
             <div key={i} className="h-20 rounded-lg animate-pulse" />
           ))}
         </div>
-      ) : projects.length > 0 ? (
+      ) : projects && projects.length > 0 ? (
         <div className="space-y-4">
           {projects.map((project) => (
             <Link

@@ -44,5 +44,17 @@ export default function Dashboard(): React.ReactElement {
     }
   }, [user, profile, loading, router, displayRole, isClient, isFreelancer]);
 
+  // Show loading state while auth is being checked or profile is loading
+  if (loading || !user || !profile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-secondary">{t("common.loading")}</p>
+        </div>
+      </div>
+    );
+  }
+
   return displayRole === "client" ? <ClientDashboard /> : <FreelancerDashboard />;
 }

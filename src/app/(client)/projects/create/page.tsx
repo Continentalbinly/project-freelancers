@@ -17,6 +17,7 @@ import { db } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { TIMELINE_OPTIONS, getTimelineData } from "@/service/timelineUtils";
 
 import ProjectStepper from "../components/ProjectStepper";
 import ProjectBasics from "../components/ProjectSteps/ProjectBasics";
@@ -70,7 +71,7 @@ const categoryFeeFor = (categories: any[], categoryId?: string) => {
 };
 
 export default function CreateProjectPage() {
-  const { t } = useTranslationContext();
+  const { t, currentLanguage } = useTranslationContext();
   const router = useRouter();
   const { user } = useAuth();
 
@@ -311,6 +312,8 @@ export default function CreateProjectPage() {
 
       const projectRef = await addDoc(collection(db, "projects"), {
         ...removeUndefined(formData),
+        // Convert timeline ID to full timeline object with both languages
+        timeline: formData.timeline ? getTimelineData(formData.timeline) : null,
         postingFee,
         clientId: user.uid,
         status: "open",
@@ -355,14 +358,11 @@ export default function CreateProjectPage() {
     }
   };
 
-  const timelines = [
-    { id: "lessThan1Week", label: t("createProject.lessThan1Week") || "Less than 1 week" },
-    { id: "oneToTwoWeeks", label: t("createProject.oneToTwoWeeks") || "1-2 weeks" },
-    { id: "twoToFourWeeks", label: t("createProject.twoToFourWeeks") || "2-4 weeks" },
-    { id: "oneToTwoMonths", label: t("createProject.oneToTwoMonths") || "1-2 months" },
-    { id: "twoToThreeMonths", label: t("createProject.twoToThreeMonths") || "2-3 months" },
-    { id: "moreThan3Months", label: t("createProject.moreThan3Months") || "More than 3 months" },
-  ];
+  // Use timeline options from utility
+  const timelines = TIMELINE_OPTIONS.map(option => ({
+    id: option.id,
+    label: currentLanguage === 'lo' ? option.label_lo : option.label_en
+  }));
 
   const steps = [
     t("createProject.basicInformation") || "Basic Info",
@@ -376,7 +376,7 @@ export default function CreateProjectPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Stepper */}
         <ProjectStepper steps={steps} current={step} />
 

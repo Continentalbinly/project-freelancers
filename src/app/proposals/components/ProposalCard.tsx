@@ -26,10 +26,8 @@ export default function ProposalCard({
 }: ProposalCardProps) {
   const { currentLanguage } = useTranslationContext();
   const { user } = useAuth();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState<string>("Unknown User");
-  const [rating, setRating] = useState<number | null>(null);
-  const [totalProjects, setTotalProjects] = useState<number | null>(null);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
   const router = useRouter();
@@ -44,45 +42,30 @@ export default function ProposalCard({
 
   // 🔍 Fetch profile info
   useEffect(() => {
-    const fetchProfileAvatar = async () => {
+    const fetchProfile = async () => {
       try {
-        const profileId =
-          activeTab === "submitted"
-            ? proposal.client?.id || proposal.project?.clientId
-            : proposal.freelancerId;
+        setLoadingProfile(true);
 
-        if (!profileId) return;
-        const snap = await getDoc(doc(db, "profiles", profileId));
-        if (snap.exists()) {
-          const data = snap.data();
-          setAvatarUrl(data.avatarUrl || null);
-          setDisplayName(data.fullName || "Unknown User");
-          if (activeTab === "received") {
-            setRating(data.rating || null);
-            setTotalProjects(data.totalProjects || null);
-          }
+        const userId = activeTab === "submitted"
+          ? proposal.project?.clientId
+          : proposal.freelancerId;
+
+        if (!userId) return;
+
+        const profileDoc = await getDoc(doc(db, "profiles", userId));
+        if (profileDoc.exists()) {
+          setProfileData(profileDoc.data());
         }
-      } catch (err) {
-        //console.error("⚠️ Error fetching profile:", err);
+      } finally {
+        setLoadingProfile(false);
       }
     };
 
-    if (
-      (activeTab === "submitted" && proposal.client?.avatar) ||
-      (activeTab === "received" && proposal.freelancer?.avatar)
-    ) {
-      const userData =
-        activeTab === "submitted" ? proposal.client : proposal.freelancer;
-      setAvatarUrl(userData?.avatar || null);
-      setDisplayName(userData?.fullName || "Unknown User");
-      if (activeTab === "received") {
-        setRating(userData?.rating || null);
-        setTotalProjects(userData?.totalProjects || null);
-      }
-    } else {
-      fetchProfileAvatar();
-    }
+    fetchProfile();
   }, [proposal, activeTab]);
+
+  // Get person data
+  const person = profileData;
 
   // === STATUS HELPERS ===
   const getStatusColor = (status: string) => {
@@ -160,12 +143,16 @@ export default function ProposalCard({
       {/* === Header === */}
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-6 gap-4">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
-          <Avatar
-            src={avatarUrl || undefined}
-            alt={displayName}
-            name={displayName}
-            size="xl"
-          />
+          {loadingProfile ? (
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
+          ) : (
+            <Avatar
+              src={person?.avatarUrl || ""}
+              alt={person?.fullName}
+              name={person?.fullName}
+              size="xl"
+            />
+          )}
           <div className="w-full sm:flex-1 text-center sm:text-left">
             <h3 className="text-lg sm:text-xl font-bold text-text-primary mb-1 line-clamp-2">
               {proposal.project?.title || "Untitled Project"}
@@ -225,23 +212,25 @@ export default function ProposalCard({
               ? t("proposals.proposalCard.client")
               : t("proposals.proposalCard.freelancer")}
           </h4>
-          <p className="text-xs text-text-secondary">{displayName}</p>
+          <p className="text-xs text-text-secondary">
+            {person?.fullName || "Unknown User"}
+          </p>
           {activeTab === "received" && (
             <div className="flex items-center gap-2 mt-1">
-              {rating ? (
+              {person?.rating ? (
                 <span className="text-xs text-yellow-600 flex items-center gap-0.5">
                   <StarIcon className="w-3.5 h-3.5 text-yellow-500" />
-                  {rating.toFixed(1)}
+                  {person.rating.toFixed(1)}
                 </span>
               ) : (
                 <span className="text-xs text-gray-400">
                   {t("common.noRating")}
                 </span>
               )}
-              {totalProjects !== null && (
+              {person?.totalProjects !== null && person?.totalProjects !== undefined && (
                 <span className="text-xs text-text-secondary flex items-center gap-1">
                   <BriefcaseIcon className="w-3 h-3 text-primary/60" />
-                  {totalProjects}
+                  {person.totalProjects}
                 </span>
               )}
             </div>

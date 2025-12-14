@@ -35,27 +35,15 @@ export default function HeaderDrawer({
   const { theme, toggleTheme } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
   const [openFinance, setOpenFinance] = useState(false);
-  const [liveCredit, setLiveCredit] = useState<number | null>(
-    profile?.credit || 0
-  );
 
-  /** Realtime credit listener */
-  useEffect(() => {
-    if (!user?.uid) return;
-
-    const unsub = onSnapshot(doc(db, "profiles", user.uid), (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setLiveCredit(data.credit || 0);
-      }
-    });
-
-    return () => unsub();
-  }, [user?.uid]);
+  // Use profile.credit from AuthContext instead of real-time listener
+  // This prevents duplicate listeners and improves performance
+  const liveCredit = profile?.credit || 0;
 
   /** Logout handler */
   const handleLogout = async () => {
     await logoutUser();
+    // Force full page reload to clear all state
     window.location.href = "/";
   };
 

@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import {
   collection,
   query,
   where,
-  getDocs,
   orderBy,
   limit,
 } from "firebase/firestore";
 import { db } from "@/service/firebase";
+import { useFirestoreQuery } from "@/hooks/useFirestoreQuery";
 import type { Project } from "@/types/project";
 import StatsGrid from "../StatsGrid";
 import QuickActions from "../QuickActions";
@@ -21,51 +21,49 @@ export default function ClientDashboard() {
   const { user, profile } = useAuth();
   const { t } = useTranslationContext();
 
-  const [myProjects, setMyProjects] = useState<Project[]>([]);
-  const [stats, setStats] = useState({
-    activeProjects: 0,
-    completedProjects: 0,
-    credit: 0,
-  });
-  const [dataLoading, setDataLoading] = useState(true);
+  // Memoize query to prevent unnecessary recalculations
+  const projectsQuery = useMemo(() => {
+    if (!user) return null;
+    return query(
+      collection(db, "projects"),
+      where("clientId", "==", user.uid),
+      orderBy("createdAt", "desc"),
+      limit(6)
+    );
+  }, [user]);
 
-  // 📊 Load CLIENT dashboard data
-  useEffect(() => {
-    if (!user) return;
+  // Use optimized query hook with caching
+  const { data: projects = [], loading: dataLoading } = useFirestoreQuery<Project>(
+    `client_projects_${user?.uid}`,
+    projectsQuery,
+    {
+      enabled: !!user,
+      ttl: 3 * 60 * 1000, // 3 minutes
+      dependencies: [user?.uid],
+    }
+  );
 
-    const loadClientData = async () => {
-      try {
-        const projectsQ = query(
-          collection(db, "projects"),
-          where("clientId", "==", user.uid),
-          orderBy("createdAt", "desc"),
-          limit(6)
-        );
+  // Compute stats from projects
+  const stats = useMemo(() => {
+    if (!projects || projects.length === 0) {
+      return {
+        activeProjects: 0,
+        completedProjects: 0,
+        credit: 0,
+      };
+    }
 
-        const projectsSnap = await getDocs(projectsQ);
-        const projects = projectsSnap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Project[];
+    const active = projects.filter(
+      (p: any) => p.status === "open" || p.status === "in_progress"
+    ).length;
+    const completed = projects.filter((p: any) => p.status === "completed").length;
 
-        const active = projects.filter((p) => p.status === "open" || p.status === "in_progress").length;
-        const completed = projects.filter((p) => p.status === "completed").length;
-
-        setMyProjects(projects);
-        setStats({
-          activeProjects: active,
-          completedProjects: completed,
-          credit: profile?.credit || 0,
-        });
-      } catch (err) {
-        console.error("Error loading client data:", err);
-      } finally {
-        setDataLoading(false);
-      }
+    return {
+      activeProjects: active,
+      completedProjects: completed,
+      credit: profile?.credit || 0,
     };
-
-    loadClientData();
-  }, [user, profile?.credit]);
+  }, [projects, profile?.credit]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,7 +83,7 @@ export default function ClientDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <StatsGrid stats={stats} />
         <QuickActions variant="client" />
-        <RecentProjects projects={myProjects} isLoading={dataLoading} />
+        <RecentProjects projects={projects} isLoading={dataLoading} />
       </div>
     </div>
   );

@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { formatLAK, formatHourlyRate } from "@/service/currencyUtils";
 import type { Proposal, ProposalWithDetails } from "@/types/proposal";
@@ -15,6 +18,36 @@ export default function RecentProposals({
   isLoading,
 }: RecentProposalsProps) {
   const { t } = useTranslationContext();
+  const [projectTitles, setProjectTitles] = useState<Record<string, string>>({});
+
+  // Fetch project titles for all proposals
+  useEffect(() => {
+    const fetchProjectTitles = async () => {
+      const titles: Record<string, string> = {};
+      
+      for (const proposal of proposals) {
+        const projectId = proposal.projectId;
+        if (projectId && !titles[projectId]) {
+          try {
+            const projectDoc = await getDoc(doc(db, "projects", projectId));
+            if (projectDoc.exists()) {
+              titles[projectId] = projectDoc.data().title || projectId;
+            } else {
+              titles[projectId] = projectId;
+            }
+          } catch (error) {
+            titles[projectId] = projectId;
+          }
+        }
+      }
+      
+      setProjectTitles(titles);
+    };
+
+    if (proposals.length > 0) {
+      fetchProjectTitles();
+    }
+  }, [proposals]);
 
   return (
     <div className="rounded-lg border border-border bg-background-secondary shadow-sm p-8">
@@ -39,13 +72,15 @@ export default function RecentProposals({
             />
           ))}
         </div>
-      ) : proposals.length > 0 ? (
+      ) : proposals && proposals.length > 0 ? (
         <div className="space-y-4">
           {proposals.map((proposal) => {
-            const projectTitle =
-              "project" in proposal && proposal.project
-                ? proposal.project.title || proposal.projectId
-                : proposal.projectId;
+            const projectTitle = 
+              projectTitles[proposal.projectId] ||
+              ("project" in proposal && proposal.project
+                ? proposal.project.title
+                : null) ||
+              proposal.projectId;
             const budget = formatLAK(proposal.proposedBudget || 0);
 
             return (
