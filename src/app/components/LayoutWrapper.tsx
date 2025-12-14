@@ -2,10 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import Footer from "./footer/footer";
-import MobileNavBar from "./MobileNavBar";
+import Footer from "@/app/components/footer/footer";
+import MobileNavBar from "@/app/components/MobileNavBar";
 import { useAuth } from "@/contexts/AuthContext";
-import Header from "./Header";
+import Header from "@/app/components/Header";
 
 export default function LayoutWrapper({
   children,
