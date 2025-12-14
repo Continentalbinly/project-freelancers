@@ -1,0 +1,92 @@
+name: Deploy to Test Server
+
+on:
+  push:
+    branches:
+      - test
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Test Environment
+    runs-on: ubuntu-latest
+    environment: test
+    concurrency:
+      group: deploy-test
+      cancel-in-progress: true
+    timeout-minutes: 20
+
+    steps:
+      - name: Preflight – Verify SSH and environment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            echo "👤 User: $(whoami)"
+            echo "🖥 Host: $HOSTNAME"
+
+            if [ -d /var/www/test.unijobs.app ]; then
+              echo "✅ App directory exists"
+            else
+              echo "❌ App directory missing"; exit 1
+            fi
+
+            if command -v pm2 >/dev/null 2>&1; then
+              echo "✅ PM2 installed"
+            else
+              echo "❌ PM2 not installed"; exit 1
+            fi
+
+            if command -v node >/dev/null 2>&1; then
+              echo "✅ Node version: $(node -v)"
+            else
+              echo "❌ Node not installed"; exit 1
+            fi
+
+            echo "✅ Preflight passed"
+
+      - name: Deploy to VPS (test branch)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+
+            echo "🚀 Deploying test branch"
+
+            cd /var/www/test.unijobs.app
+
+            echo "🔄 Reset repository to origin/test"
+            git fetch origin
+            git reset --hard origin/test
+            git clean -fd
+
+            echo "📦 Install dependencies"
+            npm install
+
+            echo "🧹 Remove old build"
+            rm -rf .next
+
+            echo "🏗 Build application"
+            npm run build
+
+            echo "♻️ Restart PM2 using ecosystem"
+            pm2 start ecosystem.config.js --only unijobs-test || pm2 restart unijobs-test
+
+            pm2 save
+
+            echo "🔎 Health check"
+            ss -tulpn | grep 3001
+            curl -f http://localhost:3001
+
+            echo "✅ Deployment completed successfully"
+
+      - name: Deployment Status
+        if: success()
+        run: echo "🚀 Successfully deployed to https://test.unijobs.app"
