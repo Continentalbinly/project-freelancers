@@ -1,5 +1,8 @@
 "use client";
 
+import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { TIMELINE_OPTIONS } from "@/service/timelineUtils";
+
 export interface ProjectFormData {
   title: string;
   description: string;
@@ -34,6 +37,15 @@ export default function ProjectReview({
   credits = 0,
   isEdit = false,
 }: Props) {
+  const { currentLanguage } = useTranslationContext();
+
+  // Get timeline label based on current language
+  const getTimelineLabel = (timelineId: string) => {
+    const option = TIMELINE_OPTIONS.find(opt => opt.id === timelineId);
+    if (!option) return timelineId;
+    return currentLanguage === 'lo' ? option.label_lo : option.label_en;
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -75,7 +87,9 @@ export default function ProjectReview({
               </div>
               <div>
                 <p className="text-xs text-text-secondary">{t("createProject.timeline")}</p>
-                <p className="font-semibold text-text-primary">{formData.timeline || "N/A"}</p>
+                <p className="font-semibold text-text-primary">
+                  {formData.timeline ? getTimelineLabel(formData.timeline) : "N/A"}
+                </p>
               </div>
             </div>
 

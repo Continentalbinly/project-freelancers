@@ -34,6 +34,7 @@ export default function ChatRoomPage() {
 
   const [chatRoom, setChatRoom] = useState<any>(null);
   const [receiver, setReceiver] = useState<any>(null);
+  const [loadingReceiver, setLoadingReceiver] = useState(true);
   const [messages, setMessages] = useState<any[]>([]);
   const [projectStatus, setProjectStatus] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<string | null>(null);
@@ -67,12 +68,19 @@ export default function ChatRoomPage() {
   /** ------------------- 🔹 LOAD RECEIVER PROFILE ------------------- */
   useEffect(() => {
     if (!chatRoom || !user) return;
+    
+    setLoadingReceiver(true);
     const receiverId = chatRoom.participants?.find(
       (x: string) => x !== user.uid
     );
-    if (!receiverId) return;
+    if (!receiverId) {
+      setLoadingReceiver(false);
+      return;
+    }
+    
     getDoc(doc(db, "profiles", receiverId)).then((snap) => {
       if (snap.exists()) setReceiver(snap.data());
+      setLoadingReceiver(false);
     });
   }, [chatRoom, user]);
 
@@ -150,11 +158,15 @@ export default function ChatRoomPage() {
           >
             <ArrowLeftIcon className="w-5 h-5 text-text-secondary" />
           </button>
-          <Avatar
-            src={receiver?.avatarUrl || ""}
-            name={receiver?.fullName || "User"}
-            size="lg"
-          />
+          {loadingReceiver ? (
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
+          ) : (
+            <Avatar
+              src={receiver?.avatarUrl || ""}
+              name={receiver?.fullName || "User"}
+              size="lg"
+            />
+          )}
           <div className="flex flex-col truncate">
             <span className="font-semibold   truncate">
               {receiver?.fullName || "User"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import Link from "next/link";
@@ -8,13 +8,11 @@ import {
   collection,
   query,
   where,
-  getDocs,
-  getDoc,
-  doc,
   orderBy,
   limit,
 } from "firebase/firestore";
 import { db } from "@/service/firebase";
+import { useFirestoreQuery } from "@/hooks/useFirestoreQuery";
 import type { Proposal, ProposalWithDetails } from "@/types/proposal";
 import StatsGrid from "../StatsGrid";
 import QuickActions from "../QuickActions";
@@ -24,90 +22,73 @@ export default function FreelancerDashboard() {
   const { user, profile } = useAuth();
   const { t } = useTranslationContext();
 
-  const [myProposals, setMyProposals] = useState<ProposalWithDetails[]>([]);
-  const [stats, setStats] = useState({
-    pendingProposals: 0,
-    completedProjects: 0,
-    totalEarned: 0,
-  });
-  const [dataLoading, setDataLoading] = useState(true);
+  // Memoize query to prevent unnecessary recalculations
+  const proposalsQuery = useMemo(() => {
+    if (!user) return null;
+    return query(
+      collection(db, "proposals"),
+      where("freelancerId", "==", user.uid),
+      orderBy("createdAt", "desc"),
+      limit(6)
+    );
+  }, [user]);
 
-  // 📊 Load FREELANCER dashboard data
-  useEffect(() => {
-    if (!user) return;
+  // Use optimized query hook with caching
+  const { data: proposals = [], loading: dataLoading } = useFirestoreQuery<Proposal>(
+    `freelancer_proposals_${user?.uid}`,
+    proposalsQuery,
+    {
+      enabled: !!user,
+      ttl: 3 * 60 * 1000, // 3 minutes
+      dependencies: [user?.uid],
+    }
+  );
 
-    const loadFreelancerData = async () => {
-      try {
-        const proposalsQ = query(
-          collection(db, "proposals"),
-          where("freelancerId", "==", user.uid),
-          orderBy("createdAt", "desc"),
-          limit(6)
-        );
+  // Compute stats from proposals and profile
+  const stats = useMemo(() => {
+    if (!proposals) {
+      return {
+        pendingProposals: 0,
+        completedProjects: 0,
+        totalEarned: 0,
+      };
+    }
 
-        const proposalsSnap = await getDocs(proposalsQ);
-        const proposals = proposalsSnap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Proposal[];
+    const pending = proposals.filter((p: any) => p.status === "pending").length;
+    const completedFromProfile =
+      typeof profile?.projectsCompleted === "number"
+        ? profile.projectsCompleted
+        : typeof profile?.completedProjects === "number"
+        ? profile.completedProjects
+        : 0;
 
-        const projectIds = Array.from(new Set(proposals.map((p) => p.projectId)));
-        const projectDocs = await Promise.all(
-          projectIds.map(async (projectId) => {
-            const snap = await getDoc(doc(db, "projects", projectId));
-            if (!snap.exists()) return null;
-            const data = snap.data() as any;
-            return {
-              id: snap.id,
-              title: data?.title || projectId,
-              description: data?.description,
-              budget: data?.budget,
-              clientId: data?.clientId || "",
-              skillsRequired: data?.skillsRequired,
-              status: data?.status,
-              acceptedFreelancerId: data?.acceptedFreelancerId,
-            };
-          })
-        );
-        const projectMap = new Map(
-          projectDocs
-            .filter(Boolean)
-            .map((p) => [p!.id, p! as ProposalWithDetails["project"]])
-        );
-
-        const proposalsWithDetails: ProposalWithDetails[] = proposals.map((p) => ({
-          ...p,
-          project: projectMap.get(p.projectId) || undefined,
-        }));
-
-        const pending = proposals.filter((p) => p.status === "pending").length;
-        const completedStatuses = new Set(["completed", "closed", "done", "paid"]);
-        const completedFromProjects = projectDocs.filter(
-          (p) => p?.acceptedFreelancerId === user.uid && completedStatuses.has(p?.status)
-        ).length;
-        const completedFromProfile =
-          typeof profile?.projectsCompleted === "number"
-            ? profile.projectsCompleted
-            : typeof profile?.completedProjects === "number"
-            ? profile.completedProjects
-            : null;
-        const completedProjects = completedFromProfile ?? completedFromProjects;
-
-        setMyProposals(proposalsWithDetails);
-        setStats({
-          pendingProposals: pending,
-          completedProjects,
-          totalEarned: profile?.totalEarned || 0,
-        });
-      } catch (err) {
-        console.error("Error loading freelancer data:", err);
-      } finally {
-        setDataLoading(false);
-      }
+    return {
+      pendingProposals: pending,
+      completedProjects: completedFromProfile,
+      totalEarned: profile?.totalEarned || 0,
     };
+  }, [proposals, profile?.projectsCompleted, profile?.completedProjects, profile?.totalEarned]);
 
-    loadFreelancerData();
-  }, [user, profile?.totalEarned]);
+  // Transform proposals to include project details from cache
+  const myProposals: ProposalWithDetails[] = useMemo(() => {
+    if (!proposals || proposals.length === 0) {
+      return [];
+    }
+    
+    return proposals.map((p: any) => ({
+      ...p,
+      project: {
+        id: p.projectId,
+        title: p.projectTitle || p.projectId,
+        description: "",
+        budget: 0,
+        clientId: "",
+        skillsRequired: [],
+        status: "",
+        acceptedFreelancerId: "",
+      },
+    }));
+  }, [proposals]);
 
   return (
     <div className="min-h-screen bg-background">

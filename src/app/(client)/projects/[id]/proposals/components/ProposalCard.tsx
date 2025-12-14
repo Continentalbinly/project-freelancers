@@ -37,7 +37,7 @@ export default function ProposalCard({
     const fetchProfile = async () => {
       const profileId =
         activeTab === "submitted"
-          ? proposal.client?.id || proposal.project?.clientId
+          ? proposal.project?.clientId
           : proposal.freelancerId;
 
       if (!profileId) return;
@@ -115,7 +115,7 @@ export default function ProposalCard({
       <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between mb-6 gap-4">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 flex-1">
           <Avatar
-            src={avatarUrl || undefined}
+            src={avatarUrl || ""}
             alt={displayName}
             name={displayName}
             size="xl"

@@ -2,13 +2,15 @@
 import Link from "next/link";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { useAuth } from "@/contexts/AuthContext";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
   const { user, profile, loading } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   // ✅ Detect device width (mobile < 768px)
   useEffect(() => {
@@ -42,17 +44,17 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
           <Link
             href="/messages"
             onClick={handleMessagesClick}
-            className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title={t("header.messages")}
           >
-            <MessageCircle className="w-5 h-5 text-text-primary hover:text-primary transition-colors" />
+            <MessageCircle className="w-5 h-5 text-text-primary hover:text-primary dark:hover:text-primary transition-colors" />
           </Link>
 
           {/* 🧑‍💻 Avatar button — opens drawer */}
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
             title={t("header.account")}
           >
             <Avatar {...getAvatarProps(profile, user)} size="md" />
@@ -64,7 +66,7 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
           <div className="hidden md:flex items-center space-x-3">
             <Link
               href="/auth/login"
-              className="text-sm font-medium text-text-primary hover:text-primary transition-colors"
+              className="text-sm font-medium text-text-primary hover:text-primary dark:hover:text-primary transition-colors"
             >
               {t("header.signIn")}
             </Link>
@@ -74,6 +76,18 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
             >
               {t("header.signUp")}
             </Link>
+            {/* Theme toggle for logged-out users */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              title={theme === 'dark' ? (t("header.lightMode") || 'Switch to light mode') : (t("header.darkMode") || 'Switch to dark mode')}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Moon className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
             <LanguageSwitcher />
           </div>
 
@@ -81,7 +95,7 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="md:hidden p-2 rounded-lg hover:bg-background-secondary transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title={t("header.menu")}
           >
             <svg

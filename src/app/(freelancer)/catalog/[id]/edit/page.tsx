@@ -93,7 +93,7 @@ export default function EditCatalogPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">{t("editCatalogPage.title") || "Edit Service"}</h1>
           <p className="text-sm sm:text-base text-text-secondary mt-1">{t("editCatalogPage.subtitle") || "Update your service details and pricing"}</p>

@@ -260,7 +260,7 @@ export default function GigsPage() {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed border-border bg-background-secondary/50 py-16 text-center">
+          <div className="rounded-xl border-2 border-dashed border-border bg-background py-16 text-center">
             <PackageIcon className="w-12 h-12 text-text-secondary/50 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-text-primary mb-2">
               {t("gigsPage.noServicesFound") || "No Services Found"}

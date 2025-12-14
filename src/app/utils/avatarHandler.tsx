@@ -32,6 +32,7 @@ export default function Avatar({
   const [currentSrc, setCurrentSrc] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [verifying, setVerifying] = useState(true); // Check if image exists
 
   const initials = fallback || getInitials(name || "U");
 
@@ -59,42 +60,50 @@ export default function Avatar({
     return input;
   };
 
-  // ✅ Use API to check file existence (no 404)
+  // ✅ Simplified image loading - direct approach
   useEffect(() => {
-    const verifyImage = async () => {
-      if (!src) return;
-      const normalized = normalizeSrc(src)!;
-
-      // Cloud / Firebase URLs skip checking
-      if (normalized.startsWith("http")) {
-        setCurrentSrc(normalized);
+    const loadImage = async () => {
+      // If no src provided or empty string, show fallback
+      if (!src || src.trim() === "") {
+        setVerifying(false);
+        setImageError(true);
+        return;
+      }
+      
+      const normalized = normalizeSrc(src);
+      
+      if (!normalized) {
+        setVerifying(false);
+        setImageError(true);
         return;
       }
 
-      try {
-        const res = await fetch(
-          `/api/check-image?path=${encodeURIComponent(normalized)}`
-        );
-        const data = await res.json();
-
-        if (data.exists) {
-          setCurrentSrc(normalized);
-        } else {
-          const cloudId = getCloudPublicId(normalized);
-          if (cloudId) {
-            const cloudUrl = `${CLOUDINARY_BASE}f_auto,q_auto,c_fill,w_${w},h_${h}/${cloudId}`;
-            setCurrentSrc(cloudUrl);
-          } else {
-            setImageError(true);
-          }
-        }
-      } catch {
-        setImageError(true);
+      // Direct URLs (Firebase, Cloudinary, external) - use directly
+      if (normalized.startsWith("http")) {
+        setCurrentSrc(normalized);
+        setVerifying(false);
+        return;
       }
+
+      // Local paths - try to load directly first
+      // If it fails, the img onError will handle it
+      setCurrentSrc(normalized);
+      setVerifying(false);
     };
 
-    verifyImage();
+    loadImage();
   }, [src]);
+
+  // Show skeleton while verifying image
+  if (verifying) {
+    return (
+      <div
+        className={`relative rounded-full overflow-hidden ${sizeClasses[size]} ${className}`}
+      >
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
+      </div>
+    );
+  }
 
   if (!currentSrc || imageError) {
     return (
@@ -112,7 +121,7 @@ export default function Avatar({
       className={`relative rounded-full overflow-hidden ${sizeClasses[size]} ${className}`}
     >
       {imageLoading && (
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-shimmer" />
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
       )}
       <img
         src={currentSrc}

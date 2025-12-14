@@ -85,16 +85,16 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
         <>
           {/* Guest Links */}
           <Link href="/projects" className={linkClasses("/projects")}>
-            {t("header.projects")}
+            {t("header.findWork")}
           </Link>
 
           <Link href="/gigs" className={linkClasses("/gigs")}>
-            {t("header.freelancers")}
+            {t("header.hireFreelancer")}
           </Link>
 
-          <Link href="/clients" className={linkClasses("/clients")}>
+          {/* <Link href="/clients" className={linkClasses("/clients")}>
             {t("header.clients")}
-          </Link>
+          </Link> */}
         </>
       )}
 

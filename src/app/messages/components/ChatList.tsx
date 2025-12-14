@@ -87,6 +87,7 @@ export default function ChatList({
             );
             const name = profileCache[otherId]?.fullName || "Unknown";
             const avatar = profileCache[otherId]?.avatarUrl || "";
+            const profileLoaded = !!profileCache[otherId];
 
             const last = room.lastMessage
               ? room.lastMessage.length > 40
@@ -115,7 +116,11 @@ export default function ChatList({
                     : "border-border hover:border-primary/40 hover:shadow-sm"
                 }`}
               >
-                <Avatar src={avatar} name={name} size="lg" />
+                {!profileLoaded ? (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer flex-shrink-0" />
+                ) : (
+                  <Avatar src={avatar} name={name} size="lg" />
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className={`font-semibold truncate transition-colors duration-200 ${
