@@ -51,12 +51,23 @@ export default function Avatar({
       : null;
   };
 
+  const DEFAULT_AVATAR = "/images/assets/user.png";
+
   const normalizeSrc = (input?: string): string | null => {
     if (!input) return null;
+    // Known external sources can be used directly
     if (input.includes("firebasestorage.googleapis.com")) return input;
     if (input.includes("res.cloudinary.com")) return input;
-    if (input.includes("/uploads/profileImage/"))
-      return input.replace(/^https?:\/\/[^/]+/, "");
+    // Mask local upload path by mapping to Cloudinary if possible
+    if (input.includes("/uploads/profileImage/")) {
+      const publicId = getCloudPublicId(input);
+      if (publicId && process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+        // Use Cloudinary delivery to avoid exposing local file path
+        return `${CLOUDINARY_BASE}${publicId}`;
+      }
+      // If we cannot map to Cloudinary, use default avatar
+      return DEFAULT_AVATAR;
+    }
     return input;
   };
 
@@ -85,9 +96,8 @@ export default function Avatar({
         return;
       }
 
-      // Local paths - try to load directly first
-      // If it fails, the img onError will handle it
-      setCurrentSrc(normalized);
+      // Local paths or default avatar
+      setCurrentSrc(normalized || DEFAULT_AVATAR);
       setVerifying(false);
     };
 
