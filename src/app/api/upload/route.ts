@@ -76,9 +76,8 @@ export async function POST(request: NextRequest) {
 
     const filePath = join(uploadsDir, fileName);
     await writeFile(filePath, buffer);
-    const baseUrl =
-      process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin || "";
-    const fileUrl = `${baseUrl}/uploads/${folderType}${
+    // Return relative path only - frontend will construct full URL
+    const fileUrl = `/uploads/${folderType}${
       subfolder ? `/${subfolder}` : ""
     }/${fileName}`;
 
@@ -122,6 +121,7 @@ async function handleProfileUpload(
 
     const filePath = join(uploadsDir, fileName);
     await writeFile(filePath, buffer);
+    // Return relative path only - frontend will construct full URL
     const localUrl = `/uploads/${folderType}/${fileName}`;
 
     // Backup to Cloudinary
