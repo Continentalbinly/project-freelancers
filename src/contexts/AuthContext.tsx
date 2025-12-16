@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode, useCallback,
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
 import { auth } from '@/service/firebase'
 import { Profile } from '@/types/profile'
-import { clearCache } from '@/service/dataFetch'
+import { clearAllCache, abortAllPendingRequests } from '@/service/dataFetch'
 
 interface AuthContextType {
   user: FirebaseUser | null
@@ -87,7 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await fetchProfile(firebaseUser)
       } else {
         // Clear all caches on logout
-        clearCache('*')
+        clearAllCache()
+        abortAllPendingRequests()
         
         // Clear any profile data from localStorage (security cleanup)
         try {
