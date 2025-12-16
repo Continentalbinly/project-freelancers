@@ -3,32 +3,77 @@ import { getAuth } from "firebase-admin/auth";
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// ✅ Initialize Firebase Admin SDK (server-side only)
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      privateKey: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(
-        /\\n/g,
-        "\n"
-      ),
-    }),
-  });
+type Firestore = ReturnType<typeof getFirestore>;
+type AdminAuth = ReturnType<typeof getAuth>;
+
+const requiredAdminEnv = [
+  "FIREBASE_PROJECT_ID",
+  "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+  "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY",
+];
+
+let adminInitError: Error | null = null;
+let adminInitialized = false;
+let adminAuth: AdminAuth | null = null;
+let adminDB: Firestore | null = null;
+
+function initFirebaseAdmin() {
+  if (adminInitialized || getApps().length) {
+    adminInitialized = true;
+    return;
+  }
+
+  const missing = requiredAdminEnv.filter(
+    (key) => !process.env[key] || process.env[key] === ""
+  );
+
+  if (missing.length) {
+    adminInitError = new Error(
+      `Missing Firebase Admin env vars: ${missing.join(", ")}`
+    );
+    return;
+  }
+
+  try {
+    initializeApp({
+      credential: cert({
+        projectId: process.env.FIREBASE_PROJECT_ID!,
+        clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+        privateKey: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY!.replace(
+          /\\n/g,
+          "\n"
+        ),
+      }),
+    });
+    adminAuth = getAuth();
+    adminDB = getFirestore();
+    adminInitialized = true;
+  } catch (error) {
+    adminInitError =
+      error instanceof Error
+        ? error
+        : new Error("Failed to initialize Firebase Admin");
+  }
 }
 
-const adminAuth = getAuth();
-const adminDB = getFirestore();
+initFirebaseAdmin();
 
 /**
- * 🔥 Unified handler
+ * dY"Â Unified handler
  */
 export async function POST(request: NextRequest) {
+  if (adminInitError || !adminInitialized || !adminAuth || !adminDB) {
+    return NextResponse.json(
+      { success: false, error: "Authentication service unavailable" },
+      { status: 500 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { action, ...data } = body;
 
-    // ✅ Verify Firebase ID token
+    // Æ’o. Verify Firebase ID token
     const authHeader = request.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
@@ -42,7 +87,7 @@ export async function POST(request: NextRequest) {
     try {
       decodedToken = await adminAuth.verifyIdToken(token);
     } catch (error) {
-      //console.error("❌ Invalid Firebase ID token:", error);
+      //console.error("Æ’?O Invalid Firebase ID token:", error);
       return NextResponse.json(
         { success: false, error: "Invalid authorization token" },
         { status: 401 }
@@ -51,9 +96,9 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case "create-profile":
-        return await createProfile(decodedToken.uid, data);
+        return await createProfile(adminDB, decodedToken.uid, data);
       case "get-profile":
-        return await getProfile(decodedToken.uid);
+        return await getProfile(adminDB, decodedToken.uid);
       default:
         return NextResponse.json(
           { success: false, error: "Invalid action" },
@@ -61,7 +106,7 @@ export async function POST(request: NextRequest) {
         );
     }
   } catch (error) {
-    //console.error("🔥 API Error:", error);
+    //console.error("dY"Â API Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 }
@@ -70,25 +115,30 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * ✅ Create user profile (full data from signup)
+ * Æ’o. Create user profile (full data from signup)
  */
-async function createProfile(userId: string, data: any) {
+async function createProfile(db: Firestore, userId: string, data: any) {
   try {
     // Merge category + occupation right here
     const mainRole = data.userRoles?.[0] || data.userType || "freelancer";
     const category =
       mainRole === "freelancer" ? data.userCategory : data.clientCategory;
     const occupation = category ? `${mainRole}_${category}` : mainRole;
+    const now = new Date();
 
     const profileData: Record<string, unknown> = {
       id: userId,
-      email: data.email,
-      fullName: data.fullName,
-      userType: Array.isArray(data.userType) ? data.userType : [data.userType],
+      email: data.email || "",
+      fullName: data.fullName || "",
+      userType: Array.isArray(data.userType)
+        ? data.userType
+        : [data.userType || mainRole],
       userRoles:
         data.userRoles ||
-        (Array.isArray(data.userType) ? data.userType : [data.userType]),
-      occupation, // ✅ directly saved
+        (Array.isArray(data.userType)
+          ? data.userType
+          : [data.userType || mainRole]),
+      occupation, // Æ’o. directly saved
       userCategory: data.userCategory || "",
       clientCategory: data.clientCategory || "",
       avatarUrl: data.avatarUrl || "",
@@ -101,29 +151,29 @@ async function createProfile(userId: string, data: any) {
       university: data.university || "",
       fieldOfStudy: data.fieldOfStudy || "",
       graduationYear: data.graduationYear || "",
-      skills: data.skills || [],
+      skills: Array.isArray(data.skills) ? data.skills : [],
       bio: data.bio || "",
       hourlyRate: data.hourlyRate || "",
       institution: data.institution || "",
       department: data.department || "",
       position: data.position || "",
-      yearsOfExperience: data.yearsOfExperience || 0,
+      yearsOfExperience: Number(data.yearsOfExperience) || 0,
       projectPreferences: data.projectPreferences || "",
       budgetRange: data.budgetRange || "",
-      acceptTerms: data.acceptTerms || false,
-      acceptPrivacyPolicy: data.acceptPrivacyPolicy || false,
-      acceptMarketingEmails: data.acceptMarketingEmails || false,
+      acceptTerms: Boolean(data.acceptTerms),
+      acceptPrivacyPolicy: Boolean(data.acceptPrivacyPolicy),
+      acceptMarketingEmails: Boolean(data.acceptMarketingEmails),
 
-      // ✅ Initial billing & state
-      credit: data.credit || 0,
-      plan: data.plan || "free",
-      planStatus: data.planStatus || "inactive",
-      planStartDate: data.planStartDate || null,
-      planEndDate: data.planEndDate || null,
-      totalTopups: data.totalTopups || 0,
-      totalSpentOnPlans: data.totalSpentOnPlans || 0,
+      // ✅ SECURITY: Initial billing & state (server enforced, client values ignored)
+      credit: 0,
+      plan: "free",
+      planStatus: "inactive",
+      planStartDate: null,
+      planEndDate: null,
+      totalTopups: 0,
+      totalSpentOnPlans: 0,
 
-      // ✅ System defaults
+      // ✅ SECURITY: System defaults (client cannot override)
       emailVerified: false,
       isActive: true,
       rating: 0,
@@ -141,7 +191,7 @@ async function createProfile(userId: string, data: any) {
       emailNotifications: true,
       projectUpdates: true,
       proposalNotifications: true,
-      marketingEmails: data.acceptMarketingEmails || false,
+      marketingEmails: Boolean(data.acceptMarketingEmails),
       weeklyDigest: false,
       browserNotifications: true,
       profileVisibility: true,
@@ -156,11 +206,11 @@ async function createProfile(userId: string, data: any) {
       timelinessRating: 0,
       portfolio: {},
       sections: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: now,
+      updatedAt: now,
     };
 
-    await adminDB.collection("profiles").doc(userId).set(profileData);
+    await db.collection("profiles").doc(userId).set(profileData);
 
     return NextResponse.json({
       success: true,
@@ -168,7 +218,7 @@ async function createProfile(userId: string, data: any) {
       message: "Profile created successfully",
     });
   } catch (error) {
-    //console.error("❌ Firestore create error:", error);
+    //console.error("Æ’?O Firestore create error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create profile" },
       { status: 500 }
@@ -177,11 +227,11 @@ async function createProfile(userId: string, data: any) {
 }
 
 /**
- * ✅ Get profile
+ * Æ’o. Get profile
  */
-async function getProfile(userId: string) {
+async function getProfile(db: Firestore, userId: string) {
   try {
-    const snap = await adminDB.collection("profiles").doc(userId).get();
+    const snap = await db.collection("profiles").doc(userId).get();
     if (!snap.exists) {
       return NextResponse.json(
         { success: false, error: "Profile not found" },
@@ -191,7 +241,7 @@ async function getProfile(userId: string) {
 
     return NextResponse.json({ success: true, data: snap.data() });
   } catch (error) {
-    //console.error("❌ Firestore get error:", error);
+    //console.error("Æ’?O Firestore get error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to get profile" },
       { status: 500 }

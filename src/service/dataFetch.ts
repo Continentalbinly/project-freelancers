@@ -53,14 +53,18 @@ export function setToCache<T>(key: string, data: T, ttl = DEFAULT_TTL): void {
 }
 
 /**
- * Clear cache entry
+ * Clear cache entry or all cache when using wildcard
  */
 export function clearCache(key: string): void {
+  if (key === "*") {
+    clearAllCache();
+    return;
+  }
   CACHE.delete(key);
 }
 
 /**
- * Clear all cache
+ * Clear all cache entries
  */
 export function clearAllCache(): void {
   CACHE.clear();
@@ -72,6 +76,16 @@ export function clearAllCache(): void {
 export function abortPendingRequest(key: string): void {
   const pending = PENDING_REQUESTS.get(key);
   if (pending) {
+    pending.abortController.abort();
+    PENDING_REQUESTS.delete(key);
+  }
+}
+
+/**
+ * Abort all in-flight requests
+ */
+export function abortAllPendingRequests(): void {
+  for (const [key, pending] of PENDING_REQUESTS.entries()) {
     pending.abortController.abort();
     PENDING_REQUESTS.delete(key);
   }
@@ -148,7 +162,9 @@ export async function fetchFromAPI<T>(
     token,
   } = options;
 
-  const cacheKey = `${endpoint}:${JSON.stringify(body || {})}`;
+  // ✅ SECURITY: Include token in cache key to prevent cross-user data leakage
+  // Without token in key, different users with same request body would share cached data
+  const cacheKey = `${endpoint}:${JSON.stringify(body || {})}:${token || 'anonymous'}`;
 
   return fetchWithCache<T>(
     cacheKey,
