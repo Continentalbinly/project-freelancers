@@ -19,6 +19,7 @@ export interface UserProfile {
   id: string;
   fullName?: string;
   email?: string;
+  role?: "freelancer" | "client" | "admin";
   userType?: string[] | string;
   isActive?: boolean;
   plan?: string;
