@@ -55,19 +55,14 @@ export default function FreelancerDashboard() {
     }
 
     const pending = proposals.filter((p: any) => p.status === "pending").length;
-    const completedFromProfile =
-      typeof profile?.projectsCompleted === "number"
-        ? profile.projectsCompleted
-        : typeof profile?.completedProjects === "number"
-        ? profile.completedProjects
-        : 0;
+    const completedFromProfile = profile?.projectsCompleted || 0;
 
     return {
       pendingProposals: pending,
       completedProjects: completedFromProfile,
       totalEarned: profile?.totalEarned || 0,
     };
-  }, [proposals, profile?.projectsCompleted, profile?.completedProjects, profile?.totalEarned]);
+  }, [proposals, profile?.projectsCompleted, profile?.totalEarned]);
 
   // Transform proposals to include project details from cache
   const myProposals: ProposalWithDetails[] = useMemo(() => {
