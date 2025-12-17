@@ -20,8 +20,8 @@ export default function MobileNavBar() {
   const { user, profile, loading } = useAuth();
   const { t } = useTranslationContext();
 
-  const isFreelancer = profile?.userType?.includes("freelancer");
-  const isClient = profile?.userType?.includes("client");
+  const isFreelancer = profile?.role === "freelancer";
+  const isClient = profile?.role === "client";
 
   const isActive = (href: string) => {
     if (href === "/" && (pathname === "/" || pathname === "/dashboard")) {

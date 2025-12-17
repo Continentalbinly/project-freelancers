@@ -48,13 +48,7 @@ export default function HeaderDrawer({
   };
 
   /** Admin role check */
-  const isAdmin =
-    (Array.isArray(profile?.userRoles) &&
-      profile.userRoles
-        .map((r: string) => r.toLowerCase())
-        .includes("admin")) ||
-    (Array.isArray(profile?.userType) &&
-      profile.userType.map((r: string) => r.toLowerCase()).includes("admin"));
+  const isAdmin = profile?.isAdmin === true || profile?.role === "admin";
 
   /** Detect mobile width */
   useEffect(() => {
@@ -79,18 +73,7 @@ export default function HeaderDrawer({
   const navLinks = user ? loggedInLinks : guestLinks;
 
   /** Role check */
-  const roles = Array.isArray(profile?.userRoles)
-    ? profile.userRoles.map((r: string) => r.toLowerCase())
-    : [];
-  const types = Array.isArray(profile?.userType)
-    ? profile.userType.map((r: string) => r.toLowerCase())
-    : [];
-  const category = (profile?.userCategory || "").toLowerCase();
-
-  const isClient =
-    roles.includes("client") ||
-    types.includes("client") ||
-    category.includes("client");
+  const isClient = profile?.role === "client";
 
   const canManageProjects = isClient || isAdmin;
 
@@ -166,7 +149,7 @@ export default function HeaderDrawer({
                           {profile?.fullName || user.email}
                         </div>
                         <div className="text-xs text-text-secondary dark:text-gray-400">
-                          {profile?.userType?.join(", ") || "Member"}
+                          {profile?.role || "Member"}
                         </div>
                       </div>
                     </div>

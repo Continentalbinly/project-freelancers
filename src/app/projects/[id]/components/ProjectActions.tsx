@@ -6,12 +6,7 @@ export default function ProjectActions({ project, t }: any) {
   const { user, profile } = useAuth();
   const isOwner = user?.uid === project.clientId;
 
-  const isFreelancer =
-    (Array.isArray(profile?.userType) &&
-      profile.userType.includes("freelancer")) ||
-    (Array.isArray(profile?.userRoles) &&
-      profile.userRoles.includes("freelancer")) ||
-    profile?.userCategory === "freelancer";
+  const isFreelancer = profile?.role === "freelancer";
 
   return (
     <div className="rounded-lg shadow-sm border border-border dark:border-gray-800 p-6">

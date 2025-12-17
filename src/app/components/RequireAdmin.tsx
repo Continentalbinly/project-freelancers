@@ -44,9 +44,7 @@ export default function RequireAdmin({
     }
 
     // 🧩 Check role
-    const isAdmin = Array.isArray(profile.userType)
-      ? profile.userType.includes("admin")
-      : profile.userType === "admin";
+    const isAdmin = profile.isAdmin === true || profile.role === "admin";
 
     if (isAdmin) {
       setIsAuthorized(true);

@@ -26,10 +26,7 @@ export default function ProjectsPage() {
   // -----------------------------
   // 🔐 Determine if user is client
   // -----------------------------
-  const roles = profile?.userRoles || [];
-  const types = profile?.userType || [];
-
-  const isClient = roles.includes("client") || types.includes("client");
+  const isClient = profile?.role === "client";
 
   // Block clients from public projects list; send to manage
   useEffect(() => {

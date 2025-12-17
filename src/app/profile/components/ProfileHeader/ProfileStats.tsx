@@ -1,7 +1,7 @@
 import { formatEarnings } from "@/service/currencyUtils";
 
 export default function ProfileStats({ profile, t }: any) {
-  const isFreelancer = profile?.userType?.includes("freelancer");
+  const isFreelancer = profile?.role === "freelancer";
 
   const items = [
     {

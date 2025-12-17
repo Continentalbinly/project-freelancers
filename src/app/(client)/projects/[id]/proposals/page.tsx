@@ -86,9 +86,7 @@ export default function ProjectProposalsPage() {
   // ------------------------------------
   // Identify freelancer
   // ------------------------------------
-  const isFreelancer = Array.isArray(profile?.userType)
-    ? profile.userType.includes("freelancer") && profile.userType.length === 1
-    : profile?.userType === "freelancer";
+  const isFreelancer = profile?.role === "freelancer";
 
   // ------------------------------------
   // Redirect unauthenticated user

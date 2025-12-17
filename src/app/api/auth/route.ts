@@ -18,8 +18,19 @@ let adminAuth: AdminAuth | null = null;
 let adminDB: Firestore | null = null;
 
 function initFirebaseAdmin() {
-  if (adminInitialized || getApps().length) {
-    adminInitialized = true;
+  if (adminInitialized) return;
+
+  if (getApps().length) {
+    try {
+      adminAuth = getAuth();
+      adminDB = getFirestore();
+      adminInitialized = true;
+    } catch (error) {
+      adminInitError =
+        error instanceof Error
+          ? error
+          : new Error("Failed to attach to existing Firebase Admin app");
+    }
     return;
   }
 
@@ -120,27 +131,20 @@ export async function POST(request: NextRequest) {
 async function createProfile(db: Firestore, userId: string, data: any) {
   try {
     // Merge category + occupation right here
-    const mainRole = data.userRoles?.[0] || data.userType || "freelancer";
-    const category =
-      mainRole === "freelancer" ? data.userCategory : data.clientCategory;
-    const occupation = category ? `${mainRole}_${category}` : mainRole;
+    const role = data.role || "freelancer";
+    const occupation = data.occupation && typeof data.occupation === "object"
+      ? data.occupation
+      : { id: role, name_en: role, name_lo: role };
     const now = new Date();
 
     const profileData: Record<string, unknown> = {
       id: userId,
       email: data.email || "",
       fullName: data.fullName || "",
-      userType: Array.isArray(data.userType)
-        ? data.userType
-        : [data.userType || mainRole],
-      userRoles:
-        data.userRoles ||
-        (Array.isArray(data.userType)
-          ? data.userType
-          : [data.userType || mainRole]),
-      occupation, // Æ’o. directly saved
-      userCategory: data.userCategory || "",
-      clientCategory: data.clientCategory || "",
+      role,
+      occupation,
+      // Admin overlay must never be set by clients at signup
+      isAdmin: false,
       avatarUrl: data.avatarUrl || "",
       dateOfBirth: data.dateOfBirth || "",
       gender: data.gender || "",

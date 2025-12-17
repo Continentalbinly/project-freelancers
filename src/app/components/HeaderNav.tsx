@@ -9,8 +9,8 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
   const { user, profile, loading } = useAuth();
   const { t } = useTranslationContext();
 
-  const isFreelancer = profile?.userType?.includes("freelancer");
-  const isClient = profile?.userType?.includes("client");
+  const isFreelancer = profile?.role === "freelancer";
+  const isClient = profile?.role === "client";
 
   const [openFinance, setOpenFinance] = useState(false);
   const financeRef = useRef<HTMLDivElement>(null);

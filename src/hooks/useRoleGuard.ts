@@ -25,13 +25,10 @@ export function useRoleGuard(
 
   useEffect(() => {
     if (loading || !user || !profile) return;
-
-    const roles = profile?.userRoles || [];
-    const types = profile?.userType || [];
-    const isAdmin = roles.includes("admin") || types.includes("admin");
-    const isClient = roles.includes("client") || types.includes("client");
-    const isFreelancer =
-      roles.includes("freelancer") || types.includes("freelancer");
+    const role = profile.role;
+    const isAdmin = profile.isAdmin === true || role === "admin"; // backward compatible
+    const isClient = role === "client";
+    const isFreelancer = role === "freelancer";
 
     let isAuthorized = false;
 
@@ -53,11 +50,7 @@ export function useRoleGuard(
   return {
     isAuthorized:
       user && profile
-        ? (profile?.userType?.includes(options.requiredRole) ||
-            profile?.userRoles?.includes(options.requiredRole) ||
-            profile?.userType?.includes("admin") ||
-            profile?.userRoles?.includes("admin")) ??
-          false
+        ? profile.role === options.requiredRole || profile.isAdmin === true || profile.role === "admin"
         : false,
     isLoading: loading,
   };

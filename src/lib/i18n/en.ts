@@ -1,4 +1,3 @@
-
 const en = {
   language: "English",
   welcome: "Welcome",
@@ -14,8 +13,19 @@ const en = {
     noRating: "No ratings yet",
     noNotes: "No notes",
     confirm: "Confirm",
+    tip: "Tip",
+    next: "Next",
+    selected: "Selected",
+    previous: "Previous",
+    security: "Security",
     used: "Used",
     draftLoaded: "Loading Draft...",
+    clickToUpload: "Click to upload",
+    or: "or",
+    dragAndDrop: "drag and drop",
+    imageFormats: "PNG, JPG, GIF up to 5MB",
+    remove: "Remove",
+    step: "Step",
     status: {
       statusOpen: "Open",
       statusInProgress: "In Progress",
@@ -68,8 +78,10 @@ const en = {
     uploaded: "uploaded",
     submitting: "Submitting...",
     accessRestrictedTitle: "Access restricted",
-    clientRedirectProjects: "Clients manage their projects in the manage view. Redirecting you now...",
-    freelancerRedirectCatalog: "Freelancers manage their gigs in the catalog manage view. Redirecting you now...",
+    clientRedirectProjects:
+      "Clients manage their projects in the manage view. Redirecting you now...",
+    freelancerRedirectCatalog:
+      "Freelancers manage their gigs in the catalog manage view. Redirecting you now...",
   },
   // Cookie consent translations
   cookieConsent: {
@@ -694,13 +706,147 @@ const en = {
       },
       alreadyHaveAccount: "Already have an account?",
       signIn: "Sign In",
+      security: {
+        info: "The security of your account is of utmost importance",
+      },
+      fields: {
+        fullName: "Full Name",
+        email: "Email Address",
+        password: "Password",
+        confirmPassword: "Confirm Password",
+        dateOfBirth: "Date of Birth",
+        gender: "Gender",
+        phone: "Phone Number",
+        country: "Country",
+        passwordRequirement: "Password must be at least 6 characters",
+        profilePicture: "Profile Picture",
+        profession: "Profession",
+        companyType: "Company Type",
+        bio: {
+          freelancer: "About you",
+          client: "About your company",
+        },
+        bioHint: "This helps others understand who you are",
+        skills: "Top Skills",
+        skillsUnit: "skills",
+        skillsHint: "Add up to 5 skills separated by commas",
+        accountType: "Account Type",
+      },
+      placeholders: {
+        fullName: "Enter your full name",
+        email: "Enter your email",
+        password: "Create a password",
+        confirmPassword: "Re-enter your password",
+        phone: "Enter your phone number",
+        country: "Enter your country",
+        selectOption: "Select...",
+        bioFreelancer: "Tell clients about your experience and skills...",
+        bioClient: "Tell freelancers about your company...",
+        skills: "e.g. React, UI Design, Content Writing (separated by comma)",
+      },
+      validations: {
+        required: "This field is required",
+        invalidEmail: "Invalid email address format",
+        passwordsDoNotMatch: "Passwords do not match",
+        invalidDate: "Invalid date format",
+        underage: "You must be at least 13 years old to sign up",
+        invalidPhone: "Invalid phone number format",
+        passwordStrong: "Password Strong",
+        passwordsMatch: "Passwords match",
+      },
+      passwordStrength: {
+        weak: "Weak",
+        fair: "Fair",
+        good: "Good",
+        strong: "Strong",
+        criteria: {
+          length: "8+ characters",
+          uppercase: "Uppercase (A-Z)",
+          lowercase: "Lowercase (a-z)",
+          number: "Number (0-9)",
+          special: "Special character (!@#$%...)",
+        },
+      },
       errors: {
-        signupFailed: "Signup failed",
-        unexpectedError: "An unexpected error occurred",
-        uploadFailed: "Image upload failed",
-        invalidFileType:
-          "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.",
-        fileTooLarge: "File size too large. Maximum size is 5MB.",
+        emailInUse: "Email is already in use",
+        weakPassword: "Weak password",
+        passwordTooShort: "Password must be at least 6 characters",
+        passwordTooWeak: "Password is too weak. Include uppercase, lowercase, numbers, and special characters.",
+        passwordsDoNotMatch: "Passwords do not match",
+        invalidEmail: "Invalid email address",
+        nameRequired: "Please enter your full name",
+        invalidFileType: "Please select an image file",
+        fileTooLarge: "File must be smaller than 5MB",
+        uploadFailed: "Failed to upload image. Please try again.",
+      },
+      roles: {
+        freelancer: {
+          title: "Freelancer",
+          description:
+            "Find freelance opportunities and earn income while working",
+          info: "As a freelancer, you can browse and apply for projects posted by clients. Build your portfolio, gain experience, and earn income while working on projects that interest you.",
+        },
+        client: {
+          title: "Client",
+          description:
+            "Post projects and hire freelancers to get your work done",
+          info: "As a client, you can post projects and find talented freelancers to help you complete your work. Whether you need assistance with research, writing, design, or other tasks, our platform connects you with skilled individuals ready to help.",
+        },
+      },
+      steps: {
+        role: {
+          title: "Role",
+          subtitle: "Choose your role",
+        },
+        account: {
+          title: "Account",
+          subtitle: "Create your account",
+        },
+        profile: {
+          title: "Profile",
+          subtitle: "Tell us about yourself",
+          tip: "You can always update your profile information later.",
+        },
+        review: {
+          title: "Review",
+          subtitle: "Agree to terms and create account",
+        },
+        labels: {
+          role: "Role",
+          account: "Account",
+          profile: "Profile",
+          review: "Review",
+        },
+      },
+      occupations: {
+        developer: "Developer",
+        designer: "Designer",
+        writer: "Writer",
+        marketer: "Marketer",
+        startup: "Startup",
+        agency: "Agency",
+        corporate: "Corporate",
+        individual: "Individual",
+        other: "Other",
+      },
+      sections: {
+        account: "Account Information",
+        profile: "Profile Information",
+        agreements: "Agreements",
+      },
+      agreements: {
+        terms: "I agree to the Terms of Service",
+        privacy: "I agree to the Privacy Policy",
+        marketing: "I want to receive updates and offers",
+      },
+      review: {
+        ready: "You're all set! Click 'Sign Up' to create your account.",
+      },
+      actions: {
+        signup: "Sign Up",
+      },
+      upload: {
+        optional: "Optional - You can add a photo later",
       },
     },
     verifyEmail: {
@@ -722,10 +868,6 @@ const en = {
       signIn: "Sign in",
       success: {
         sent: "Verification email sent successfully!",
-      },
-      errors: {
-        noUser: "No user found. Please sign in again.",
-        failedToSend: "Failed to send verification email.",
       },
     },
   },
@@ -1045,8 +1187,10 @@ const en = {
     },
     blockedFeature: {
       title: "Pro Subscription Coming Soon",
-      message: "The Pro subscription plan is not yet available during the launch phase. We're preparing this premium tier to offer enhanced features and benefits.",
-      availableNote: "This feature will be available in the next phase of our platform development.",
+      message:
+        "The Pro subscription plan is not yet available during the launch phase. We're preparing this premium tier to offer enhanced features and benefits.",
+      availableNote:
+        "This feature will be available in the next phase of our platform development.",
       backButton: "Back to Pricing",
     },
     faq: {
@@ -3434,7 +3578,8 @@ const en = {
     createService: "Create Service",
     subtitle: "View and manage your published services",
     noServicesYet: "No services yet",
-    createFirstService: "Create your first service to get started with freelancing",
+    createFirstService:
+      "Create your first service to get started with freelancing",
     view: "View",
     edit: "Edit",
     publish: "Publish",
@@ -3475,9 +3620,11 @@ const en = {
     description: "Description",
     chars: "chars",
     titlePlaceholder: "e.g., I will design a modern, responsive landing page",
-    titleHint: "Create a clear, specific title that describes your service. Good titles help clients find you.",
+    titleHint:
+      "Create a clear, specific title that describes your service. Good titles help clients find you.",
     descriptionPlaceholder: "Describe your service in detail",
-    descriptionHint: "Detailed descriptions increase trust and conversions. Explain your process, deliverables, and what makes your service unique.",
+    descriptionHint:
+      "Detailed descriptions increase trust and conversions. Explain your process, deliverables, and what makes your service unique.",
   },
   stepCategory: {
     chooseCategory: "Choose Category",
@@ -3497,7 +3644,8 @@ const en = {
     uploading: "Uploading...",
     uploadedImages: "Uploaded Images",
     cover: "Cover",
-    noImages: "No images uploaded yet. Add at least one image to showcase your service.",
+    noImages:
+      "No images uploaded yet. Add at least one image to showcase your service.",
   },
   stepPackage: {
     package: "Package",
@@ -3507,11 +3655,13 @@ const en = {
     price: "Price (LAK)",
     deliveryDays: "Delivery Days",
     revisionLimit: "Revision Limit",
-    revisionLimitInfo: "How many times can clients request revisions? (default: 2)",
+    revisionLimitInfo:
+      "How many times can clients request revisions? (default: 2)",
     features: "Package Features",
     featurePlaceholder: "Type a feature and press Enter",
     add: "Add",
-    noFeatures: "No features added. Add features to make this tier more attractive.",
+    noFeatures:
+      "No features added. Add features to make this tier more attractive.",
   },
   orderDetail: {
     backToOrders: "Back to Orders",
@@ -3529,13 +3679,15 @@ const en = {
     deliverWork: "Deliver Work",
     deliveryMessagePlaceholder: "Write a delivery message, notes, or feedback…",
     acceptOrder: "Accept Order",
-    acceptOrderDesc: "Review the order details and accept to start working on it.",
+    acceptOrderDesc:
+      "Review the order details and accept to start working on it.",
     startWork: "Start Work",
     startWorkDesc: "Click below to start working on this order.",
     sending: "Sending...",
     sendDelivery: "Send Delivery",
     deliverySent: "Delivery Sent",
-    deliveryMessageDesc: "Write your delivery message, include any notes or files information.",
+    deliveryMessageDesc:
+      "Write your delivery message, include any notes or files information.",
     awaitingClientReview: "Awaiting client review and acceptance...",
     deliveryType: "Delivery Type",
     textDelivery: "Text",
@@ -3559,7 +3711,8 @@ const en = {
     viewProfile: "View Profile",
     sendMessage: "Send Message",
     reviewDelivery: "Review Delivery",
-    reviewDeliveryDesc: "Review the work and accept the delivery to complete the order.",
+    reviewDeliveryDesc:
+      "Review the work and accept the delivery to complete the order.",
     completing: "Completing...",
     acceptComplete: "Accept & Complete",
     acceptAndPayout: "Accept & Payout",
@@ -3571,7 +3724,8 @@ const en = {
     requestRevision: "Request Revision",
     revisionRequested: "Revision Requested",
     latestRevision: "Latest Revision Request",
-    noMoreRevisions: "No more revisions available. Please accept or reject the delivery.",
+    noMoreRevisions:
+      "No more revisions available. Please accept or reject the delivery.",
     pleaseEnterRevisionReason: "Please enter revision reason",
     timeline: "Timeline",
     orderCreated: "Order Created",
@@ -3585,7 +3739,8 @@ const en = {
     statusCancelled: "Cancelled",
     statusRefunded: "Refunded",
     uploadScreenshots: "Upload Screenshots (Max 3)",
-    screenshotsHelp: "Upload screenshots to show the work and proof of completion",
+    screenshotsHelp:
+      "Upload screenshots to show the work and proof of completion",
     dragScreenshots: "Click to upload screenshots",
     pleaseUploadScreenshots: "Please upload at least one screenshot",
     deliveryScreenshots: "Screenshots",
@@ -3632,7 +3787,8 @@ const en = {
     orderFee: "Order Placement Fee",
     fixedByCategory: "Fixed by category",
     remainingCredits: "Remaining Credits",
-    feeNote: "The order fee is based on the service category, not the package price. This ensures fair pricing for all orders in this category.",
+    feeNote:
+      "The order fee is based on the service category, not the package price. This ensures fair pricing for all orders in this category.",
     cancel: "Cancel",
     confirm: "Confirm Order",
     processing: "Processing...",

@@ -4,9 +4,7 @@ import { User, Mail, Shield } from "lucide-react";
 import type { UserProfile } from "../page";
 
 export default function UserCard({ user }: { user: UserProfile }) {
-  const roles = Array.isArray(user.userType)
-    ? user.userType.join(", ")
-    : user.userType || "—";
+  const roles = user.role || "—";
 
   const statusColor = user.isActive ? "text-green-600" : "text-red-600";
 
@@ -44,7 +42,7 @@ export default function UserCard({ user }: { user: UserProfile }) {
             ? new Date(user.createdAt.toDate()).toLocaleDateString()
             : "—"}
         </p>
-        {roles.includes("admin") && (
+        {roles === "admin" && (
           <span className="flex items-center gap-1 text-[11px] text-primary font-medium">
             <Shield className="w-3 h-3" /> Admin
           </span>

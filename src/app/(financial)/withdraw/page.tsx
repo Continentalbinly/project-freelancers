@@ -27,14 +27,9 @@ export default function WithdrawPage() {
       setLoading(false);
 
       // Detect user role
-      const roles = (data as any).userRoles || [];
-      const types = (data as any).userType || [];
-      const isFreelancer = roles.includes("freelancer") || types.includes("freelancer");
-      const isClient = roles.includes("client") || types.includes("client");
-
-      if (isFreelancer) {
+      if ((data as any).role === "freelancer") {
         setUserRole("freelancer");
-      } else if (isClient) {
+      } else if ((data as any).role === "client") {
         setUserRole("client");
       }
     });
