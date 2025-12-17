@@ -44,17 +44,11 @@ export default function Home(): React.ReactElement {
     // User and profile both ready - redirect based on role
     if (!hasRedirected.current) {
       hasRedirected.current = true;
-      
-      const roles = profile?.userRoles || [];
-      const types = profile?.userType || [];
-
-      const isClient = roles.includes("client") || types.includes("client");
-      const isFreelancer = roles.includes("freelancer") || types.includes("freelancer");
-
+      const role = profile.role;
       // 🎯 Route based on primary role
-      if (isClient) {
+      if (role === "client") {
         router.push("/dashboard?role=client");
-      } else if (isFreelancer) {
+      } else if (role === "freelancer") {
         router.push("/dashboard?role=freelancer");
       } else {
         // User has no role yet, go to generic dashboard

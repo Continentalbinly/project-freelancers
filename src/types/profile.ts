@@ -1,24 +1,27 @@
-// Profile type for users (students, teachers, admins)
+// Profile type for users in general marketplace (freelancers, clients, admins)
 export interface Profile {
-  title: string;
   id: string;
   email: string;
   fullName: string;
   avatarUrl?: string;
   credit: number;
-  userType: ("freelancer" | "client" | "admin")[];
-  userRoles?: ("freelancer" | "client" | "admin")[];
-  userCategory?: string;
-  occupation?: string;
+  // ✅ Single role system (no redundancy)
+  role: "freelancer" | "client" | "admin";
+  // ✅ Flexible occupation for any job type (employee, developer, teacher, accountant, etc.)
+  occupation?: {
+    id: string;
+    name_en: string;
+    name_lo: string;
+  };
 
-  // NEW 🪙 Billing & Subscription
-  plan?: "free" | "pro" | "enterprise";
-  planStatus?: "inactive" | "pending" | "active" | "expired";
-  planStartDate?: Date;
-  planEndDate?: Date;
-  lastPaymentDate?: Date;
-  totalTopups?: number; // total number of approved top-ups
-  totalSpentOnPlans?: number; // total amount spent on subscriptions
+  // 🪙 Billing & Subscription
+  plan: "free" | "pro" | "enterprise";
+  planStatus: "inactive" | "pending" | "active" | "expired";
+  planStartDate: Date | null;
+  planEndDate: Date | null;
+  lastPaymentDate?: Date | null;
+  totalTopups: number; // total number of approved top-ups
+  totalSpentOnPlans: number; // total amount spent on subscriptions
 
   // Personal Information
   dateOfBirth?: string;
@@ -29,15 +32,12 @@ export interface Profile {
   city?: string;
   website?: string;
 
-  // Education (Student-specific)
-  university?: string;
-  fieldOfStudy?: string;
-  graduationYear?: string;
-
-  // Professional Information
+  // Professional Information (Freelancer & Client)
   skills?: string[];
   bio?: string;
   hourlyRate?: number | string;
+  
+  // Ratings & Statistics
   rating?: number;
   totalRatings?: number;
   totalEarned?: number;
@@ -45,23 +45,17 @@ export interface Profile {
   activeProjects?: number;
   totalProjects?: number;
   favoriteCount?: number;
-
-  // Teacher-specific fields
-  institution?: string;
-  department?: string;
-  position?: string;
-  yearsOfExperience?: number;
-  projectPreferences?: string;
-  budgetRange?: string;
+  
+  // For Clients
   projectsPosted?: number;
   totalSpent?: number;
   freelancersHired?: number;
-  completedProjects?: number;
-  openProjects?: number;
 
   // Email verification
   emailVerified?: boolean;
   isActive?: boolean;
+  // Admin privilege overlay
+  isAdmin?: boolean;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
 

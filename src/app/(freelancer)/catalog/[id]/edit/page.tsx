@@ -61,9 +61,7 @@ export default function EditCatalogPage() {
   // Ensure only owner (or admin) can edit
   useEffect(() => {
     if (!original || !user || !profile) return;
-    const roles = profile.userRoles || [];
-    const types = profile.userType || [];
-    const isAdmin = roles.includes("admin") || types.includes("admin");
+    const isAdmin = profile.isAdmin === true || profile.role === "admin";
     if (!isAdmin && original.ownerId !== user.uid) {
       router.push("/catalog/manage");
     }

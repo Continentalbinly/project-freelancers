@@ -14,17 +14,15 @@ export async function GET() {
     let totalSpent = 0
     
     profilesSnapshot.forEach((doc) => {
-      const data = doc.data()
-      const userType = data.userType || []
-      
-      // Count freelancers
-      if (Array.isArray(userType) && userType.includes('freelancer')) {
+      const data = doc.data() as any
+      const role = data.role
+
+      if (role === 'freelancer') {
         freelancerCount++
         totalEarned += data.totalEarned || 0
       }
-      
-      // Count clients
-      if (Array.isArray(userType) && userType.includes('client')) {
+
+      if (role === 'client') {
         clientCount++
         totalSpent += data.totalSpent || 0
       }

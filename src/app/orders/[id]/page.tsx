@@ -53,17 +53,9 @@ export default function OrderDetailPage() {
   // Detect user role
   useEffect(() => {
     if (!profile) return;
-    const roles = profile.userRoles || [];
-    const types = profile.userType || [];
-    
-    const isFreelancer = roles.includes("freelancer") || types.includes("freelancer");
-    const isClient = roles.includes("client") || types.includes("client");
-    
-    if (isFreelancer) {
-      setUserRole("freelancer");
-    } else if (isClient) {
-      setUserRole("client");
-    }
+    if (profile.role === "freelancer") setUserRole("freelancer");
+    else if (profile.role === "client") setUserRole("client");
+    else setUserRole(null);
   }, [profile]);
 
   useEffect(() => {

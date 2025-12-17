@@ -51,9 +51,7 @@ export default function GigsPage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const roles = profile?.userRoles || [];
-  const types = profile?.userType || [];
-  const isFreelancer = roles.includes("freelancer") || types.includes("freelancer");
+  const isFreelancer = profile?.role === "freelancer";
 
   // Fetch categories from database
   useEffect(() => {

@@ -15,8 +15,8 @@ export default function Dashboard(): React.ReactElement {
   const roleParam = searchParams.get("role");
 
   // Determine user role
-  const isClient = profile?.userType?.includes("client") || profile?.userRoles?.includes("client");
-  const isFreelancer = profile?.userType?.includes("freelancer") || profile?.userRoles?.includes("freelancer");
+  const isClient = profile?.role === "client";
+  const isFreelancer = profile?.role === "freelancer";
 
   // If role is passed as param, use it; otherwise use user's role
   const displayRole = roleParam || (isClient ? "client" : "freelancer");

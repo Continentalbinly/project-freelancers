@@ -199,12 +199,7 @@ export default function CreateProjectPage() {
   // Block freelancers
   if (!user || !userProfile || !draftLoaded) return renderSkeleton();
 
-  const roles = userProfile.userRoles || [];
-  const types = userProfile.userType || [];
-
-  const isFreelancerOnly =
-    (roles.includes("freelancer") || types.includes("freelancer")) &&
-    !roles.includes("client");
+  const isFreelancerOnly = userProfile.role === "freelancer";
 
   if (isFreelancerOnly) {
     return (
