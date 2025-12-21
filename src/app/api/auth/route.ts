@@ -126,10 +126,23 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Æ’o. Create user profile (full data from signup)
+ * ✅ Create user profile (full data from signup) with idempotency
  */
 async function createProfile(db: Firestore, userId: string, data: any) {
   try {
+    const profileRef = db.collection("profiles").doc(userId);
+    
+    // ✅ Check if profile already exists (idempotency)
+    const existingDoc = await profileRef.get();
+    if (existingDoc.exists) {
+      // Profile already exists, return success with existing data
+      return NextResponse.json({
+        success: true,
+        data: existingDoc.data(),
+        message: "Profile already exists",
+      });
+    }
+
     // Merge category + occupation right here
     const role = data.role || "freelancer";
     const occupation = data.occupation && typeof data.occupation === "object"
@@ -214,28 +227,48 @@ async function createProfile(db: Firestore, userId: string, data: any) {
       updatedAt: now,
     };
 
-    await db.collection("profiles").doc(userId).set(profileData);
+    // ✅ Use set with merge option for idempotency (prevents race conditions)
+    await profileRef.set(profileData, { merge: false });
+
+    // ✅ Verify profile was created
+    const verifyDoc = await profileRef.get();
+    if (!verifyDoc.exists) {
+      throw new Error("Profile creation verification failed");
+    }
 
     return NextResponse.json({
       success: true,
       data: profileData,
       message: "Profile created successfully",
     });
-  } catch (error) {
-    //console.error("Æ’?O Firestore create error:", error);
+  } catch (error: any) {
+    console.error("Firestore create error:", error);
+    
+    // Check if it's a permission error vs other error
+    const errorMessage = error?.message || "Failed to create profile";
+    const isPermissionError = errorMessage.includes("permission") || 
+                             errorMessage.includes("PERMISSION_DENIED");
+    
     return NextResponse.json(
-      { success: false, error: "Failed to create profile" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: isPermissionError 
+          ? "Permission denied. Please check your authentication." 
+          : "Failed to create profile. Please try again." 
+      },
+      { status: isPermissionError ? 403 : 500 }
     );
   }
 }
 
 /**
- * Æ’o. Get profile
+ * ✅ Get profile with error handling
  */
 async function getProfile(db: Firestore, userId: string) {
   try {
-    const snap = await db.collection("profiles").doc(userId).get();
+    const profileRef = db.collection("profiles").doc(userId);
+    const snap = await profileRef.get();
+    
     if (!snap.exists) {
       return NextResponse.json(
         { success: false, error: "Profile not found" },
@@ -243,12 +276,36 @@ async function getProfile(db: Firestore, userId: string) {
       );
     }
 
-    return NextResponse.json({ success: true, data: snap.data() });
-  } catch (error) {
-    //console.error("Æ’?O Firestore get error:", error);
+    const profileData = snap.data();
+    
+    // ✅ Ensure required fields exist
+    if (!profileData) {
+      return NextResponse.json(
+        { success: false, error: "Profile data is empty" },
+        { status: 404 }
+      );
+    }
+
+    // ✅ Add id field to profile data
+    return NextResponse.json({ 
+      success: true, 
+      data: { ...profileData, id: snap.id }
+    });
+  } catch (error: any) {
+    console.error("Firestore get error:", error);
+    
+    const errorMessage = error?.message || "Failed to get profile";
+    const isPermissionError = errorMessage.includes("permission") || 
+                             errorMessage.includes("PERMISSION_DENIED");
+    
     return NextResponse.json(
-      { success: false, error: "Failed to get profile" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: isPermissionError 
+          ? "Permission denied. Please check your authentication." 
+          : "Failed to get profile. Please try again." 
+      },
+      { status: isPermissionError ? 403 : 500 }
     );
   }
 }

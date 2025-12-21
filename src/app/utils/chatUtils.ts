@@ -8,7 +8,7 @@ import {
   where,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 
 /**
  * Ensures a chat room exists for the project (creates one if missing)
@@ -20,6 +20,7 @@ export async function createOrOpenChatRoom(
 ) {
   if (!projectId || !currentUserId) return null;
 
+  const db = requireDb();
   // 1️⃣ Get project data
   const projectRef = doc(db, "projects", projectId);
   const projectSnap = await getDoc(projectRef);
@@ -94,6 +95,7 @@ export async function createOrOpenChatRoomForOrder(
 ) {
   if (!orderId || !currentUserId) return null;
 
+  const db = requireDb();
   // Get order data
   const orderRef = doc(db, "orders", orderId);
   const orderSnap = await getDoc(orderRef);

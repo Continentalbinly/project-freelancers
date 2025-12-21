@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   collection,
   query,
@@ -39,8 +39,9 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
   /** ------------------- 🔹 LOAD MESSAGES ------------------- */
   useEffect(() => {
     if (!chatRoom?.id) return;
+    const firestore = requireDb();
     const q = query(
-      collection(db, "chatMessages"),
+      collection(firestore, "chatMessages"),
       where("chatRoomId", "==", chatRoom.id),
       orderBy("timestamp", "asc")
     );
@@ -63,7 +64,8 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
       return;
     }
     
-    getDoc(doc(db, "profiles", receiverId)).then((snap) => {
+    const firestore = requireDb();
+    getDoc(doc(firestore, "profiles", receiverId)).then((snap) => {
       if (snap.exists()) setReceiver(snap.data());
       setLoadingReceiver(false);
     });
@@ -81,13 +83,15 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
     setOrderStatus(null);
 
     if (chatRoom?.projectId) {
-      const unsub = onSnapshot(doc(db, "projects", chatRoom.projectId), (snap) => {
+      const firestore = requireDb();
+      const unsub = onSnapshot(doc(firestore, "projects", chatRoom.projectId), (snap) => {
         if (snap.exists()) setProjectStatus(snap.data().status);
       });
       return () => unsub();
     }
     if (chatRoom?.orderId) {
-      const unsub = onSnapshot(doc(db, "orders", chatRoom.orderId), (snap) => {
+      const firestore = requireDb();
+      const unsub = onSnapshot(doc(firestore, "orders", chatRoom.orderId), (snap) => {
         if (snap.exists()) setOrderStatus(snap.data().status);
       });
       return () => unsub();
@@ -102,14 +106,15 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
     // Order: disable only when completed
     if (orderStatus === "completed") return;
     try {
-      await addDoc(collection(db, "chatMessages"), {
+      const firestore = requireDb();
+      await addDoc(collection(firestore, "chatMessages"), {
         chatRoomId: chatRoom.id,
         message: text,
         senderId: user.uid,
         receiverId: chatRoom.participants.find((id: string) => id !== user.uid),
         timestamp: serverTimestamp(),
       });
-      await updateDoc(doc(db, "chatRooms", chatRoom.id), {
+      await updateDoc(doc(firestore, "chatRooms", chatRoom.id), {
         lastMessage: text,
         lastMessageTime: serverTimestamp(),
       });

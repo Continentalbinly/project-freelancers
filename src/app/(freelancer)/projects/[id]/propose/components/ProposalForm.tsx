@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { User as FirebaseUser } from "firebase/auth";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import {
   doc,
@@ -11,11 +13,32 @@ import {
   increment,
 } from "firebase/firestore";
 import { db } from "@/service/firebase";
+import { Project } from "@/types/project";
+import { Profile } from "@/types/profile";
+import { Milestone } from "@/types/proposal";
+
+// Form-specific types (simpler than full types for UI state)
+interface WorkSampleForm {
+  id: string;
+  url: string;
+  type: string;
+  title: string;
+  publicId?: string;
+}
 import WorkSamples from "./WorkSamples";
 import Milestones from "./Milestones";
 import ProposalSummary from "./ProposalSummary";
 import { Dialog } from "@headlessui/react";
+import { createProposalSubmittedNotification } from "@/app/orders/utils/notificationService";
 import { toast } from "react-toastify";
+
+interface ProposalFormProps {
+  project: Project;
+  user: FirebaseUser;
+  profile: Profile | null;
+  t: (key: string) => string;
+  proposalFee: number;
+}
 
 export default function ProposalForm({
   project,
@@ -23,7 +46,8 @@ export default function ProposalForm({
   profile,
   t,
   proposalFee,
-}: any) {
+}: ProposalFormProps) {
+  const router = useRouter();
   const [coverLetter, setCoverLetter] = useState("");
   const [proposedBudget] = useState(project.budget?.toString() || "");
   const [proposedRate, setProposedRate] = useState(
@@ -31,8 +55,8 @@ export default function ProposalForm({
   );
   const [estimatedDuration, setEstimatedDuration] = useState("");
   const [workPlan, setWorkPlan] = useState("");
-  const [workSamples, setWorkSamples] = useState<any[]>([]);
-  const [milestones, setMilestones] = useState<any[]>([]);
+  const [workSamples, setWorkSamples] = useState<WorkSampleForm[]>([]);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -76,6 +100,10 @@ export default function ProposalForm({
     setError(null);
 
     try {
+      if (!db) {
+        setError("Database not available");
+        return;
+      }
       const proposalRef = doc(collection(db, "proposals"));
       const proposalId = proposalRef.id;
 
@@ -94,7 +122,9 @@ export default function ProposalForm({
           title: s.title,
           url: s.url,
           type: s.type,
-          publicId: s.publicId || null,
+          description: "",
+          uploadedAt: new Date(),
+          ...(s.publicId && { publicId: s.publicId }),
         })),
         status: "pending",
         createdAt: serverTimestamp(),
@@ -130,14 +160,30 @@ export default function ProposalForm({
         updatedAt: serverTimestamp(),
       });
 
+      // Create notifications for client and freelancer
+      try {
+        await createProposalSubmittedNotification(
+          project.clientId,
+          user.uid,
+          project.id,
+          project.title,
+          proposalId,
+          proposalFee
+        );
+      } catch (notifError) {
+        // Log error but don't fail the proposal submission
+        console.error("Error creating proposal notification:", notifError);
+      }
+
       toast.success(t("proposePage.submitSuccess") || "Proposal Sent!");
 
       setTimeout(() => {
-        window.location.href = "/proposals";
+        router.push("/proposals");
       }, 1200);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      console.error(error);
+      setError(error.message);
       toast.error(t("common.submitFailed") || "Submit failed");
     } finally {
       setSubmitting(false);
@@ -203,7 +249,7 @@ export default function ProposalForm({
             ) : (
               <button
                 className="btn btn-primary"
-                onClick={() => (window.location.href = "/topup")}
+                onClick={() => router.push("/topup")}
               >
                 {t("proposePage.topUpCredits")}
               </button>

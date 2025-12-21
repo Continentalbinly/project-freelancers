@@ -49,7 +49,7 @@ export default function FooterSection({
           <li key={link.href}>
             <Link
               href={link.href}
-              className="hover:text-primary transition-colors"
+              className="hover:text-primary transition-colors cursor-pointer text-left"
             >
               {link.label}
             </Link>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 
 export default function StepQRPayment({ session, updateSession, t }: any) {
   const [remaining, setRemaining] = useState(
@@ -55,7 +55,8 @@ export default function StepQRPayment({ session, updateSession, t }: any) {
     if (!txId) return;
 
     pollInterval.current = setInterval(async () => {
-      const snap = await getDoc(doc(db, "transactions", txId));
+      const firestore = requireDb();
+      const snap = await getDoc(doc(firestore, "transactions", txId));
 
       if (snap.exists() && snap.data().status === "confirmed") {
         clearInterval(timerInterval.current); // stop countdown

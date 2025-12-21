@@ -7,7 +7,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { toast } from "react-toastify";
 
 export async function submitRating({
@@ -22,9 +22,10 @@ export async function submitRating({
 
     const avg =
       (form.communication + form.quality + form.timeliness + form.value) / 4;
+    const firestore = requireDb();
 
     /** 1️⃣ Save rating document */
-    await addDoc(collection(db, "ratings"), {
+    await addDoc(collection(firestore, "ratings"), {
       projectId: project.id,
       raterId: isClient ? project.clientId : project.acceptedFreelancerId,
       raterType: isClient ? "client" : "freelancer",
@@ -35,13 +36,13 @@ export async function submitRating({
     });
 
     /** 2️⃣ Mark project as rated */
-    await updateDoc(doc(db, "projects", project.id), {
+    await updateDoc(doc(firestore, "projects", project.id), {
       ...(isClient && { clientRated: true }),
       ...(!isClient && { freelancerRated: true }),
     });
 
     /** 3️⃣ Update rated user's profile stats */
-    const profileRef = doc(db, "profiles", ratedUser);
+    const profileRef = doc(firestore, "profiles", ratedUser);
     const snap = await getDoc(profileRef);
 
     if (snap.exists()) {

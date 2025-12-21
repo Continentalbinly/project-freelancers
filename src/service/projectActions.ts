@@ -6,7 +6,7 @@ import {
   collection,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 
 /**
  * 🔹 Mark project as completed by freelancer
@@ -15,6 +15,7 @@ export async function markFreelancerCompleted(
   projectId: string,
   notes: string
 ) {
+  const db = requireDb();
   const projectRef = doc(db, "projects", projectId);
   await updateDoc(projectRef, {
     freelancerCompleted: {
@@ -34,6 +35,7 @@ export async function markClientCompleted(
   clientId: string,
   notes: string
 ) {
+  const db = requireDb();
   const projectRef = doc(db, "projects", projectId);
   const projectSnap = await getDoc(projectRef);
   if (!projectSnap.exists()) throw new Error("Project not found");
@@ -68,6 +70,7 @@ async function releaseFundsToFreelancer(
 ) {
   if (!freelancerId) return;
 
+  const db = requireDb();
   const freelancerRef = doc(db, "profiles", freelancerId);
   const clientRef = doc(db, "profiles", clientId);
 

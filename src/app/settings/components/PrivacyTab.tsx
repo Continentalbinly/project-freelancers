@@ -18,7 +18,7 @@ export default function PrivacyTab() {
 
   // 🔹 Safe toggle update
   async function toggle(field: BooleanField, value: boolean) {
-    if (!user) return;
+    if (!user || !db) return;
     const ref = doc(db, "profiles", user.uid);
     await updateDoc(ref, { [field]: !value });
     await refreshProfile();

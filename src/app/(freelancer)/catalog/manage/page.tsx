@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { collection, onSnapshot, query, where, orderBy, updateDoc, doc, getDocs } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import type { Catalog } from "@/types/catalog";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 import { Plus, Edit, Eye, Zap, Package as PackageIcon, DollarSign } from "lucide-react";
@@ -66,7 +66,7 @@ export default function MyCatalogPage() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const snap = await getDocs(collection(db, "categories"));
+        const snap = await getDocs(collection(requireDb(), "categories"));
         const cats = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
         setCategories(cats);
       } catch (err) {
@@ -90,7 +90,7 @@ export default function MyCatalogPage() {
   useEffect(() => {
     if (!user) return;
     const q = query(
-      collection(db, "catalogs"),
+      collection(requireDb(), "catalogs"),
       where("ownerId", "==", user.uid),
       orderBy("createdAt", "desc")
     );
@@ -106,7 +106,7 @@ export default function MyCatalogPage() {
     setPublishing(catalog.id);
     try {
       const next = catalog.status === "published" ? "draft" : "published";
-      await updateDoc(doc(db, "catalogs", catalog.id), { status: next });
+      await updateDoc(doc(requireDb(), "catalogs", catalog.id), { status: next });
     } finally {
       setPublishing(null);
     }

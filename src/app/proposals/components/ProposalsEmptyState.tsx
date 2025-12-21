@@ -1,7 +1,8 @@
 "use client";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProposalsEmptyState({ activeTab, t }: any) {
+  const router = useRouter();
   return (
     <div className="text-center py-16">
       <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
@@ -30,9 +31,9 @@ export default function ProposalsEmptyState({ activeTab, t }: any) {
           : t("proposals.emptyState.received.description")}
       </p>
       {activeTab === "submitted" && (
-        <Link href="/projects" className="btn btn-primary">
+        <button onClick={() => router.push("/projects")} className="btn btn-primary cursor-pointer">
           {t("proposals.emptyState.submitted.action")}
-        </Link>
+        </button>
       )}
     </div>
   );

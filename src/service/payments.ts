@@ -6,7 +6,7 @@ import {
   updateDoc,
   increment,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 
 /**
  * User requests top-up or subscription (pending approval)
@@ -17,6 +17,7 @@ export async function requestTransaction(
   amount: number,
   plan?: string
 ) {
+  const db = requireDb();
   const transactionsRef = collection(db, "transactions");
   const newDoc = await addDoc(transactionsRef, {
     userId,
@@ -36,6 +37,7 @@ export async function approveTransaction(
   transactionId: string,
   adminId: string
 ) {
+  const db = requireDb();
   const transactionRef = doc(db, "transactions", transactionId);
   await updateDoc(transactionRef, {
     status: "approved",
@@ -48,6 +50,7 @@ export async function approveTransaction(
  * Add user credit manually (when admin approves)
  */
 export async function addUserCredit(userId: string, amount: number) {
+  const db = requireDb();
   const profileRef = doc(db, "profiles", userId);
   await updateDoc(profileRef, {
     credit: increment(amount),

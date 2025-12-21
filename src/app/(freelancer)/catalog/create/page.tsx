@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { collection, doc, serverTimestamp, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import { Stepper, StepBasics, StepCategoryTags, StepMedia, StepPackage, type CatalogForm } from "../components";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -65,7 +65,7 @@ export default function CreateCatalogPage() {
 
       try {
         // First try to load from Firestore
-        const draftRef = doc(db, "catalog_drafts", user.uid);
+        const draftRef = doc(requireDb(), "catalog_drafts", user.uid);
         const snap = await getDoc(draftRef);
 
         if (snap.exists()) {
@@ -121,7 +121,7 @@ export default function CreateCatalogPage() {
     
     try {
       // Save to Firestore using user ID as doc ID
-      const draftRef = doc(db, "catalog_drafts", user.uid);
+      const draftRef = doc(requireDb(), "catalog_drafts", user.uid);
       await setDoc(draftRef, {
         ownerId: user.uid,
         title: form.title.trim(),
@@ -147,7 +147,7 @@ export default function CreateCatalogPage() {
   const onSubmit = async () => {
     try {
       setSaving(true);
-      const ref = doc(collection(db, "catalogs"));
+      const ref = doc(collection(requireDb(), "catalogs"));
       await setDoc(ref, {
         id: ref.id,
         ownerId: user!.uid,
@@ -164,7 +164,7 @@ export default function CreateCatalogPage() {
 
       // Clear draft after successful creation
       localStorage.removeItem(LOCAL_KEY);
-      await deleteDoc(doc(db, "catalog_drafts", user!.uid));
+      await deleteDoc(doc(requireDb(), "catalog_drafts", user!.uid));
 
       router.push("/catalog/manage");
     } catch (e) {

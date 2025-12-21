@@ -1,11 +1,11 @@
 "use client";
-import ProposalCard from "./ProposalCard";
+import ProposalCardNew from "./ProposalCardNew";
 
 export default function ProposalsList({ proposals, activeTab, t }: any) {
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-4 sm:gap-6">
       {proposals.map((proposal: any) => (
-        <ProposalCard
+        <ProposalCardNew
           key={proposal.id}
           proposal={proposal}
           activeTab={activeTab}

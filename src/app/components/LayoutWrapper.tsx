@@ -19,6 +19,7 @@ export default function LayoutWrapper({
   const isMessagesPage = pathname?.startsWith("/messages");
   const isSingleMessagePage = /^\/messages\/[^/]+$/.test(pathname || "");
   const isAuthPage = pathname?.startsWith("/auth");
+  const isNotificationsPage = pathname?.startsWith("/notifications");
   const isPrivateRoute =
     pathname?.startsWith("/dashboard") ||
     pathname?.startsWith("/projects") ||
@@ -53,8 +54,8 @@ export default function LayoutWrapper({
         !isSingleMessagePage &&
         !isAdminPage && <Footer />}
 
-      {/* 📱 Mobile Navigation (hidden for messages + admin) */}
-      {!isMessagesPage && !isSingleMessagePage && !isAdminPage && (
+      {/* 📱 Mobile Navigation (hidden for messages + admin + notifications) */}
+      {!isMessagesPage && !isSingleMessagePage && !isAdminPage && !isNotificationsPage && (
         <MobileNavBar />
       )}
     </>

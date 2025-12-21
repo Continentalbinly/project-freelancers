@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,12 +12,11 @@ import {
   User,
   Briefcase,
   Shield,
-  FolderOpen,
   BanknoteArrowDown,
   Sun,
   Moon,
+  Headset,
 } from "lucide-react";
-import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { logoutUser } from "@/service/auth-client";
@@ -33,12 +33,46 @@ export default function HeaderDrawer({
 }: any) {
   const { user, profile } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [openFinance, setOpenFinance] = useState(false);
+  const [liveCredit, setLiveCredit] = useState<number>(profile?.credit || 0);
 
-  // Use profile.credit from AuthContext instead of real-time listener
-  // This prevents duplicate listeners and improves performance
-  const liveCredit = profile?.credit || 0;
+  // ✅ Real-time credit listener for instant updates after topup/transactions
+  useEffect(() => {
+    if (!user?.uid || !db) {
+      setLiveCredit(profile?.credit || 0);
+      return;
+    }
+
+    const profileRef = doc(db, "profiles", user.uid);
+    
+    // Subscribe to real-time updates
+    const unsubscribe = onSnapshot(
+      profileRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          const credit = data?.credit ?? 0;
+          setLiveCredit(credit);
+        } else {
+          setLiveCredit(profile?.credit || 0);
+        }
+      },
+      (error) => {
+        console.error("Error listening to credit updates:", error);
+        // Fallback to profile credit on error
+        setLiveCredit(profile?.credit || 0);
+      }
+    );
+
+    // Initialize with current profile credit
+    setLiveCredit(profile?.credit || 0);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user?.uid, profile?.credit, db]);
 
   /** Logout handler */
   const handleLogout = async () => {
@@ -59,9 +93,7 @@ export default function HeaderDrawer({
   }, []);
 
   const loggedInLinks = [
-    ...(!isMobile
-      ? [{ href: "/profile", label: t("header.profile"), icon: User }]
-      : []),
+    { href: "/profile", label: t("header.profile"), icon: User },
   ];
 
   const guestLinks = [
@@ -101,18 +133,11 @@ export default function HeaderDrawer({
             {/* Header bar */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-background">
               <Link
-                href="/"
+                href="/contact"
                 onClick={() => setIsDrawerOpen(false)}
-                className="flex items-center space-x-2"
+                className="flex items-center gap-2 text-text-primary hover:text-primary transition-colors cursor-pointer"
               >
-                <Image
-                  src="/favicon.svg"
-                  alt="UniJobs logo"
-                  width={48}
-                  height={48}
-                  className="rounded-md"
-                  priority
-                />
+                <Headset className="w-5 h-5" />
               </Link>
               <div className="flex items-center gap-3">
                 <button
@@ -169,7 +194,7 @@ export default function HeaderDrawer({
                       <Link
                         href="/admin"
                         onClick={() => setIsDrawerOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all"
+                        className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all cursor-pointer w-full text-left"
                       >
                         <Shield className="w-5 h-5" />
                         <span className="text-sm font-medium">
@@ -185,7 +210,7 @@ export default function HeaderDrawer({
                       key={href}
                       href={href}
                       onClick={() => setIsDrawerOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all"
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all cursor-pointer w-full text-left"
                     >
                       <Icon className="w-5 h-5" />
                       <span className="text-sm font-medium">{label}</span>
@@ -223,33 +248,28 @@ export default function HeaderDrawer({
                     {openFinance && (
                       <div className="flex flex-col gap-0">
                         <Link
-                          href="/transactions"
-                          onClick={() => setIsDrawerOpen(false)}
-                          className="text-sm px-4 py-2 ml-6 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300"
-                        >
-                          {t("header.transactions")}
-                        </Link>
-
-                        <Link
                           href="/topup"
                           onClick={() => setIsDrawerOpen(false)}
-                          className="text-sm px-4 py-2 ml-6 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300"
+                          className="text-sm px-4 py-2 ml-6 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 cursor-pointer text-left"
                         >
                           {t("header.topUp")}
                         </Link>
 
-                        <Link
-                          href="/withdraw"
-                          onClick={() => setIsDrawerOpen(false)}
-                          className="text-sm px-4 py-2 ml-6 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300"
-                        >
-                          {t("header.withdraw")}
-                        </Link>
+                        {/* Only show withdraw for freelancers */}
+                        {!isClient && (
+                          <Link
+                            href="/withdraw"
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="text-sm px-4 py-2 ml-6 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 cursor-pointer text-left"
+                          >
+                            {t("header.withdraw")}
+                          </Link>
+                        )}
 
                         <Link
                           href="/pricing"
                           onClick={() => setIsDrawerOpen(false)}
-                          className="text-sm px-4 py-2 ml-6 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300"
+                          className="text-sm px-4 py-2 ml-6 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 cursor-pointer text-left"
                         >
                           {t("header.subscription")}
                         </Link>
@@ -261,7 +281,7 @@ export default function HeaderDrawer({
                   <Link
                     href="/settings"
                     onClick={() => setIsDrawerOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all"
+                    className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all cursor-pointer w-full text-left"
                   >
                     <Settings className="w-5 h-5" />
                     <span className="text-sm font-medium">
@@ -289,7 +309,7 @@ export default function HeaderDrawer({
                       key={href}
                       href={href}
                       onClick={() => setIsDrawerOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all"
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-text-primary dark:text-gray-300 hover:text-primary transition-all cursor-pointer w-full text-left"
                     >
                       <Icon className="w-5 h-5" />
                       <span className="text-sm font-medium">{label}</span>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { SignupCredentials } from "@/types/auth";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Shield } from "lucide-react";
 
 interface AccountStepProps {
   formData: SignupCredentials;
@@ -498,7 +498,7 @@ export default function AccountStep({
         }}
       >
         <p className="font-medium mb-1">
-          🔒 {t("common.security") || "Security"}:
+          <Shield className="inline-block w-5 h-5 mr-1" /> {t("common.security") || "Security"}:
         </p>
         <p>
           {t("auth.signup.security.info") ||

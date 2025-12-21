@@ -10,7 +10,7 @@ import {
   collection,
   getDocs,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -69,8 +69,8 @@ export default function EditProjectPage() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        if (!db) throw new Error('Firestore not initialized');
-        const snap = await getDocs(collection(db, "categories"));
+        const firestore = requireDb();
+        const snap = await getDocs(collection(firestore, "categories"));
         const cats = snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as any) }));
         setCategories(cats as any[]);
       } catch (err) {
@@ -87,9 +87,10 @@ export default function EditProjectPage() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        if (!user || !projectId || !db) return;
+        if (!user || !projectId) return;
+        const firestore = requireDb();
 
-        const docSnap = await getDoc(firestoreDoc(db, "projects", projectId));
+        const docSnap = await getDoc(firestoreDoc(firestore, "projects", projectId));
         if (!docSnap.exists()) {
           router.push("/projects");
           return;
@@ -199,7 +200,8 @@ export default function EditProjectPage() {
     setSaving(true);
 
     try {
-      const projectRef = firestoreDoc(db, "projects", projectId);
+      const firestore = requireDb();
+      const projectRef = firestoreDoc(firestore, "projects", projectId);
 
       await updateDoc(projectRef, {
         title: formData.title,

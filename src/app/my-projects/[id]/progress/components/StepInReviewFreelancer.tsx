@@ -5,7 +5,7 @@ import { CheckCircle, XCircle, Clock } from "lucide-react";
 import { acceptChangeRequest, rejectChangeRequest } from "./actions";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import { toast } from "react-toastify";
 
@@ -34,8 +34,9 @@ export default function StepInReviewFreelancer({ project }: { project: any }) {
   // 🔹 Load change requests
   useEffect(() => {
     const fetchRequests = async () => {
+      const firestore = requireDb();
       const q = query(
-        collection(db, "projects", project.id, "changeRequests"),
+        collection(firestore, "projects", project.id, "changeRequests"),
         orderBy("createdAt", "desc")
       );
       const snap = await getDocs(q);

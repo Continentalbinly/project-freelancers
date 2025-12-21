@@ -1,25 +1,38 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, memo } from "react";
+import { useOrderCount } from "./hooks/useOrderCount";
 
-export default function HeaderNav({ pathname }: { pathname: string }) {
+function HeaderNav({ pathname }: { pathname: string }) {
   const { user, profile, loading } = useAuth();
   const { t } = useTranslationContext();
+  const router = useRouter();
 
-  const isFreelancer = profile?.role === "freelancer";
-  const isClient = profile?.role === "client";
+  const isFreelancer = useMemo(() => profile?.role === "freelancer", [profile?.role]);
+  const isClient = useMemo(() => profile?.role === "client", [profile?.role]);
+
+  // Get order count for active orders needing attention
+  const { count: orderCount } = useOrderCount({
+    userId: user?.uid || null,
+    userRole: isFreelancer ? "freelancer" : isClient ? "client" : null,
+  });
 
   const [openFinance, setOpenFinance] = useState(false);
   const financeRef = useRef<HTMLDivElement>(null);
 
   const linkClasses = (path: string) => {
-    const isActiveHome = path === "/" && (pathname === "/" || pathname === "/dashboard");
+    // Handle home path separately - it should only be active on "/"
+    const isActiveHome = path === "/" && pathname === "/";
+    // Handle dashboard path separately
+    const isActiveDashboard =
+      path === "/dashboard" && pathname.startsWith("/dashboard");
+    // Handle other paths
     const isActivePath = pathname === path;
-    const isActive = isActiveHome || isActivePath;
-    
+    const isActive = isActiveHome || isActiveDashboard || isActivePath;
+
     return `text-sm font-medium transition-colors ${
       isActive
         ? "text-primary border-b-2 border-primary"
@@ -43,7 +56,7 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
 
   if (loading) {
     return (
-      <nav className="hidden md:flex items-center space-x-8 animate-pulse">
+      <nav className="flex items-center space-x-8 animate-pulse">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
@@ -54,56 +67,116 @@ export default function HeaderNav({ pathname }: { pathname: string }) {
     );
   }
 
+  const handleNavigation = (path: string) => {
+    router.push(path);
+  };
+
   return (
     <nav className="hidden md:flex items-center space-x-8 relative">
-      {/* Home */}
-      <Link href="/" className={linkClasses("/")}>
-        {t("header.home")}
-      </Link>
-
       {user ? (
         <>
-          <Link href="/proposals" className={linkClasses("/proposals")}>
-            {t("header.proposals")}
-          </Link>
-
           {/* Freelancer: Find Work link */}
           {isFreelancer && (
-            <Link href="/projects" className={linkClasses("/projects")}>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/projects");
+              }}
+              className={linkClasses("/projects") + " cursor-pointer"}
+            >
               {t("header.findWork")}
-            </Link>
+            </button>
           )}
 
           {/* Client: Hire Freelancer link */}
           {isClient && (
-            <Link href="/gigs" className={linkClasses("/gigs")}>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/gigs");
+              }}
+              className={linkClasses("/gigs") + " cursor-pointer"}
+            >
               {t("header.hireFreelancer")}
-            </Link>
+            </button>
           )}
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("/proposals");
+            }}
+            className={linkClasses("/proposals") + " cursor-pointer"}
+          >
+            {t("header.proposals")}
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("/orders");
+            }}
+            className={`${linkClasses("/orders")} relative inline-flex flex-col items-center justify-center cursor-pointer`}
+          >
+            <span className="relative">
+              {t("header.orders")}
+              {orderCount > 0 && (
+                <span className="absolute -top-2 -right-5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-error rounded-full">
+                  {orderCount > 99 ? "99+" : orderCount}
+                </span>
+              )}
+            </span>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("/dashboard");
+            }}
+            className={linkClasses("/dashboard") + " cursor-pointer"}
+          >
+            {t("header.dashboard") || "Dashboard"}
+          </button>
         </>
       ) : (
         <>
           {/* Guest Links */}
-          <Link href="/projects" className={linkClasses("/projects")}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("/projects");
+            }}
+            className={linkClasses("/projects") + " cursor-pointer"}
+          >
             {t("header.findWork")}
-          </Link>
+          </button>
 
-          <Link href="/gigs" className={linkClasses("/gigs")}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("/gigs");
+            }}
+            className={linkClasses("/gigs") + " cursor-pointer"}
+          >
             {t("header.hireFreelancer")}
-          </Link>
-
-          {/* <Link href="/clients" className={linkClasses("/clients")}>
-            {t("header.clients")}
-          </Link> */}
+          </button>
         </>
       )}
 
       {/* About (guest only) */}
       {!user && (
-        <Link href="/about" className={linkClasses("/about")}>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavigation("/about");
+          }}
+          className={linkClasses("/about") + " cursor-pointer"}
+        >
           {t("header.about")}
-        </Link>
+        </button>
       )}
     </nav>
   );
 }
+
+export default memo(HeaderNav);

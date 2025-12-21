@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { collection, onSnapshot, orderBy, query, where, getDoc, doc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { convertTimestampToDate } from "@/service/timeUtils";
 import type { Order, OrderStatus } from "@/types/order";
 import { ChevronRight, Calendar, DollarSign, Package, Clock, CheckCircle, AlertCircle, XCircle, User } from "lucide-react";
@@ -60,6 +60,7 @@ function OrderSkeleton() {
 export default function OrdersListPage(): React.ReactElement {
   const { user, profile } = useAuth();
   const { t } = useTranslationContext();
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<OrderStatus | "all">("all");
@@ -82,6 +83,7 @@ export default function OrdersListPage(): React.ReactElement {
     if (!user || !userRole) return;
     
     // Query based on role: freelancers see orders to fulfill, clients see orders they placed
+    const db = requireDb();
     const field = userRole === "freelancer" ? "sellerId" : "buyerId";
     const q = query(collection(db, "orders"), where(field, "==", user.uid), orderBy("createdAt", "desc"));
     
@@ -255,10 +257,21 @@ export default function OrdersListPage(): React.ReactElement {
               const config = statusConfig[order.status];
               const statusLabel = t(`ordersPage.status.${order.status}`) || order.status.replace("_", " ");
               return (
-                <Link
+                <div
                   key={order.id}
-                  href={`/orders/${order.id}`}
-                  className="group border border-border rounded-xl p-5 bg-background-secondary hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all flex items-center justify-between gap-4"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(`/orders/${order.id}`);
+                  }}
+                  className="group border border-border rounded-xl p-5 bg-background-secondary hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all flex items-center justify-between gap-4 cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push(`/orders/${order.id}`);
+                    }
+                  }}
                 >
                   {/* Left: Order Info */}
                   <div className="flex-1 min-w-0">
@@ -298,7 +311,7 @@ export default function OrdersListPage(): React.ReactElement {
                     </div>
                     <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5 text-text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>

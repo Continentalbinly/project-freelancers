@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   collection,
   query,
@@ -41,9 +41,10 @@ export default function MessagesPage() {
   useEffect(() => {
     if (!user) return;
     setLoading(true);
+    const firestore = requireDb();
 
     const q = query(
-      collection(db, "chatRooms"),
+      collection(firestore, "chatRooms"),
       where("participants", "array-contains", user.uid),
       orderBy("lastMessageTime", "desc")
     );
@@ -83,7 +84,8 @@ export default function MessagesPage() {
     });
 
     missing.forEach(async (uid) => {
-      const snap = await getDoc(doc(db, "profiles", uid));
+      const firestore = requireDb();
+      const snap = await getDoc(doc(firestore, "profiles", uid));
       if (snap.exists()) {
         const d = snap.data();
         setProfileCache((p) => ({

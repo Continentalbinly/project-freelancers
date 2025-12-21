@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { User } from "lucide-react";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { Project } from "@/types/project";
 
@@ -7,6 +9,7 @@ interface ProjectParticipantsProps {
   clientProfile: any;
   freelancerProfile: any;
   project: Project;
+  currentUserId?: string;
   t: (key: string) => string;
 }
 
@@ -14,8 +17,15 @@ export default function ProjectParticipants({
   clientProfile,
   freelancerProfile,
   project,
+  currentUserId,
   t,
 }: ProjectParticipantsProps) {
+  const router = useRouter();
+
+  const handleViewProfile = (profileId: string) => {
+    router.push(`/profile/${profileId}`);
+  };
+
   return (
     <div className="rounded-lg shadow-sm border border-border dark:border-gray-800 p-6">
       <h3 className="text-lg font-semibold   mb-4">
@@ -29,7 +39,7 @@ export default function ProjectParticipants({
             {...getAvatarProps(clientProfile, { uid: project.clientId })}
             size="lg"
           />
-          <div>
+          <div className="flex-1">
             <p className="font-medium  ">
               {clientProfile?.fullName || t("projectDetail.client")}
             </p>
@@ -41,6 +51,19 @@ export default function ProjectParticipants({
             <p className="text-sm text-text-secondary">
               {t("projectDetail.projectCreator")}
             </p>
+            {/* View Profile Button - Only show if current user is not the client */}
+            {currentUserId && clientProfile?.id && currentUserId !== clientProfile.id && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleViewProfile(clientProfile.id);
+                }}
+                className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-xs text-primary hover:bg-primary/5 transition-colors cursor-pointer"
+              >
+                <User className="w-3 h-3" />
+                {t("orderDetail.viewProfile") || "View Profile"}
+              </button>
+            )}
           </div>
         </div>
 
@@ -53,7 +76,7 @@ export default function ProjectParticipants({
               })}
               size="lg"
             />
-            <div>
+            <div className="flex-1">
               <p className="font-medium  ">
                 {freelancerProfile.fullName}
               </p>
@@ -65,6 +88,19 @@ export default function ProjectParticipants({
               <p className="text-sm text-text-secondary">
                 {t("projectDetail.assignedFreelancer")}
               </p>
+              {/* View Profile Button - Only show if current user is not the freelancer */}
+              {currentUserId && freelancerProfile.id && currentUserId !== freelancerProfile.id && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleViewProfile(freelancerProfile.id);
+                  }}
+                  className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-xs text-primary hover:bg-primary/5 transition-colors cursor-pointer"
+                >
+                  <User className="w-3 h-3" />
+                  {t("orderDetail.viewProfile") || "View Profile"}
+                </button>
+              )}
             </div>
           </div>
         ) : (

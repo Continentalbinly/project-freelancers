@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { Users, Folder, CreditCard, Settings } from "lucide-react";
 import DashboardCard from "./DashboardCard";
@@ -18,18 +18,18 @@ export default function AdminStatsOverview() {
 
   useEffect(() => {
     // 👥 Total users
-    const unsubUsers = onSnapshot(collection(db, "profiles"), (snap) => {
+    const unsubUsers = onSnapshot(collection(requireDb(), "profiles"), (snap) => {
       setStats((prev) => ({ ...prev, users: snap.size }));
     });
 
     // 📂 Total projects
-    const unsubProjects = onSnapshot(collection(db, "projects"), (snap) => {
+    const unsubProjects = onSnapshot(collection(requireDb(), "projects"), (snap) => {
       setStats((prev) => ({ ...prev, projects: snap.size }));
     });
 
     // 💳 Transactions total & pending
     const unsubTransactions = onSnapshot(
-      collection(db, "transactions"),
+      collection(requireDb(), "transactions"),
       (snap) => {
         let totalAmount = 0;
         let pendingCount = 0;

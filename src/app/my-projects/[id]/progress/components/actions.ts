@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   doc,
   updateDoc,
@@ -17,7 +17,8 @@ import {
 /** Freelancer starts work → 'in_progress' */
 export async function markInProgress(projectId: string) {
   if (!projectId) return;
-  await updateDoc(doc(db, "projects", projectId), {
+  const firestore = requireDb();
+  await updateDoc(doc(firestore, "projects", projectId), {
     status: "in_progress",
     updatedAt: serverTimestamp(),
   });
@@ -32,8 +33,9 @@ export async function submitForReview(
 ) {
   if (!projectId || !freelancerId) return;
   if (previewUrls.length === 0) throw new Error("No preview images uploaded.");
+  const firestore = requireDb();
 
-  await addDoc(collection(db, "projects", projectId, "submissions"), {
+  await addDoc(collection(firestore, "projects", projectId, "submissions"), {
     freelancerId,
     previewUrls,
     note,
@@ -41,7 +43,7 @@ export async function submitForReview(
     createdAt: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, "projects", projectId), {
+  await updateDoc(doc(firestore, "projects", projectId), {
     status: "in_review",
     updatedAt: serverTimestamp(),
   });
@@ -57,8 +59,9 @@ export async function createChangeRequest(
 ) {
   if (!projectId) return;
   if (remainingQuota <= 0) throw new Error("No edit quota remaining.");
+  const firestore = requireDb();
 
-  const projectRef = doc(db, "projects", projectId);
+  const projectRef = doc(firestore, "projects", projectId);
 
   await addDoc(collection(projectRef, "changeRequests"), {
     clientId,
@@ -80,8 +83,9 @@ export async function acceptChangeRequest(
   projectId: string,
   requestId: string
 ) {
+  const firestore = requireDb();
   const requestRef = doc(
-    db,
+    firestore,
     "projects",
     projectId,
     "changeRequests",
@@ -92,7 +96,7 @@ export async function acceptChangeRequest(
     acceptedAt: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, "projects", projectId), {
+  await updateDoc(doc(firestore, "projects", projectId), {
     status: "in_progress",
     updatedAt: serverTimestamp(),
   });
@@ -105,8 +109,9 @@ export async function rejectChangeRequest(
   reason: string,
   description: string
 ) {
+  const firestore = requireDb();
   const requestRef = doc(
-    db,
+    firestore,
     "projects",
     projectId,
     "changeRequests",
@@ -119,7 +124,7 @@ export async function rejectChangeRequest(
     rejectedAt: serverTimestamp(),
   });
 
-  await updateDoc(doc(db, "projects", projectId), {
+  await updateDoc(doc(firestore, "projects", projectId), {
     status: "in_review",
     updatedAt: serverTimestamp(),
   });
@@ -128,8 +133,9 @@ export async function rejectChangeRequest(
 /** Client approves → create transaction + move to payout step */
 export async function markCompleted(projectId: string) {
   if (!projectId) return;
+  const firestore = requireDb();
 
-  const projectRef = doc(db, "projects", projectId);
+  const projectRef = doc(firestore, "projects", projectId);
   const projectSnap = await getDoc(projectRef);
   if (!projectSnap.exists()) throw new Error("Project not found.");
 

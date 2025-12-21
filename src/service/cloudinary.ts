@@ -36,6 +36,11 @@ export async function uploadToCloudinary(
     if (subfolder) {
       cloudinaryFolder += `/${subfolder}`;
     }
+  } else if (folderType === "portfolio") {
+    cloudinaryFolder = "portfolio";
+    if (subfolder) {
+      cloudinaryFolder += `/${subfolder}`;
+    }
   }
 
   // Upload to Cloudinary

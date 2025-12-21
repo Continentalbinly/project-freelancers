@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import cookiesImage from '../../images/assets/cookies.png'
 import { useTranslationContext } from '@/app/components/LanguageProvider'
@@ -15,6 +15,7 @@ interface CookiePreferences {
 
 export default function CookieConsent() {
     const { t } = useTranslationContext()
+    const router = useRouter()
     const [showBanner, setShowBanner] = useState(false)
     const [showPreferences, setShowPreferences] = useState(false)
     const [preferences, setPreferences] = useState<CookiePreferences>({
@@ -89,9 +90,9 @@ export default function CookieConsent() {
                                     </h3>
                                     <p className="text-xs sm:text-sm text-text-secondary mb-4 lg:mb-0">
                                         {t('cookieConsent.bannerDesc')}
-                                        <Link href="/cookies" className="text-primary hover:underline ml-1">
+                                        <button onClick={() => router.push("/cookies")} className="text-primary hover:underline ml-1 cursor-pointer">
                                             {t('learnMore')}
-                                        </Link>
+                                        </button>
                                     </p>
                                 </div>
                             </div>
@@ -263,9 +264,9 @@ export default function CookieConsent() {
 
                             <p className="text-xs text-text-secondary mt-4 text-center">
                                 {t('cookieConsent.policyLink')}{' '}
-                                <Link href="/cookies" className="text-primary hover:underline">
+                                <button onClick={() => router.push("/cookies")} className="text-primary hover:underline cursor-pointer">
                                     {t('cookies')}
-                                </Link>
+                                </button>
                             </p>
                         </div>
                     </div>

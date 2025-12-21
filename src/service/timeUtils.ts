@@ -7,9 +7,19 @@
 export function convertTimestampToDate(value: Record<string, unknown> | Date | string | number | null | undefined): Date {
   if (!value) return new Date();
 
-  // Firestore Timestamp
+  // Firestore Timestamp with toDate() method
   if (typeof value === 'object' && 'toDate' in value && typeof value.toDate === "function") {
     return (value as { toDate(): Date }).toDate();
+  }
+
+  // Firestore Timestamp serialized format: { seconds: number, nanoseconds?: number }
+  if (typeof value === 'object' && value !== null && 'seconds' in value) {
+    const ts = value as { seconds: number; nanoseconds?: number };
+    if (typeof ts.seconds === 'number') {
+      // Convert seconds to milliseconds, add nanoseconds if available
+      const milliseconds = ts.seconds * 1000 + (ts.nanoseconds ? ts.nanoseconds / 1000000 : 0);
+      return new Date(milliseconds);
+    }
   }
 
   // Already a Date
@@ -18,7 +28,12 @@ export function convertTimestampToDate(value: Record<string, unknown> | Date | s
   }
 
   // String or number
-  return new Date(value as string | number);
+  const date = new Date(value as string | number);
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return new Date(); // Return current date if invalid
+  }
+  return date;
 }
 
 /**

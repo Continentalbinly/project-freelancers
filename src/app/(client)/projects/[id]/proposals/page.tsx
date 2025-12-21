@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   collection,
   query,
@@ -13,8 +13,15 @@ import {
   doc as firestoreDoc,
   getDoc,
   updateDoc,
+  increment,
+  serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { 
+  createProposalAcceptedNotification, 
+  createProposalRejectedNotification 
+} from "@/app/orders/utils/notificationService";
 
 // Components
 import ProposalsFilter from "./components/ProposalsFilter";
@@ -107,9 +114,10 @@ export default function ProjectProposalsPage() {
   // ------------------------------------
   const fetchData = async () => {
     try {
+      const firestore = requireDb();
       setLoadingProposals(true);
 
-      const projectDoc = await getDoc(firestoreDoc(db, "projects", projectId));
+      const projectDoc = await getDoc(firestoreDoc(firestore, "projects", projectId));
       if (!projectDoc.exists()) {
         router.push("/projects/manage");
         return;
@@ -128,7 +136,7 @@ export default function ProjectProposalsPage() {
 
       // fetch proposals
       const q = query(
-        collection(db, "proposals"),
+        collection(firestore, "proposals"),
         where("projectId", "==", projectId),
         orderBy("createdAt", "desc")
       );
@@ -138,7 +146,7 @@ export default function ProjectProposalsPage() {
         snap.docs.map(async (docSnap) => {
           const data = docSnap.data();
 
-          const freelancerRef = firestoreDoc(db, "profiles", data.freelancerId);
+          const freelancerRef = firestoreDoc(firestore, "profiles", data.freelancerId);
           const freelancerDoc = await getDoc(freelancerRef);
           const freelancerData = freelancerDoc.exists()
             ? freelancerDoc.data()
@@ -191,36 +199,173 @@ export default function ProjectProposalsPage() {
   };
 
   const handleAccept = async (proposal: Proposal) => {
-    await updateDoc(firestoreDoc(db, "proposals", proposal.id), {
-      status: "accepted",
-      updatedAt: new Date(),
-    });
+    try {
+      const firestore = requireDb();
+      // Get project info for notifications
+      const projectSnap = await getDoc(firestoreDoc(firestore, "projects", projectId));
+      const projectTitle = projectSnap.exists() 
+        ? (projectSnap.data().title ?? "Unknown Project")
+        : "Unknown Project";
 
-    await updateDoc(firestoreDoc(db, "projects", projectId), {
-      status: "in_progress",
-      acceptedFreelancerId: proposal.freelancerId,
-      updatedAt: new Date(),
-    });
+      await updateDoc(firestoreDoc(firestore, "proposals", proposal.id), {
+        status: "accepted",
+        updatedAt: serverTimestamp(),
+      });
 
-    const otherProposals = proposals.filter((p) => p.id !== proposal.id);
-    await Promise.all(
-      otherProposals.map((p) =>
-        updateDoc(firestoreDoc(db, "proposals", p.id), {
-          status: "rejected",
-          updatedAt: new Date(),
+      await updateDoc(firestoreDoc(firestore, "projects", projectId), {
+        status: "in_progress",
+        acceptedFreelancerId: proposal.freelancerId,
+        acceptedProposalId: proposal.id,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Reject other proposals and refund their fees
+      const otherProposals = proposals.filter((p) => p.id !== proposal.id);
+      const project = projectSnap.exists() ? projectSnap.data() : null;
+      const refundAmount = project?.postingFee ?? 0;
+
+      await Promise.all(
+        otherProposals.map(async (p) => {
+          await updateDoc(firestoreDoc(firestore, "proposals", p.id), {
+            status: "rejected",
+            updatedAt: serverTimestamp(),
+          });
+
+          // Refund credits for rejected proposals
+          if (refundAmount > 0) {
+            const freelancerRef = firestoreDoc(firestore, "profiles", p.freelancerId);
+            const freelancerSnap = await getDoc(freelancerRef);
+            
+            if (freelancerSnap.exists()) {
+              const freelancerData = freelancerSnap.data();
+              const previousBalance = freelancerData.credit ?? 0;
+              const newBalance = previousBalance + refundAmount;
+
+              await updateDoc(freelancerRef, {
+                credit: increment(refundAmount),
+              });
+
+              // Create transaction log
+              const txRef = firestoreDoc(collection(firestore, "transactions"));
+              await setDoc(txRef, {
+                id: txRef.id,
+                userId: p.freelancerId,
+                projectId: projectId,
+                type: "proposal_refund",
+                direction: "in",
+                amount: refundAmount,
+                previousBalance,
+                newBalance,
+                currency: "LAK",
+                status: "completed",
+                description: `Refund for rejected proposal on project "${projectTitle}"`,
+                createdAt: serverTimestamp(),
+              });
+
+              // Create notification for rejected proposal
+              try {
+                await createProposalRejectedNotification(
+                  project?.clientId || user?.uid || "",
+                  p.freelancerId,
+                  projectId,
+                  projectTitle,
+                  p.id,
+                  refundAmount
+                );
+              } catch (notifError) {
+                console.error("Error creating proposal rejected notification:", notifError);
+              }
+            }
+          }
         })
-      )
-    );
+      );
 
-    fetchData();
+      // Create notification for accepted proposal
+      try {
+        await createProposalAcceptedNotification(
+          project?.clientId || user?.uid || "",
+          proposal.freelancerId,
+          projectId,
+          projectTitle,
+          proposal.id
+        );
+      } catch (notifError) {
+        console.error("Error creating proposal accepted notification:", notifError);
+      }
+
+      fetchData();
+    } catch (error) {
+      console.error("Error accepting proposal:", error);
+      fetchData();
+    }
   };
 
   const handleReject = async (proposal: Proposal) => {
-    await updateDoc(firestoreDoc(db, "proposals", proposal.id), {
-      status: "rejected",
-      updatedAt: new Date(),
-    });
-    fetchData();
+    try {
+      const firestore = requireDb();
+      // Get project info for refund and notifications
+      const projectSnap = await getDoc(firestoreDoc(firestore, "projects", projectId));
+      const project = projectSnap.exists() ? projectSnap.data() : null;
+      const projectTitle = project?.title ?? "Unknown Project";
+      const refundAmount = project?.postingFee ?? 0;
+
+      await updateDoc(firestoreDoc(firestore, "proposals", proposal.id), {
+        status: "rejected",
+        updatedAt: serverTimestamp(),
+      });
+
+      // Refund credits to freelancer
+      if (refundAmount > 0) {
+        const freelancerRef = firestoreDoc(firestore, "profiles", proposal.freelancerId);
+        const freelancerSnap = await getDoc(freelancerRef);
+        
+        if (freelancerSnap.exists()) {
+          const freelancerData = freelancerSnap.data();
+          const previousBalance = freelancerData.credit ?? 0;
+          const newBalance = previousBalance + refundAmount;
+
+          await updateDoc(freelancerRef, {
+            credit: increment(refundAmount),
+          });
+
+          // Create transaction log
+          const txRef = firestoreDoc(collection(firestore, "transactions"));
+          await setDoc(txRef, {
+            id: txRef.id,
+            userId: proposal.freelancerId,
+            projectId: projectId,
+            type: "proposal_refund",
+            direction: "in",
+            amount: refundAmount,
+            previousBalance,
+            newBalance,
+            currency: "LAK",
+            status: "completed",
+            description: `Refund for rejected proposal on project "${projectTitle}"`,
+            createdAt: serverTimestamp(),
+          });
+
+          // Create notification for freelancer
+          try {
+            await createProposalRejectedNotification(
+              project?.clientId || user?.uid || "",
+              proposal.freelancerId,
+              projectId,
+              projectTitle,
+              proposal.id,
+              refundAmount
+            );
+          } catch (notifError) {
+            console.error("Error creating proposal rejected notification:", notifError);
+          }
+        }
+      }
+
+      fetchData();
+    } catch (error) {
+      console.error("Error rejecting proposal:", error);
+      fetchData();
+    }
   };
 
   // ------------------------------------

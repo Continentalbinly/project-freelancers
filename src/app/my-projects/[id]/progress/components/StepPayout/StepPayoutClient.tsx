@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { toast } from "react-toastify";
 
 const QR_EXPIRE_TIME = 180;
@@ -38,7 +38,8 @@ export default function StepPayoutClient({ project }: { project: any }) {
   // Load project → transactionId
   // ----------------------------------------------------------
   const loadProjectTransaction = async () => {
-    const snap = await getDoc(doc(db, "projects", project.id));
+    const firestore = requireDb();
+    const snap = await getDoc(doc(firestore, "projects", project.id));
     if (!snap.exists()) return toast.error("Project not found");
 
     const p = snap.data();
@@ -52,7 +53,8 @@ export default function StepPayoutClient({ project }: { project: any }) {
   // Load QR from transaction
   // ----------------------------------------------------------
   const loadExistingQR = async (txId: string) => {
-    const snap = await getDoc(doc(db, "transactions", txId));
+    const firestore = requireDb();
+    const snap = await getDoc(doc(firestore, "transactions", txId));
 
     if (!snap.exists()) {
       setTimeout(() => loadExistingQR(txId), 800);
@@ -149,7 +151,8 @@ export default function StepPayoutClient({ project }: { project: any }) {
     clearInterval(pollInterval.current);
 
     pollInterval.current = setInterval(async () => {
-      const snap = await getDoc(doc(db, "transactions", txId));
+      const firestore = requireDb();
+      const snap = await getDoc(doc(firestore, "transactions", txId));
       if (snap.exists() && snap.data().status === "confirmed") {
         clearInterval(timerInterval.current);
         clearInterval(pollInterval.current);

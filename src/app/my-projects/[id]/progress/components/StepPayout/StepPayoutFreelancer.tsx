@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function StepPayoutFreelancer({ project }: { project: any }) {
@@ -16,7 +16,8 @@ export default function StepPayoutFreelancer({ project }: { project: any }) {
   // Poll project.status
   useEffect(() => {
     const checkStatus = async () => {
-      const snap = await getDoc(doc(db, "projects", project.id));
+      const firestore = requireDb();
+      const snap = await getDoc(doc(firestore, "projects", project.id));
       if (snap.exists() && snap.data().status === "completed") {
         setCompleted(true);
         clearInterval(pollInterval.current);

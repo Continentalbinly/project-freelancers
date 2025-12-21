@@ -30,6 +30,31 @@ export interface SignupCredentials {
   bio?: string;
   skills?: string[];
   
+  // ✅ Personal information
+  dateOfBirth?: string;
+  gender?: "male" | "female" | "other" | "prefer_not_to_say";
+  phone?: string;
+  location?: string;
+  country?: string;
+  city?: string;
+  website?: string;
+  
+  // ✅ Portfolio fields
+  portfolio?: Record<string, unknown>;
+  sections?: Array<Record<string, unknown>>;
+  experience?: Array<{
+    title: string;
+    company: string;
+    period: string;
+    description: string;
+  }>;
+  projects?: Array<{
+    title: string;
+    description: string;
+    technologies: string[];
+    link?: string;
+  }>;
+  
   // ✅ Terms and conditions
   acceptTerms: boolean;
   acceptPrivacyPolicy: boolean;

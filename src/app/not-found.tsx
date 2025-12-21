@@ -1,8 +1,9 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function NotFound(): React.ReactElement {
+  const router = useRouter()
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full text-center space-y-6 sm:space-y-8">
@@ -30,45 +31,45 @@ export default function NotFound(): React.ReactElement {
             <h3 className="text-base sm:text-lg font-semibold text-text-primary mb-3 sm:mb-4">Where would you like to go?</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Link 
-                href="/" 
-                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors shadow-sm text-sm sm:text-base"
+              <button 
+                onClick={() => router.push('/')}
+                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-primary text-white rounded-md hover:bg-primary-hover transition-colors shadow-sm text-sm sm:text-base cursor-pointer"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
                 Go Home
-              </Link>
+              </button>
               
-              <Link 
-                href="/projects" 
-                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-secondary text-white rounded-md hover:bg-secondary-hover transition-colors shadow-sm text-sm sm:text-base"
+              <button 
+                onClick={() => router.push('/projects')}
+                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-secondary text-white rounded-md hover:bg-secondary-hover transition-colors shadow-sm text-sm sm:text-base cursor-pointer"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 Browse Projects
-              </Link>
+              </button>
               
-              <Link 
-                href="/auth/login" 
-                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-md hover:bg-background-tertiary hover:border-border-hover transition-colors text-sm sm:text-base hover-surface"
+              <button 
+                onClick={() => router.push('/auth/login')}
+                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-md hover:bg-background-tertiary hover:border-border-hover transition-colors text-sm sm:text-base hover-surface cursor-pointer"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
                 Sign In
-              </Link>
+              </button>
               
-              <Link 
-                href="/auth/signup" 
-                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-md hover:bg-background-tertiary hover:border-border-hover transition-colors text-sm sm:text-base hover-surface"
+              <button 
+                onClick={() => router.push('/auth/signup')}
+                className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 border border-border rounded-md hover:bg-background-tertiary hover:border-border-hover transition-colors text-sm sm:text-base hover-surface cursor-pointer"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
                 Sign Up
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -83,18 +84,18 @@ export default function NotFound(): React.ReactElement {
               If you believe this is an error, please contact our support team or jump to the help center.
             </p>
             <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
-              <Link 
-                href="/contact" 
-                className="px-3 py-2 text-xs sm:text-sm text-primary hover:text-primary-hover font-medium rounded-md hover-surface"
+              <button 
+                onClick={() => router.push('/contact')}
+                className="px-3 py-2 text-xs sm:text-sm text-primary hover:text-primary-hover font-medium rounded-md hover-surface cursor-pointer"
               >
                 Contact Support
-              </Link>
-              <Link 
-                href="/help" 
-                className="px-3 py-2 text-xs sm:text-sm text-primary hover:text-primary-hover font-medium rounded-md hover-surface"
+              </button>
+              <button 
+                onClick={() => router.push('/help')}
+                className="px-3 py-2 text-xs sm:text-sm text-primary hover:text-primary-hover font-medium rounded-md hover-surface cursor-pointer"
               >
                 Help Center
-              </Link>
+              </button>
               <button suppressHydrationWarning 
                 onClick={() => window.history.back()}
                 className="px-3 py-2 text-xs sm:text-sm text-primary hover:text-primary-hover font-medium rounded-md hover-surface"

@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { formatLAK, formatHourlyRate } from "@/service/currencyUtils";
 import type { Proposal, ProposalWithDetails } from "@/types/proposal";
@@ -18,6 +18,7 @@ export default function RecentProposals({
   isLoading,
 }: RecentProposalsProps) {
   const { t } = useTranslationContext();
+  const router = useRouter();
   const [projectTitles, setProjectTitles] = useState<Record<string, string>>({});
 
   // Fetch project titles for all proposals
@@ -29,7 +30,7 @@ export default function RecentProposals({
         const projectId = proposal.projectId;
         if (projectId && !titles[projectId]) {
           try {
-            const projectDoc = await getDoc(doc(db, "projects", projectId));
+            const projectDoc = await getDoc(doc(requireDb(), "projects", projectId));
             if (projectDoc.exists()) {
               titles[projectId] = projectDoc.data().title || projectId;
             } else {
@@ -55,12 +56,15 @@ export default function RecentProposals({
         <h2 className="text-2xl font-bold">
           {t("freelancerDashboard.recentProposals") || "Recent Proposals"}
         </h2>
-        <Link
-          href="/proposals?tab=submitted"
-          className="text-secondary hover:text-secondary-dark font-medium"
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            router.push("/proposals?tab=submitted");
+          }}
+          className="text-secondary hover:text-secondary-dark font-medium cursor-pointer"
         >
           {t("common.viewAll")} →
-        </Link>
+        </button>
       </div>
 
       {isLoading ? (
@@ -84,10 +88,21 @@ export default function RecentProposals({
             const budget = formatLAK(proposal.proposedBudget || 0);
 
             return (
-              <Link
+              <div
                 key={proposal.id}
-                href={`/proposals/${proposal.id}`}
-                className="flex items-center justify-between p-4 border border-border bg-background rounded-lg transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push(`/proposals/${proposal.id}`);
+                }}
+                className="flex items-center justify-between p-4 border border-border bg-background rounded-lg transition-colors cursor-pointer hover:border-primary/50"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(`/proposals/${proposal.id}`);
+                  }
+                }}
               >
                 <div className="flex-1">
                   <h3 className="font-semibold">{projectTitle}</h3>
@@ -101,7 +116,7 @@ export default function RecentProposals({
                     {proposal.status}
                   </span>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>
@@ -110,12 +125,15 @@ export default function RecentProposals({
           <p className="text-text-secondary mb-4">
             {t("freelancerDashboard.noProposals") || "No proposals yet"}
           </p>
-          <Link
-            href="/projects"
-            className="btn bg-secondary text-white px-6 py-2 rounded-lg hover:bg-secondary-dark"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              router.push("/projects");
+            }}
+            className="btn bg-secondary text-white px-6 py-2 rounded-lg hover:bg-secondary-dark cursor-pointer"
           >
             {t("freelancerDashboard.browseNow") || "Browse Opportunities"}
-          </Link>
+          </button>
         </div>
       )}
     </div>

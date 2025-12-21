@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useTranslationContext } from '@/app/components/LanguageProvider'
 
 interface FAQItem {
@@ -247,12 +248,12 @@ export default function FAQPage() {
             {t('faq.contactSection.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="btn btn-primary px-8 py-3">
+            <Link href="/contact" className="btn btn-primary px-8 py-3">
               {t('faq.contactSection.contactSupport')}
-            </a>
-            <a href="/help" className="btn btn-outline px-8 py-3">
+            </Link>
+            <Link href="/help" className="btn btn-outline px-8 py-3">
               {t('faq.contactSection.helpCenter')}
-            </a>
+            </Link>
           </div>
         </div>
       </section>

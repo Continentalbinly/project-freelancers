@@ -18,7 +18,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 
 import TransactionTabs from "./components/TransactionTabs";
 import TransactionTable from "./components/TransactionTable";
@@ -78,7 +78,7 @@ export default function AdminTransactionsPage() {
     async function checkRole() {
       if (!user?.uid) return setIsAdmin(false);
 
-      const ref = doc(db, "profiles", user.uid);
+      const ref = doc(requireDb(), "profiles", user.uid);
       const snap = await getDoc(ref);
       const data = snap.data();
 
@@ -98,7 +98,7 @@ export default function AdminTransactionsPage() {
   ) {
     if (!tx.transactionId) return; // Only for QR top-ups
 
-    const ref = doc(db, "topupSessions", tx.transactionId);
+    const ref = doc(requireDb(), "topupSessions", tx.transactionId);
     const snap = await getDoc(ref);
     if (!snap.exists()) return;
 
@@ -119,7 +119,7 @@ export default function AdminTransactionsPage() {
       return;
     }
 
-    const baseQuery = collection(db, "transactions");
+    const baseQuery = collection(requireDb(), "transactions");
 
     const q =
       statusParam === "all"
@@ -140,7 +140,7 @@ export default function AdminTransactionsPage() {
       const users: Record<string, UserProfile> = {};
       for (const tx of txs) {
         if (!users[tx.userId]) {
-          const ref = doc(db, "profiles", tx.userId);
+          const ref = doc(requireDb(), "profiles", tx.userId);
           const snap = await getDoc(ref);
           if (snap.exists()) {
             const d = snap.data();
@@ -170,8 +170,8 @@ export default function AdminTransactionsPage() {
 
     if (!confirm(confirmText)) return;
 
-    const txRef = doc(db, "transactions", tx.id);
-    const userRef = doc(db, "profiles", tx.userId);
+    const txRef = doc(requireDb(), "transactions", tx.id);
+    const userRef = doc(requireDb(), "profiles", tx.userId);
 
     // 🔵 Update transaction
     await updateDoc(txRef, {
@@ -226,8 +226,8 @@ export default function AdminTransactionsPage() {
   async function handleReject(tx: Transaction) {
     if (!confirm("Reject this transaction?")) return;
 
-    const txRef = doc(db, "transactions", tx.id);
-    const userRef = doc(db, "profiles", tx.userId);
+    const txRef = doc(requireDb(), "transactions", tx.id);
+    const userRef = doc(requireDb(), "profiles", tx.userId);
 
     await updateDoc(txRef, {
       status: "rejected",
@@ -255,7 +255,7 @@ export default function AdminTransactionsPage() {
 
         await updateDoc(userRef, updateData);
 
-        await addDoc(collection(db, "transactions"), {
+        await addDoc(collection(requireDb(), "transactions"), {
           userId: tx.userId,
           type: "refund",
           status: "confirmed",

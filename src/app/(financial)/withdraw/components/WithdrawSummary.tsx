@@ -1,55 +1,41 @@
 "use client";
 
+import { Wallet, TrendingUp } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function WithdrawSummary({ profile, userRole }: any) {
   const { t } = useTranslationContext();
 
-  // Client: show credit only
-  if (userRole === "client") {
-    return (
-      <div className="backdrop-blur-xl border border-border bg-background rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
-        <div className="text-sm sm:text-base">
-          <p className="text-text-secondary">{t("withdraw.summary.credit")}</p>
-          <p className="font-bold text-primary text-2xl mt-2">
-            {profile.credit?.toLocaleString() || 0} LAK
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Freelancer: show earned only
   if (userRole === "freelancer") {
+    const totalEarned = profile.totalEarned || 0;
     return (
-      <div className="backdrop-blur-xl border border-border bg-background rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
-        <div className="text-sm sm:text-base">
-          <p className="text-text-secondary">{t("withdraw.summary.earned")}</p>
-          <p className="font-bold text-success text-2xl mt-2">
-            {profile.totalEarned?.toLocaleString() || 0} LAK
-          </p>
+      <div className="rounded-2xl border border-success/20 dark:border-success/30 bg-gradient-to-br from-success/10 to-success/5 dark:from-success/20 dark:to-success/10 p-6 md:p-8 shadow-sm">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 rounded-xl bg-success/20 dark:bg-success/30 flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-success" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-text-secondary dark:text-gray-400">
+                  {t("withdraw.summary.earned") || "Total Earnings"}
+                </p>
+                <p className="text-3xl md:text-4xl font-bold text-success mt-1">
+                  {totalEarned.toLocaleString()}
+                  <span className="text-xl md:text-2xl ml-1">LAK</span>
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-text-secondary dark:text-gray-400 mt-4">
+              {t("withdraw.summary.description") || "This is the total amount you've earned from completed projects. You can withdraw any amount from this balance."}
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Fallback: show both
-  return (
-    <div className="backdrop-blur-xl border border-border bg-background rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
-      <div className="flex justify-between text-sm sm:text-base">
-        <div>
-          <p className="text-text-secondary">{t("withdraw.summary.credit")}</p>
-          <p className="font-bold text-primary text-xl mt-1">
-            {profile.credit?.toLocaleString() || 0} LAK
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-text-secondary">{t("withdraw.summary.earned")}</p>
-          <p className="font-bold text-success text-xl mt-1">
-            {profile.totalEarned?.toLocaleString() || 0} LAK
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  // Fallback (shouldn't happen for freelancer-only page)
+  return null;
 }

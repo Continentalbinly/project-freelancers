@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { db } from "@/service/firebase";
-import { doc, getDoc, serverTimestamp, updateDoc, arrayUnion } from "firebase/firestore";
+import { requireDb } from "@/service/firebase";
+import { doc, getDoc, serverTimestamp, updateDoc, arrayUnion, Timestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
 import type { Order, OrderStatus } from "@/types/order";
 import OrderProgressTimeline from "../components/OrderProgressTimeline";
@@ -16,6 +16,8 @@ import DeliveryHistory from "../components/DeliveryHistory";
 import OrderPaymentStep from "../components/OrderPaymentStep";
 import OrderSidebar from "../components/OrderSidebar";
 import OrderDetailSkeleton from "../components/OrderDetailSkeleton";
+import OrderReviewSection from "../components/OrderReviewSection";
+import { createOrderNotification, createRevisionNotification, createRevisionDecisionNotification } from "../utils/notificationService";
 
 export default function OrderDetailPage() {
   const { t } = useTranslationContext();
@@ -61,6 +63,7 @@ export default function OrderDetailPage() {
   useEffect(() => {
     const load = async () => {
       if (!user) return;
+      const db = requireDb();
       const snap = await getDoc(doc(db, "orders", id));
       if (snap.exists()) {
         const data = snap.data();
@@ -144,8 +147,20 @@ export default function OrderDetailPage() {
         }
       }
 
+      const db = requireDb();
       await updateDoc(doc(db, "orders", order!.id), updateData);
-      setOrder({ ...(order as Order), status, transactionId: updateData.transactionId || order?.transactionId });
+      const updatedOrder = { ...(order as Order), status, transactionId: updateData.transactionId || order?.transactionId };
+      setOrder(updatedOrder);
+
+      // Create notification for the other party
+      if (profile?.role && (profile.role === "client" || profile.role === "freelancer")) {
+        await createOrderNotification(
+          updatedOrder,
+          status,
+          profile.role,
+          user?.uid
+        );
+      }
     } finally {
       setUpdating(false);
     }
@@ -173,17 +188,29 @@ export default function OrderDetailPage() {
         updateData.deliveryScreenshots = screenshots;
       }
 
+      const db = requireDb();
       await updateDoc(doc(db, "orders", order.id), updateData);
       
-      setOrder({ 
+      const updatedOrder = {
         ...(order as Order), 
-        status: "delivered", 
+        status: "delivered" as OrderStatus, 
         delivery: deliveryNote, 
         deliveryType: type, 
         deliveryFiles: files || [],
         deliveryScreenshots: screenshots || []
-      });
+      };
+      setOrder(updatedOrder);
       setDeliveryNote("");
+
+      // Create notification for the client
+      if (profile?.role === "freelancer") {
+        await createOrderNotification(
+          updatedOrder,
+          "delivered",
+          "freelancer",
+          user?.uid
+        );
+      }
     } finally {
       setUpdating(false);
     }
@@ -193,30 +220,132 @@ export default function OrderDetailPage() {
     setUpdating(true);
     try {
       const revisionCount = (order.revisionCount || 0) + 1;
+      const now = Timestamp.now(); // Use Firestore Timestamp instead of Date
+      const revisionLimit = order.revisionLimit || 2;
       
+      // Create translated note for status history
+      const revisionRequestedText = t("orderDetail.revisionRequested") || "Revision Requested";
+      const revisionNote = `${revisionRequestedText} (${revisionCount}/${revisionLimit})`;
+      
+      const db = requireDb();
       await updateDoc(doc(db, "orders", order.id), {
         revisionCount,
         revisionPending: true,
+        status: "in_progress", // Change status to in_progress when revision is requested
         revisionRequests: arrayUnion({
-          requestedAt: serverTimestamp(),
+          requestedAt: now, // Use Firestore Timestamp for arrayUnion
           reason,
         }),
-        // keep status at delivered until freelancer accepts
         updatedAt: serverTimestamp(),
         statusHistory: arrayUnion({
-          status: "delivered",
-          timestamp: serverTimestamp(),
-          note: `Revision Requested (${revisionCount}/${order.revisionLimit || 2})`,
+          status: "in_progress", // Status changes to in_progress
+          timestamp: now, // Use Firestore Timestamp for arrayUnion
+          note: revisionNote,
         }),
       });
       
-      setOrder({ 
+      const updatedOrder = {
         ...(order as Order), 
-        // stay delivered
+        status: "in_progress" as OrderStatus, // Update local state
         revisionPending: true,
         revisionCount,
-        revisionRequests: [...(order.revisionRequests || []), { requestedAt: { seconds: Math.floor(Date.now() / 1000) }, reason }],
+        revisionRequests: [...(order.revisionRequests || []), { 
+          requestedAt: { seconds: now.seconds, nanoseconds: now.nanoseconds } as Record<string, unknown>, 
+          reason 
+        }],
+      };
+      setOrder(updatedOrder);
+
+      // Create notification for the freelancer
+      if (profile?.role === "client") {
+        await createRevisionNotification(
+          updatedOrder,
+          "client",
+          reason
+        );
+      }
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const acceptRevision = async () => {
+    setUpdating(true);
+    try {
+      const now = Timestamp.now();
+      const db = requireDb();
+      
+      await updateDoc(doc(db, "orders", order.id), {
+        revisionPending: false,
+        status: "in_progress", // Explicitly set status to in_progress when accepting revision
+        updatedAt: serverTimestamp(),
+        statusHistory: arrayUnion({
+          status: "in_progress",
+          timestamp: now,
+          note: t("orderDetail.revisionAccepted") || "Revision Accepted - Working on changes",
+        }),
       });
+
+      const updatedOrder = { 
+        ...order, 
+        revisionPending: false, 
+        status: "in_progress" as OrderStatus 
+      };
+      setOrder(updatedOrder);
+
+      // Create notification for the client about revision acceptance
+      if (profile?.role === "freelancer") {
+        await createRevisionDecisionNotification(
+          updatedOrder,
+          "accepted",
+          "freelancer"
+        );
+      }
+      
+      toast.success(t("orderDetail.revisionAcceptedSuccess") || "Revision accepted. You can now work on the changes.");
+    } catch (error: any) {
+      toast.error(error.message || t("common.error") || "Failed to accept revision");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const declineRevision = async () => {
+    setUpdating(true);
+    try {
+      const now = Timestamp.now();
+      const db = requireDb();
+      
+      await updateDoc(doc(db, "orders", order.id), {
+        revisionPending: false,
+        status: "delivered", // Return to delivered status
+        updatedAt: serverTimestamp(),
+        statusHistory: arrayUnion({
+          status: "delivered",
+          timestamp: now,
+          note: t("orderDetail.revisionDeclined") || "Revision Declined - Original delivery maintained",
+        }),
+      });
+      
+      const updatedOrder = {
+        ...(order as Order), 
+        revisionPending: false,
+        status: "delivered" as OrderStatus,
+      };
+      setOrder(updatedOrder);
+
+      // Create notification for the client about revision decline
+      if (profile?.role === "freelancer") {
+        await createRevisionDecisionNotification(
+          updatedOrder,
+          "declined",
+          "freelancer"
+        );
+      }
+      
+      toast.success(t("orderDetail.revisionDeclinedSuccess") || "Revision declined. Order returned to delivered status.");
+    } catch (error: any) {
+      toast.error(error.message || t("common.error") || "Failed to decline revision");
     } finally {
       setUpdating(false);
     }
@@ -291,6 +420,8 @@ export default function OrderDetailPage() {
                 setDeliveryNote={setDeliveryNote}
                 onUpdateStatus={updateStatus}
                 onDeliver={deliver}
+                onAcceptRevision={acceptRevision}
+                onDeclineRevision={declineRevision}
               />
             )}
 
@@ -311,6 +442,26 @@ export default function OrderDetailPage() {
 
             {/* Delivery History */}
             <DeliveryHistory order={order} />
+
+            {/* Review Section - Show when order is completed */}
+            {order.status === "completed" && user && userRole && (
+              <OrderReviewSection
+                order={order}
+                userRole={userRole}
+                userId={user.uid}
+                onReviewSubmitted={() => {
+                  // Reload order to get updated rating status
+                  const reload = async () => {
+                    const db = requireDb();
+                    const snap = await getDoc(doc(db, "orders", order.id));
+                    if (snap.exists()) {
+                      setOrder({ id: snap.id, ...snap.data() } as Order);
+                    }
+                  };
+                  reload();
+                }}
+              />
+            )}
           </div>
 
           {/* Right Column - Sidebar */}

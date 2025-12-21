@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { Stepper, StepBasics, StepCategoryTags, StepMedia, StepPackage, type CatalogForm } from "../../components";
 import type { Catalog } from "@/types/catalog";
@@ -41,7 +41,7 @@ export default function EditCatalogPage() {
 
   useEffect(() => {
     const load = async () => {
-      const snap = await getDoc(doc(db, "catalogs", id));
+      const snap = await getDoc(doc(requireDb(), "catalogs", id));
       if (!snap.exists()) return router.push("/catalog");
       const data = { id: snap.id, ...(snap.data() as any) } as Catalog;
       setOriginal(data);
@@ -74,7 +74,7 @@ export default function EditCatalogPage() {
     if (!original) return;
     setSaving(true);
     try {
-      await updateDoc(doc(db, "catalogs", original.id), {
+      await updateDoc(doc(requireDb(), "catalogs", original.id), {
         title: form.title.trim(),
         description: form.description.trim(),
         images: form.images,

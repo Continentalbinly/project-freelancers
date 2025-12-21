@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   collection,
   query,
@@ -45,13 +45,13 @@ export default function ChatRoomPage() {
     if (!id || !user) return;
 
     // Chat room data
-    const unsubRoom = onSnapshot(doc(db, "chatRooms", id as string), (snap) => {
+    const unsubRoom = onSnapshot(doc(requireDb(), "chatRooms", id as string), (snap) => {
       if (snap.exists()) setChatRoom({ id: snap.id, ...snap.data() });
     });
 
     // Chat messages
     const q = query(
-      collection(db, "chatMessages"),
+      collection(requireDb(), "chatMessages"),
       where("chatRoomId", "==", id),
       orderBy("timestamp", "asc")
     );
@@ -78,7 +78,7 @@ export default function ChatRoomPage() {
       return;
     }
     
-    getDoc(doc(db, "profiles", receiverId)).then((snap) => {
+    getDoc(doc(requireDb(), "profiles", receiverId)).then((snap) => {
       if (snap.exists()) setReceiver(snap.data());
       setLoadingReceiver(false);
     });
@@ -92,13 +92,13 @@ export default function ChatRoomPage() {
   /** ------------------- 🔹 TRACK PROJECT/ORDER STATUS LIVE ------------------- */
   useEffect(() => {
     if (chatRoom?.projectId) {
-      const unsub = onSnapshot(doc(db, "projects", chatRoom.projectId), (snap) => {
+      const unsub = onSnapshot(doc(requireDb(), "projects", chatRoom.projectId), (snap) => {
         if (snap.exists()) setProjectStatus(snap.data().status);
       });
       return () => unsub();
     }
     if (chatRoom?.orderId) {
-      const unsub = onSnapshot(doc(db, "orders", chatRoom.orderId), (snap) => {
+      const unsub = onSnapshot(doc(requireDb(), "orders", chatRoom.orderId), (snap) => {
         if (snap.exists()) setOrderStatus(snap.data().status);
       });
       return () => unsub();
@@ -113,14 +113,14 @@ export default function ChatRoomPage() {
     // Order: disable only when completed
     if (orderStatus === "completed") return;
     try {
-      await addDoc(collection(db, "chatMessages"), {
+      await addDoc(collection(requireDb(), "chatMessages"), {
         chatRoomId: chatRoom.id,
         message: text,
         senderId: user.uid,
         receiverId: chatRoom.participants.find((id: string) => id !== user.uid),
         timestamp: serverTimestamp(),
       });
-      await updateDoc(doc(db, "chatRooms", chatRoom.id), {
+      await updateDoc(doc(requireDb(), "chatRooms", chatRoom.id), {
         lastMessage: text,
         lastMessageTime: serverTimestamp(),
       });

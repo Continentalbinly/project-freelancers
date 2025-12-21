@@ -10,7 +10,7 @@ import {
   startAfter,
   startAt,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import GlobalStatus from "../../../../components/GlobalStatus";
 import UserCard from "./components/UserCard";
 import AdminSubHeader from "../components/AdminSubHeader";
@@ -42,7 +42,7 @@ export default function AdminUsersPage() {
 
   async function loadPage(pageNum: number) {
     setLoading(true);
-    const profilesRef = collection(db, "profiles");
+    const profilesRef = collection(requireDb(), "profiles");
     let q;
 
     if (pageNum === 1) {
@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
   async function handlePrev() {
     if (page <= 1) return;
     setLoading(true);
-    const profilesRef = collection(db, "profiles");
+    const profilesRef = collection(requireDb(), "profiles");
     const cursor = pageCursors[page - 2]; // cursor before current
     let q;
     if (page === 2) {

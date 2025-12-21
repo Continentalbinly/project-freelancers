@@ -1,8 +1,9 @@
-import { db } from '../service/firebase'
+import { requireDb } from '../service/firebase'
 import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore'
 
 async function updateProposalsCount() {
   try {
+    const db = requireDb();
     //console.log('Starting proposals count update...')
     
     // Get all projects

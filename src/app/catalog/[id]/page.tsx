@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import type { Catalog } from "@/types/catalog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,7 +27,7 @@ interface OwnerProfile {
 export default function CatalogDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { currentLanguage, t } = useTranslationContext();
   const [item, setItem] = useState<Catalog | null>(null);
   const [owner, setOwner] = useState<OwnerProfile | null>(null);
@@ -38,6 +38,7 @@ export default function CatalogDetailPage() {
 
   useEffect(() => {
     const load = async () => {
+      const db = requireDb();
       const snap = await getDoc(doc(db, "catalogs", id));
       if (snap.exists()) {
         const data = snap.data() as any;
@@ -82,7 +83,8 @@ export default function CatalogDetailPage() {
     if (id) load();
   }, [id, currentLanguage]);
 
-  if (loading) return <CatalogDetailSkeleton />;
+  // Show skeleton during loading or auth loading
+  if (loading || authLoading) return <CatalogDetailSkeleton />;
 
   // Allow viewing if: (1) published, OR (2) user is the owner
   const isOwner = user && item?.ownerId === user.uid;
@@ -187,7 +189,7 @@ export default function CatalogDetailPage() {
           <div className="lg:col-span-2">
             <div className="space-y-4 sticky top-20">
               {owner && item.status === "published" && !isOwner && (
-                <OwnerProfileCard owner={owner} t={t} />
+                <OwnerProfileCard owner={owner} currentUserId={user?.uid} t={t} />
               )}
 
               {isOwner && (

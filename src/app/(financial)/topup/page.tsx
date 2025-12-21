@@ -39,8 +39,8 @@ export default function TopupPage() {
   const step = session.step || "select";
 
   return (
-    <div className="bg-background py-8 px-4">
-      <div className="max-w-xl mx-auto rounded-2xl p-6 shadow-sm border border-border bg-background">
+    <div className="min-h-screen py-8 md:py-12 px-4">
+      <div className="max-w-6xl mx-auto">
         {step === "select" && (
           <StepSelectAmount
             session={session}
@@ -51,30 +51,36 @@ export default function TopupPage() {
         )}
 
         {step === "qr" && (
-          <StepQRPayment
-            session={session}
-            updateSession={updateSession}
-            t={t}
-          />
+          <div className="max-w-xl mx-auto rounded-2xl p-6 md:p-8 shadow-sm border border-border bg-background">
+            <StepQRPayment
+              session={session}
+              updateSession={updateSession}
+              t={t}
+            />
+          </div>
         )}
 
         {step === "success" && (
-          <StepSuccess t={t} updateSession={updateSession} />
+          <div className="max-w-xl mx-auto rounded-2xl p-6 md:p-8 shadow-sm border border-border bg-background">
+            <StepSuccess t={t} updateSession={updateSession} />
+          </div>
         )}
 
         {step === "expired" && (
-          <StepExpired
-            t={t}
-            session={session}
-            onRetry={() =>
-              updateSession({
-                step: "select",
-                qrCode: null,
-                transactionId: null,
-                expiresAt: null,
-              })
-            }
-          />
+          <div className="max-w-xl mx-auto rounded-2xl p-6 md:p-8 shadow-sm border border-border bg-background">
+            <StepExpired
+              t={t}
+              session={session}
+              onRetry={() =>
+                updateSession({
+                  step: "select",
+                  qrCode: null,
+                  transactionId: null,
+                  expiresAt: null,
+                })
+              }
+            />
+          </div>
         )}
       </div>
     </div>

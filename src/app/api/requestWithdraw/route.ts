@@ -1,4 +1,4 @@
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   doc,
   getDoc,
@@ -10,6 +10,7 @@ import {
 
 export async function POST(req: Request) {
   try {
+    const db = requireDb();
     const { userId, accountName, accountNumber, amount, source } =
       await req.json();
 

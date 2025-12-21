@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   doc,
   updateDoc,
@@ -12,9 +12,11 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { createTopupNotification } from "@/app/orders/utils/notificationService";
 
 export async function POST(req: Request) {
   try {
+    const db = requireDb();
     const raw = await req.text();
     const data = JSON.parse(raw);
 
@@ -32,7 +34,6 @@ export async function POST(req: Request) {
 
     // ❗ PhayJay ALWAYS sends transactionId — this is correct
     if (!transactionId) {
-      console.error("❌ Webhook missing transactionId");
       return NextResponse.json({ error: true });
     }
 
@@ -41,7 +42,6 @@ export async function POST(req: Request) {
     const txSnap = await getDoc(txRef);
 
     if (!txSnap.exists()) {
-      console.error("❌ Transaction not found:", transactionId);
       return NextResponse.json({ error: true });
     }
 
@@ -77,6 +77,10 @@ export async function POST(req: Request) {
     // 1) TOPUP FLOW (KEPT EXACTLY AS YOUR OLD LOGIC)
     // ────────────────────────────────────────────────
     if (safeTag2 === "topup") {
+      if (!userId) {
+        return NextResponse.json({ error: true });
+      }
+
       const userRef = doc(db, "profiles", userId);
 
       await updateDoc(userRef, {
@@ -89,6 +93,25 @@ export async function POST(req: Request) {
         confirmedAt: serverTimestamp(),
       });
 
+      // Create top-up notification
+      try {
+        // Parse amount - try txnAmount first, then savedTx.amount
+        let amountPaid = 0;
+        if (txnAmount !== undefined && txnAmount !== null) {
+          amountPaid = Number(txnAmount);
+        } else if (savedTx.amount !== undefined && savedTx.amount !== null) {
+          amountPaid = Number(savedTx.amount);
+        }
+        
+        const creditsToNotify = Number(credits) || Number(savedTx.credits) || 0;
+        
+        if (amountPaid > 0 && creditsToNotify > 0 && userId) {
+          await createTopupNotification(userId, creditsToNotify, amountPaid);
+        }
+      } catch (notifError) {
+        // Don't fail the webhook if notification creation fails
+      }
+
       return NextResponse.json({ ok: true });
     }
 
@@ -99,7 +122,6 @@ export async function POST(req: Request) {
       const projectId = safeTag3;
 
       if (!projectId) {
-        console.error("❌ Missing projectId (tag3)");
         await updateDoc(txRef, {
           status: "failed",
           errorReason: "missing_projectId",
@@ -239,7 +261,6 @@ export async function POST(req: Request) {
       const orderId = safeTag3;
 
       if (!orderId) {
-        console.error("❌ Missing orderId (tag3)");
         await updateDoc(txRef, {
           status: "failed",
           errorReason: "missing_orderId",
@@ -254,9 +275,9 @@ export async function POST(req: Request) {
       const orderSnap = await getDoc(orderRef);
       if (!orderSnap.exists()) return NextResponse.json({ error: true });
 
-      const order = orderSnap.data();
-      const freelancerId = order.sellerId;
-      const clientId = order.buyerId;
+      const orderData = orderSnap.data();
+      const freelancerId = orderData.sellerId;
+      const clientId = orderData.buyerId;
 
       // RELEASE ESCROW
       const escrowQuery = query(
@@ -336,6 +357,37 @@ export async function POST(req: Request) {
         updatedAt: serverTimestamp(),
       });
 
+      // CREATE NOTIFICATIONS FOR BOTH PARTIES
+      try {
+        const orderTitle = orderData?.catalogTitle || orderData?.packageName || "Order";
+        
+        // Notify freelancer about payment received
+        await addDoc(collection(db, "notifications"), {
+          userId: freelancerId,
+          type: "order_payment_received",
+          title: "Payment Received",
+          message: `You received payment for order "${orderTitle}". Amount: ${amountPaid.toLocaleString()} LAK`,
+          orderId,
+          orderStatus: "completed",
+          read: false,
+          createdAt: serverTimestamp(),
+        });
+
+        // Notify client about order completion
+        await addDoc(collection(db, "notifications"), {
+          userId: clientId,
+          type: "order_completed",
+          title: "Order Completed",
+          message: `Your order "${orderTitle}" has been completed and payment has been processed.`,
+          orderId,
+          orderStatus: "completed",
+          read: false,
+          createdAt: serverTimestamp(),
+        });
+      } catch (notifError) {
+        // Don't fail the webhook if notification creation fails
+      }
+
       // CREATE FREELANCER TRANSACTION LOG
       await addDoc(collection(db, "transactions"), {
         transactionId: transactionId,
@@ -351,7 +403,7 @@ export async function POST(req: Request) {
         amountPaid: amountPaid,
 
         status: "confirmed",
-        description: `Received payout for order ${order.catalogTitle || order.packageName}`,
+        description: `Received payout for order ${orderData?.catalogTitle || orderData?.packageName || "Order"}`,
 
         tag1: freelancerId,
         tag2: "order_payout_received",

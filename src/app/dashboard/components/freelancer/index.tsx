@@ -11,7 +11,7 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useFirestoreQuery } from "@/hooks/useFirestoreQuery";
 import type { Proposal, ProposalWithDetails } from "@/types/proposal";
 import StatsGrid from "../StatsGrid";
@@ -26,7 +26,7 @@ export default function FreelancerDashboard() {
   const proposalsQuery = useMemo(() => {
     if (!user) return null;
     return query(
-      collection(db, "proposals"),
+      collection(requireDb(), "proposals"),
       where("freelancerId", "==", user.uid),
       orderBy("createdAt", "desc"),
       limit(6)

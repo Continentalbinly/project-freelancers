@@ -8,7 +8,7 @@ import {
   getDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 
 export function useTopupSession(userId?: string) {
   const [session, setSession] = useState<any>(null);
@@ -16,8 +16,9 @@ export function useTopupSession(userId?: string) {
 
   useEffect(() => {
     if (!userId) return;
+    const firestore = requireDb();
 
-    const ref = doc(db, "topupSessions", userId);
+    const ref = doc(firestore, "topupSessions", userId);
     let unsub = () => {};
 
     const init = async () => {
@@ -63,7 +64,8 @@ export function useTopupSession(userId?: string) {
 
   const updateSession = async (data: any) => {
     if (!userId) return;
-    const ref = doc(db, "topupSessions", userId);
+    const firestore = requireDb();
+    const ref = doc(firestore, "topupSessions", userId);
     await setDoc(ref, data, { merge: true });
   };
 

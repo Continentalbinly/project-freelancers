@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   doc,
   getDoc,
@@ -22,6 +22,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Missing txId" });
     }
 
+    const db = requireDb();
     const oldRef = doc(db, "transactions", oldTxId);
     const oldSnap = await getDoc(oldRef);
 

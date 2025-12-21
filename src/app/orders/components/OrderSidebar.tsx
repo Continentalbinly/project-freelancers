@@ -95,23 +95,36 @@ export default function OrderSidebar({
             <>
               {order.statusHistory.map((history, idx) => {
                 const historyConfig = statusConfig[history.status];
-                const isCompleted = ["completed", "delivered"].includes(history.status);
+                const isRevisionRequest = history.note?.includes("Revision Requested") || history.note?.includes("ຂໍແກ້ໄຂ");
+                const isCompleted = ["completed", "delivered"].includes(history.status) && !isRevisionRequest;
                 return (
                   <div key={idx} className="flex gap-3">
                     <div
                       className={`w-2 h-2 rounded-full flex-shrink-0 mt-2 ${
-                        isCompleted ? "bg-success" : "bg-blue-500"
+                        isRevisionRequest 
+                          ? "bg-amber-500" 
+                          : isCompleted 
+                          ? "bg-success" 
+                          : "bg-blue-500"
                       }`}
                     ></div>
                     <div>
-                      <p className="font-medium text-text-primary">
+                      <p className={`font-medium ${
+                        isRevisionRequest 
+                          ? "text-amber-600" 
+                          : "text-text-primary"
+                      }`}>
                         {historyConfig?.label || history.status}
                       </p>
                       <p className="text-xs text-text-secondary">
                         {convertTimestampToDate(history.timestamp).toLocaleString()}
                       </p>
                       {history.note && (
-                        <p className="text-xs text-text-secondary mt-1 italic">
+                        <p className={`text-xs mt-1 italic ${
+                          isRevisionRequest 
+                            ? "text-amber-600" 
+                            : "text-text-secondary"
+                        }`}>
                           {history.note}
                         </p>
                       )}

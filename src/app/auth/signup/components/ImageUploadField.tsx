@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { Camera } from "lucide-react";
+import { Camera, X, Pencil } from "lucide-react";
 
 interface ImageUploadFieldProps {
   label: string;
@@ -51,19 +51,29 @@ export default function ImageUploadField({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("type", "profileImage");
+      formData.append("folderType", "profileImage");
 
+      // Get upload key from environment variable
+      const uploadKey = process.env.NEXT_PUBLIC_UPLOAD_KEY || "my_secure_upload_token";
+      
       const response = await fetch("/api/upload", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${uploadKey}`,
+        },
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Upload failed");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Upload failed");
       }
 
       const data = await response.json();
-      onChange(data.url);
+      if (!data.success || !data.data?.url) {
+        throw new Error(data.error || "Upload failed");
+      }
+      onChange(data.data.url);
     } catch (err) {
       setLocalError(
         t("auth.signup.errors.uploadFailed") ||
@@ -83,34 +93,73 @@ export default function ImageUploadField({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-text mb-2">
+      <label className="block text-sm font-medium text-text mb-3">
         {label}
       </label>
 
       {value ? (
-        <div className="space-y-3">
-          <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-primary bg-background-secondary">
-            <Image
-              src={value}
-              alt="Profile preview"
-              fill
-              className="object-cover"
-              sizes="100%"
-            />
+        <div className="flex flex-col items-center space-y-4">
+          {/* Circular Avatar Preview */}
+          <div className="relative group">
+            <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-primary shadow-lg ring-4 ring-primary/20">
+              <Image
+                src={value}
+                alt="Profile preview"
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 128px, 160px"
+              />
+              {/* Overlay on hover */}
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => !uploading && fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="p-2 rounded-full bg-white/90 hover:bg-white transition-colors disabled:opacity-50"
+                  title={t("common.change") || "Change photo"}
+                >
+                  <Pencil className="w-5 h-5 text-primary" />
+                </button>
+              </div>
+            </div>
+            {/* Remove button */}
+            <button
+              type="button"
+              onClick={handleRemove}
+              disabled={uploading}
+              className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-error text-white flex items-center justify-center shadow-lg hover:bg-error/90 transition-colors disabled:opacity-50 z-10"
+              title={t("common.remove") || "Remove"}
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleRemove}
-            disabled={uploading}
-            className="w-full px-4 py-2 rounded-lg font-medium text-error border border-error/30 hover:bg-error/5 transition-colors disabled:opacity-50"
-          >
-            {t("common.remove") || "Remove"}
-          </button>
+
+          {/* Change/Remove buttons for mobile */}
+          <div className="flex gap-2 w-full sm:hidden">
+            <button
+              type="button"
+              onClick={() => !uploading && fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex-1 px-4 py-2 rounded-lg font-medium text-primary border-2 border-primary hover:bg-primary/5 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Pencil className="w-4 h-4" />
+              {t("common.change") || "Change"}
+            </button>
+            <button
+              type="button"
+              onClick={handleRemove}
+              disabled={uploading}
+              className="flex-1 px-4 py-2 rounded-lg font-medium text-error border-2 border-error/30 hover:bg-error/5 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <X className="w-4 h-4" />
+              {t("common.remove") || "Remove"}
+            </button>
+          </div>
         </div>
       ) : (
         <div
           onClick={() => !uploading && fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+          className={`relative border-2 border-dashed rounded-lg p-6 sm:p-8 text-center cursor-pointer transition-colors ${
             uploading
               ? "border-border bg-background-secondary"
               : "border-border hover:border-primary bg-background-secondary hover:bg-primary-light"
@@ -126,17 +175,17 @@ export default function ImageUploadField({
           />
 
           {uploading ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="inline-block">
-                <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+                <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
               </div>
               <p className="text-sm font-medium text-text">
                 {t("common.uploading") || "Uploading..."}
               </p>
             </div>
           ) : (
-            <div className="space-y-2">
-              <div className="text-4xl justify-center flex text-primary mb-2">
+            <div className="space-y-3">
+              <div className="text-4xl justify-center flex text-primary">
                 <Camera />
               </div>
               <div>
@@ -158,9 +207,13 @@ export default function ImageUploadField({
         </div>
       )}
 
-      {localError && <p className="mt-2 text-sm text-error">{localError}</p>}
+      {localError && (
+        <div className="mt-3 p-3 rounded-lg bg-error/10 border border-error/20">
+          <p className="text-sm text-error">{localError}</p>
+        </div>
+      )}
 
-      <p className="mt-2 text-xs text-text-secondary">
+      <p className="mt-3 text-xs text-text-secondary text-center">
         {t("auth.signup.upload.optional") ||
           "Optional - You can add a photo later"}
       </p>

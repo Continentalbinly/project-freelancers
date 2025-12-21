@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { auth, db } from "@/service/firebase";
+import { auth, requireDb, requireAuth } from "@/service/firebase";
 import {
   sendEmailVerification,
   onAuthStateChanged,
-  updateProfile,
 } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { ensureDisplayName, getVerificationContinueUrl } from "@/service/auth-client";
 
 export default function VerifyEmailPage() {
   const { t } = useTranslationContext();
@@ -21,43 +21,132 @@ export default function VerifyEmailPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [checking, setChecking] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
 
-  // ✅ Detect user and sync Firestore if verified
+  // ✅ Check verification status
+  const checkVerificationStatus = async (user: any, silent = false) => {
+    if (!user) return false;
+
+    try {
+      // Reload user to get latest verification status
+      await user.reload();
+      
+      if (user.emailVerified) {
+        // Update Firestore if verified
+        try {
+          const db = requireDb();
+          const profileRef = doc(db, "profiles", user.uid);
+          const profileSnap = await getDoc(profileRef);
+          
+          if (profileSnap.exists()) {
+            const profileData = profileSnap.data();
+            if (profileData.emailVerified === false) {
+              // Non-blocking update
+              updateDoc(profileRef, {
+                emailVerified: true,
+                updatedAt: new Date(),
+              }).catch(() => {
+                // Silent fail
+              });
+            }
+          }
+        } catch {
+          // Silent fail if db not available
+        }
+        
+        setIsVerified(true);
+        if (!silent) {
+          setMessage(
+            t("auth.verifyEmail.success.verified") ||
+            "Email verified successfully! Redirecting..."
+          );
+        }
+        
+        // Redirect after a short delay to show success message
+        setTimeout(() => {
+          router.push("/");
+        }, 1500);
+        
+        return true;
+      }
+      
+      return false;
+    } catch (err) {
+      if (!silent) {
+        console.error("Error checking verification:", err);
+      }
+      return false;
+    }
+  };
+
+  // ✅ Detect user and auto-check verification status
   useEffect(() => {
+    let isMounted = true;
+    let pollInterval: NodeJS.Timeout | null = null;
+
+    if (!auth) {
+      router.push("/auth/login");
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        router.push("/auth/login");
+        if (isMounted) {
+          router.push("/auth/login");
+        }
         return;
       }
 
+      if (!isMounted) return;
+
       setEmail(user.email || "");
-      await user.reload(); // refresh latest status
+      
+      // Initial check
+      const verified = await checkVerificationStatus(user, true);
+      
+      if (!isMounted) return;
 
-      if (user.emailVerified) {
-        try {
-          // ✅ Update Firestore if still false
-          const ref = doc(db, "profiles", user.uid);
-          const snap = await getDoc(ref);
-          if (snap.exists() && snap.data().emailVerified === false) {
-            await updateDoc(ref, {
-              emailVerified: true,
-              updatedAt: new Date(),
-            });
-          }
-        } catch (err) {
-        }
+      if (verified) {
+        // Already verified, will redirect
+        return;
+      }
 
-        router.push("/"); // redirect home
-      } else {
+      // Set checking to false to show UI
+      if (isMounted) {
         setChecking(false);
       }
+
+      // ✅ Poll for verification status every 3 seconds (when user returns from email link)
+      pollInterval = setInterval(async () => {
+        if (!isMounted || !auth) return;
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          const isNowVerified = await checkVerificationStatus(currentUser, true);
+          if (isNowVerified && isMounted) {
+            if (pollInterval) {
+              clearInterval(pollInterval);
+            }
+          }
+        }
+      }, 3000);
     });
 
-    return () => unsubscribe();
-  }, [router]);
+    return () => {
+      isMounted = false;
+      unsubscribe();
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [router, t]);
 
-  // ✅ Resend Verification Email (now includes displayName)
+  // ✅ Resend Verification Email (optimized async operations)
   const handleResendVerification = async () => {
+    if (!auth) {
+      setError(
+        t("auth.verifyEmail.errors.noAuth") || "Authentication not available."
+      );
+      return;
+    }
     const user = auth.currentUser;
     if (!user) {
       setError(
@@ -71,19 +160,12 @@ export default function VerifyEmailPage() {
     setMessage("");
 
     try {
-      // 🧩 Ensure Firebase Auth has displayName for %DISPLAY_NAME%
-      const ref = doc(db, "profiles", user.uid);
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        const data = snap.data();
-        if (data.fullName && !user.displayName) {
-          await updateProfile(user, { displayName: data.fullName });
-        }
-      }
+      // ✅ Ensure displayName is set (required for %DISPLAY_NAME% in email template)
+      await ensureDisplayName(user);
 
-      // 📧 Send verification email with correct displayName
+      // 📧 Send verification email with proper continueUrl
       await sendEmailVerification(user, {
-        url: `${window.location.origin}/auth/login`,
+        url: getVerificationContinueUrl(),
         handleCodeInApp: false,
       });
 
@@ -92,11 +174,10 @@ export default function VerifyEmailPage() {
           "Verification email sent successfully."
       );
     } catch (err: any) {
-      setError(
-        err.message ||
-          t("auth.verifyEmail.errors.failedToSend") ||
-          "Failed to send verification email."
-      );
+      const errorMessage = err?.message || 
+        t("auth.verifyEmail.errors.failedToSend") ||
+        "Failed to send verification email.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -196,11 +277,45 @@ export default function VerifyEmailPage() {
                 "Resend Verification Email"}
           </button>
 
+          {/* Manual Check Button */}
+          <button
+            onClick={async () => {
+              if (!auth) {
+                setError(
+                  t("auth.verifyEmail.errors.noAuth") || "Authentication not available."
+                );
+                return;
+              }
+              const user = auth.currentUser;
+              if (!user) {
+                setError(
+                  t("auth.verifyEmail.errors.noUser") || "No signed-in user found."
+                );
+                return;
+              }
+              setLoading(true);
+              setError("");
+              setMessage("");
+              await checkVerificationStatus(user, false);
+              setLoading(false);
+            }}
+            disabled={loading || isVerified}
+            className="w-full btn btn-secondary py-2 sm:py-3 text-sm sm:text-base"
+          >
+            {loading
+              ? t("auth.verifyEmail.buttons.checking") || "Checking..."
+              : t("auth.verifyEmail.buttons.checkStatus") ||
+                "Check Verification Status"}
+          </button>
+
+          {/* Verify Later / Go Home Button */}
           <Link
             href="/"
             className="w-full inline-block text-center btn btn-secondary py-2 sm:py-3 text-sm sm:text-base"
           >
-            {t("auth.verifyEmail.buttons.goHome") || "Go Home"}
+            {t("auth.verifyEmail.buttons.verifyLater") ||
+              t("auth.verifyEmail.buttons.goHome") ||
+              "Verify Later / Go Home"}
           </Link>
 
           <div className="text-center">

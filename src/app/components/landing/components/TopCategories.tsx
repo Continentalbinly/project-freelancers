@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import {
   Briefcase,
@@ -43,7 +43,7 @@ export default function TopCategories({ t }: any) {
     const fetchCategories = async () => {
       try {
         const q = query(
-          collection(db, "categories"),
+          collection(requireDb(), "categories"),
           orderBy("createdAt", "asc")
         );
         const snapshot = await getDocs(q);

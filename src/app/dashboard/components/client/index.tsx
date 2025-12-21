@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import {
@@ -9,8 +9,10 @@ import {
   where,
   orderBy,
   limit,
+  doc,
+  onSnapshot,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useFirestoreQuery } from "@/hooks/useFirestoreQuery";
 import type { Project } from "@/types/project";
 import StatsGrid from "../StatsGrid";
@@ -20,12 +22,48 @@ import RecentProjects from "../RecentProjects";
 export default function ClientDashboard() {
   const { user, profile } = useAuth();
   const { t } = useTranslationContext();
+  const [liveCredit, setLiveCredit] = useState<number>(profile?.credit || 0);
+
+  // Real-time credit listener for instant updates after topup/transactions
+  useEffect(() => {
+    if (!user?.uid) {
+      setLiveCredit(profile?.credit || 0);
+      return;
+    }
+
+    const profileRef = doc(requireDb(), "profiles", user.uid);
+    
+    // Subscribe to real-time updates
+    const unsubscribe = onSnapshot(
+      profileRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          const credit = data?.credit ?? 0;
+          setLiveCredit(credit);
+        } else {
+          setLiveCredit(profile?.credit || 0);
+        }
+      },
+      (error) => {
+        // Fallback to profile credit on error
+        setLiveCredit(profile?.credit || 0);
+      }
+    );
+
+    // Initialize with current profile credit
+    setLiveCredit(profile?.credit || 0);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [user?.uid, profile?.credit]);
 
   // Memoize query to prevent unnecessary recalculations
   const projectsQuery = useMemo(() => {
     if (!user) return null;
     return query(
-      collection(db, "projects"),
+      collection(requireDb(), "projects"),
       where("clientId", "==", user.uid),
       orderBy("createdAt", "desc"),
       limit(6)
@@ -49,7 +87,7 @@ export default function ClientDashboard() {
       return {
         activeProjects: 0,
         completedProjects: 0,
-        credit: 0,
+        credit: liveCredit,
       };
     }
 
@@ -61,9 +99,9 @@ export default function ClientDashboard() {
     return {
       activeProjects: active,
       completedProjects: completed,
-      credit: profile?.credit || 0,
+      credit: liveCredit,
     };
-  }, [projects, profile?.credit]);
+  }, [projects, liveCredit]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -83,7 +121,7 @@ export default function ClientDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <StatsGrid stats={stats} />
         <QuickActions variant="client" />
-        <RecentProjects projects={projects} isLoading={dataLoading} />
+        <RecentProjects projects={projects || []} isLoading={dataLoading} />
       </div>
     </div>
   );

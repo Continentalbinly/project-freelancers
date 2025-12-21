@@ -1,7 +1,6 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Dialog, Transition } from "@headlessui/react";
 import {
@@ -23,7 +22,7 @@ import {
   doc,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { Project } from "@/types/project";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { Briefcase } from "lucide-react";
@@ -64,11 +63,12 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
 
     try {
       setLoading(true);
+      const firestore = requireDb();
 
       const postingFee = project.postingFee ?? 0;
 
       if (postingFee > 0) {
-        const clientRef = doc(db, "profiles", project.clientId);
+        const clientRef = doc(firestore, "profiles", project.clientId);
         const clientSnap = await getDoc(clientRef);
 
         if (clientSnap.exists()) {
@@ -81,7 +81,7 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
             updatedAt: serverTimestamp(),
           });
 
-          await addDoc(collection(db, "transactions"), {
+          await addDoc(collection(firestore, "transactions"), {
             userId: project.clientId,
             type: "posting_fee_refund",
             direction: "in",
@@ -98,14 +98,14 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
       }
 
       const proposalsSnap = await getDocs(
-        query(collection(db, "proposals"), where("projectId", "==", project.id))
+        query(collection(firestore, "proposals"), where("projectId", "==", project.id))
       );
 
       for (const p of proposalsSnap.docs) {
-        await deleteDoc(doc(db, "proposals", p.id));
+        await deleteDoc(doc(firestore, "proposals", p.id));
       }
 
-      await deleteDoc(doc(db, "projects", project.id));
+      await deleteDoc(doc(firestore, "projects", project.id));
 
       toast.success(
         postingFee > 0
@@ -196,34 +196,40 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6 pt-4 border-t border-border">
           {/* LEFT ACTIONS — stop card click */}
           <div className="flex flex-wrap gap-4 text-sm">
-            <Link
-              href={`/projects/${project.id}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 text-primary font-medium"
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/projects/${project.id}`);
+              }}
+              className="flex items-center gap-1 text-primary font-medium cursor-pointer"
             >
               <EyeIcon className="w-4 h-4" />
               {t("manageProjects.viewDetails")}
-            </Link>
+            </button>
 
             {project.status === "open" && (
               <>
-                <Link
-                  href={`/projects/${project.id}/edit`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1 text-secondary font-medium"
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/projects/${project.id}/edit`);
+                  }}
+                  className="flex items-center gap-1 text-secondary font-medium cursor-pointer"
                 >
                   <PencilIcon className="w-4 h-4" />
                   {t("manageProjects.editProject")}
-                </Link>
+                </button>
 
-                <Link
-                  href={`/projects/${project.id}/proposals`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1 text-success font-medium"
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/projects/${project.id}/proposals`);
+                  }}
+                  className="flex items-center gap-1 text-success font-medium cursor-pointer"
                 >
                   <Briefcase className="w-4 h-4" />
                   {t("manageProjects.viewProposals")} ({project.proposalsCount})
-                </Link>
+                </button>
               </>
             )}
           </div>
