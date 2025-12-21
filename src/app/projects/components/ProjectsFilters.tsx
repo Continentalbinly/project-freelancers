@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -44,7 +44,8 @@ export default function ProjectsFilters({
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const snap = await getDocs(collection(db, "categories"));
+        const firestore = requireDb();
+        const snap = await getDocs(collection(firestore, "categories"));
         const list = snap.docs.map((d) => ({
           id: d.id,
           ...(d.data() as Omit<Category, "id">),

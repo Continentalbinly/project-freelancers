@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, db } from '@/service/firebase'
+import { auth, requireDb } from '@/service/firebase'
 import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore'
 import { getAuth } from 'firebase-admin/auth'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
 
     //console.log('Starting proposals count update...')
     
+    const db = requireDb();
     // Get all projects
     const projectsSnapshot = await getDocs(collection(db, 'projects'))
     //console.log(`Found ${projectsSnapshot.size} projects`)

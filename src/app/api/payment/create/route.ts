@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const QR_URL =
@@ -45,6 +45,7 @@ export async function POST(req: Request) {
     }
 
     // ⭐ Store transaction metadata
+    const db = requireDb();
     await setDoc(doc(db, "transactions", data.transactionId), {
       id: data.transactionId,
       transactionId: data.transactionId,

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { Project } from "@/types/project";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { statusColors, getStatusLabel } from "../utils/statusUtils"; // ✅ import
@@ -29,10 +29,12 @@ export default function ProjectCard({
   const status = project.status || "unknown";
   const statusLabel = getStatusLabel(status, currentLanguage as "en" | "lo");
 
+  const router = useRouter();
+  
   return (
-    <Link
-      href={`/my-projects/${project.id}/progress`}
-      className="group block rounded-xl shadow-sm hover:shadow-xl dark:shadow-gray-900/50 border border-border dark:border-gray-700 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 dark:hover:border-primary/50 overflow-hidden"
+    <div
+      onClick={() => router.push(`/my-projects/${project.id}/progress`)}
+      className="group block rounded-xl shadow-sm hover:shadow-xl dark:shadow-gray-900/50 border border-border dark:border-gray-700 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 dark:hover:border-primary/50 overflow-hidden cursor-pointer"
     >
       {/* Image Section */}
       <div className="aspect-video w-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden relative">
@@ -93,6 +95,6 @@ export default function ProjectCard({
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 }

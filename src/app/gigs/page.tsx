@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { collection, onSnapshot, query, where, orderBy, DocumentData } from "firebase/firestore";
+import { requireDb } from "@/service/firebase";
 import type { Catalog } from "@/types/catalog";
-import { Search, X, ChevronDown, Package as PackageIcon, DollarSign, Star } from "lucide-react";
+import { Search, X, ChevronDown, Package as PackageIcon } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useAuth } from "@/contexts/AuthContext";
+import { doc, getDoc } from "firebase/firestore";
+import GigCard from "./components/GigCard";
 
 interface Category {
   id: string;
@@ -19,19 +20,39 @@ interface Category {
 // Skeleton Component
 function GigSkeleton() {
   return (
-    <div className="border border-border rounded-xl overflow-hidden bg-background-secondary animate-pulse">
-      <div className="h-40 bg-background"></div>
+    <div className="border border-border rounded-xl overflow-hidden bg-background-secondary dark:bg-gray-800 animate-pulse">
+      {/* Cover Image */}
+      <div className="h-40 bg-background-tertiary dark:bg-gray-700"></div>
       <div className="p-4 space-y-3">
-        <div className="h-5 bg-background rounded w-3/4"></div>
-        <div className="h-3 bg-background rounded w-full"></div>
-        <div className="h-3 bg-background rounded w-5/6"></div>
-        <div className="flex gap-2 pt-2">
-          <div className="h-6 bg-background rounded-full w-20"></div>
-          <div className="h-6 bg-background rounded-full w-24"></div>
+        {/* Owner Info Skeleton */}
+        <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+          <div className="w-6 h-6 rounded-full bg-background-tertiary dark:bg-gray-700"></div>
+          <div className="h-3 w-24 bg-background-tertiary dark:bg-gray-700 rounded"></div>
         </div>
-        <div className="flex gap-2 pt-3">
-          <div className="flex-1 h-8 bg-background rounded"></div>
-          <div className="h-8 w-16 bg-background rounded"></div>
+        
+        {/* Title & Category */}
+        <div>
+          <div className="h-5 bg-background-tertiary dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+          <div className="h-5 bg-background-tertiary dark:bg-gray-700 rounded-full w-20"></div>
+        </div>
+        
+        {/* Description */}
+        <div className="space-y-2">
+          <div className="h-3 bg-background-tertiary dark:bg-gray-700 rounded w-full"></div>
+          <div className="h-3 bg-background-tertiary dark:bg-gray-700 rounded w-5/6"></div>
+        </div>
+        
+        {/* Tags */}
+        <div className="flex gap-2">
+          <div className="h-5 bg-background-tertiary dark:bg-gray-700 rounded-full w-16"></div>
+          <div className="h-5 bg-background-tertiary dark:bg-gray-700 rounded-full w-20"></div>
+          <div className="h-5 bg-background-tertiary dark:bg-gray-700 rounded-full w-14"></div>
+        </div>
+        
+        {/* Price & Action */}
+        <div className="flex items-center justify-between pt-3 border-t border-border">
+          <div className="h-4 bg-background-tertiary dark:bg-gray-700 rounded w-24"></div>
+          <div className="h-7 bg-background-tertiary dark:bg-gray-700 rounded-lg w-16"></div>
         </div>
       </div>
     </div>
@@ -50,28 +71,75 @@ export default function GigsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
   const [showFilters, setShowFilters] = useState(false);
+  const [ownerProfiles, setOwnerProfiles] = useState<Map<string, { fullName: string; avatarUrl?: string; rating?: number; totalRatings?: number }>>(new Map());
+  const [cardImageIndices, setCardImageIndices] = useState<Record<string, number>>({});
 
   const isFreelancer = profile?.role === "freelancer";
 
   // Fetch categories from database
   useEffect(() => {
-    const q = query(collection(db, "categories"), orderBy("name_en", "asc"));
+    const q = query(collection(requireDb(), "categories"), orderBy("name_en", "asc"));
     const unsub = onSnapshot(q, (snap) => {
-      const cats = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) } as Category));
+      const cats = snap.docs.map((d) => {
+        const data = d.data();
+        return { id: d.id, name_en: data.name_en || "", name_lo: data.name_lo || "" } as Category;
+      });
       setCategories(cats);
       setCategoriesLoading(false);
     });
     return () => unsub();
   }, []);
 
-  // Fetch published catalogs
+  // Fetch published catalogs and owner profiles
   useEffect(() => {
-    const q = query(collection(db, "catalogs"), where("status", "==", "published"), orderBy("createdAt", "desc"));
-    const unsub = onSnapshot(q, (snap) => {
-      const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
-      setItems(rows as Catalog[]);
+    const q = query(collection(requireDb(), "catalogs"), where("status", "==", "published"), orderBy("createdAt", "desc"));
+    const unsub = onSnapshot(q, async (snap) => {
+      const rows: Catalog[] = snap.docs.map((d) => {
+        const data = d.data();
+        return {
+          id: d.id,
+          ownerId: data.ownerId || "",
+          title: data.title || "",
+          description: data.description || "",
+          images: Array.isArray(data.images) ? data.images : [],
+          category: data.category || "",
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          packages: Array.isArray(data.packages) ? data.packages : [],
+          status: data.status || "draft",
+          rating: data.rating,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        } as Catalog;
+      });
+      setItems(rows);
+      
+      // Fetch owner profiles for all catalogs
+      const ownerMap = new Map<string, { fullName: string; avatarUrl?: string; rating?: number; totalRatings?: number }>();
+      const uniqueOwnerIds = [...new Set(rows.map(item => item.ownerId).filter(Boolean))];
+      
+      // Fetch all owner profiles in parallel
+      const ownerPromises = uniqueOwnerIds.map(async (ownerId) => {
+        try {
+          const ownerSnap = await getDoc(doc(requireDb(), "profiles", ownerId));
+          if (ownerSnap.exists()) {
+            const ownerData = ownerSnap.data();
+            ownerMap.set(ownerId, {
+              fullName: ownerData.fullName || "Unknown",
+              avatarUrl: ownerData.avatarUrl || ownerData.profileImage,
+              rating: ownerData.rating || 0,
+              totalRatings: ownerData.totalRatings || 0,
+            });
+          }
+        } catch (error) {
+          console.error(`Failed to fetch owner ${ownerId}:`, error);
+        }
+      });
+      
+      await Promise.all(ownerPromises);
+      setOwnerProfiles(ownerMap);
       setLoading(false);
     });
+    
     return () => unsub();
   }, []);
 
@@ -113,11 +181,58 @@ export default function GigsPage() {
     });
   }, [items, searchText, selectedCategory, priceRange]);
 
+  // Auto-carousel for gig cards
+  useEffect(() => {
+    const intervals: NodeJS.Timeout[] = [];
+
+    filtered.forEach((gig) => {
+      const images = gig.images || [];
+      if (images.length > 1) {
+        const interval = setInterval(() => {
+          setCardImageIndices((prev) => {
+            const currentIndex = prev[gig.id] || 0;
+            const nextIndex = (currentIndex + 1) % images.length;
+            return { ...prev, [gig.id]: nextIndex };
+          });
+        }, 4000); // Change image every 4 seconds
+        intervals.push(interval);
+      }
+    });
+
+    return () => {
+      intervals.forEach(interval => clearInterval(interval));
+    };
+  }, [filtered]);
+
+  // Handle manual image change
+  const handleImageChange = (gigId: string, index: number) => {
+    setCardImageIndices((prev) => ({ ...prev, [gigId]: index }));
+  };
+
+  // Show skeleton during auth loading
   if (authLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full" />
-        <p className="mt-4 text-text-secondary text-sm">{t("common.loading")}</p>
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header Skeleton */}
+          <div className="mb-8 animate-pulse">
+            <div className="h-9 w-64 bg-background-secondary dark:bg-gray-800 rounded mb-2" />
+            <div className="h-5 w-96 bg-background-secondary dark:bg-gray-800 rounded" />
+          </div>
+
+          {/* Search Bar Skeleton */}
+          <div className="mb-6 flex flex-col sm:flex-row gap-3 animate-pulse">
+            <div className="flex-1 h-12 bg-background-secondary dark:bg-gray-800 rounded-lg" />
+            <div className="h-12 w-24 bg-background-secondary dark:bg-gray-800 rounded-lg" />
+          </div>
+
+          {/* Gigs Grid Skeleton */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {[...Array(6)].map((_, i) => (
+              <GigSkeleton key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -285,80 +400,22 @@ export default function GigsPage() {
               <span className="font-semibold text-text-primary">{items.length}</span> {t("gigsPage.services") || "services"}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-              {filtered.map((gig) => (
-                <Link
-                  key={gig.id}
-                  href={`/catalog/${gig.id}`}
-                  className="group border border-border rounded-xl overflow-hidden bg-background-secondary hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all"
-                >
-                  {/* Cover Image */}
-                  <div className="h-40 bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
-                    {gig.images?.[0] ? (
-                      <img
-                        src={gig.images[0]}
-                        alt={gig.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <PackageIcon className="w-10 h-10 text-primary/30" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-4 space-y-3">
-                    {/* Title & Category */}
-                    <div>
-                      <h3 className="font-semibold text-text-primary line-clamp-2 group-hover:text-primary transition-colors">
-                        {gig.title}
-                      </h3>
-                      {gig.category && (
-                        <span className="inline-block text-xs px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 mt-1">
-                          {getCategoryName(gig.category)}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-xs text-text-secondary line-clamp-2">{gig.description}</p>
-
-                    {/* Tags */}
-                    {(gig.tags || []).length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {gig.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-0.5 text-xs rounded-full bg-background border border-border/50 text-text-secondary"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                        {gig.tags.length > 3 && (
-                          <span className="px-2 py-0.5 text-xs rounded-full bg-background border border-border/50 text-text-secondary">
-                            +{gig.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Price & Action */}
-                    <div className="pt-3 border-t border-border flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                          <DollarSign className="w-3 h-3 text-emerald-600" />
-                        </div>
-                        <span className="text-sm font-semibold text-text-primary">
-                          From {Math.min(...(gig.packages || []).map(p => p.price || 0)).toLocaleString()} LAK
-                        </span>
-                      </div>
-                      <button className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 text-primary text-xs font-medium hover:bg-primary/20 transition-all">
-                        {t("gigsPage.view") || "View"}
-                      </button>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+              {filtered.map((gig) => {
+                const ownerProfile = ownerProfiles.has(gig.ownerId)
+                  ? ownerProfiles.get(gig.ownerId)!
+                  : undefined;
+                
+                return (
+                  <GigCard
+                    key={gig.id}
+                    gig={gig}
+                    ownerProfile={ownerProfile}
+                    categoryName={getCategoryName(gig.category)}
+                    currentImageIndex={cardImageIndices[gig.id] || 0}
+                    onImageChange={handleImageChange}
+                  />
+                );
+              })}
             </div>
           </>
         )}

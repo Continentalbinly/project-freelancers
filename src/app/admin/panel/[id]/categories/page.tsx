@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   getDoc,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import GlobalStatus from "../../../../components/GlobalStatus";
 import CategoriesHeader from "./components/CategoriesHeader";
@@ -40,7 +40,7 @@ export default function AdminCategoriesPage() {
   useEffect(() => {
     async function checkRole() {
       if (!user?.uid) return setIsAdmin(false);
-      const ref = doc(db, "profiles", user.uid);
+      const ref = doc(requireDb(), "profiles", user.uid);
       const snap = await getDoc(ref);
       const data = snap.data();
       const type = data?.userType;
@@ -53,7 +53,7 @@ export default function AdminCategoriesPage() {
   // 🔄 Fetch categories
   const fetchCategories = async () => {
     setLoading(true);
-    const q = query(collection(db, "categories"), orderBy("createdAt", "asc"));
+    const q = query(collection(requireDb(), "categories"), orderBy("createdAt", "asc"));
     const snapshot = await getDocs(q);
     const list = snapshot.docs.map((d) => ({
       id: d.id,
@@ -71,7 +71,7 @@ export default function AdminCategoriesPage() {
   const handleAdd = async () => {
     if (!form.name_en.trim() || !form.name_lo.trim()) return;
     setSaving(true);
-    await addDoc(collection(db, "categories"), {
+    await addDoc(collection(requireDb(), "categories"), {
       ...form,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -85,7 +85,7 @@ export default function AdminCategoriesPage() {
   const handleUpdate = async () => {
     if (!editingId) return;
     setSaving(true);
-    await updateDoc(doc(db, "categories", editingId), {
+    await updateDoc(doc(requireDb(), "categories", editingId), {
       ...form,
       updatedAt: serverTimestamp(),
     });
@@ -98,7 +98,7 @@ export default function AdminCategoriesPage() {
   // 🗑️ Delete
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this category?")) return;
-    await deleteDoc(doc(db, "categories", id));
+    await deleteDoc(doc(requireDb(), "categories", id));
     fetchCategories();
   };
 

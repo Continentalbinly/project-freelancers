@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   collection,
   query,
@@ -39,7 +39,7 @@ export default function useProfileData(user: { uid: string } | null) {
     if (!user) return;
     setLoadingData(true);
     try {
-      const projectsRef = collection(db, "projects");
+      const projectsRef = collection(requireDb(), "projects");
       const projectsSnap = await getDocs(
         query(projectsRef, orderBy("updatedAt", "desc"), limit(10))
       );
@@ -54,7 +54,7 @@ export default function useProfileData(user: { uid: string } | null) {
         )
       );
 
-      const proposalsRef = collection(db, "proposals");
+      const proposalsRef = collection(requireDb(), "proposals");
       const proposalsSnap = await getDocs(
         query(proposalsRef, orderBy("createdAt", "desc"), limit(10))
       );

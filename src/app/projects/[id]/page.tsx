@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import {
   doc,
   getDoc,
@@ -24,6 +24,7 @@ import ProjectParticipants from "./components/ProjectParticipants";
 import ProjectSidebar from "./components/ProjectSidebar";
 import ProjectActions from "./components/ProjectActions";
 import ProjectImage from "@/app/utils/projectImageHandler";
+import ProjectDetailSkeleton from "./components/ProjectDetailSkeleton";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
@@ -43,8 +44,9 @@ export default function ProjectDetailPage() {
   // 🔹 Fetch project + participants
   async function fetchProjectAndProfiles(projectId: string) {
     try {
+      const firestore = requireDb();
       // 🧠 1. Fetch project
-      const projectRef = doc(db, "projects", projectId);
+      const projectRef = doc(firestore, "projects", projectId);
       const projectSnap = await getDoc(projectRef);
       if (!projectSnap.exists()) {
         setLoading(false);
@@ -53,7 +55,7 @@ export default function ProjectDetailPage() {
 
       const projectData = projectSnap.data();
       const proposalsQuery = query(
-        collection(db, "proposals"),
+        collection(firestore, "proposals"),
         where("projectId", "==", projectId)
       );
       const proposalsSnap = await getDocs(proposalsQuery);
@@ -68,7 +70,7 @@ export default function ProjectDetailPage() {
 
       // 🧠 2. Fetch client profile
       if (projectData.clientId) {
-        const clientRef = doc(db, "profiles", projectData.clientId);
+        const clientRef = doc(firestore, "profiles", projectData.clientId);
         const clientSnap = await getDoc(clientRef);
         if (clientSnap.exists()) {
           setClientProfile({ id: clientSnap.id, ...clientSnap.data() });
@@ -78,7 +80,7 @@ export default function ProjectDetailPage() {
       // 🧠 3. Fetch freelancer profile
       if (projectData.acceptedFreelancerId) {
         const freelancerRef = doc(
-          db,
+          firestore,
           "profiles",
           projectData.acceptedFreelancerId
         );
@@ -97,16 +99,9 @@ export default function ProjectDetailPage() {
     }
   }
 
-  // 🕒 Loading
+  // 🕒 Loading - Show skeleton instead of spinner
   if (loading || authLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background  ">
-        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
-        <p className="mt-4 text-text-secondary text-sm sm:text-base">
-          {t("common.loading")}
-        </p>
-      </div>
-    );
+    return <ProjectDetailSkeleton />;
   }
 
   // 🚫 Project not found
@@ -152,6 +147,7 @@ export default function ProjectDetailPage() {
             clientProfile={clientProfile}
             freelancerProfile={freelancerProfile}
             project={project}
+            currentUserId={user?.uid}
             t={t}
           />
         </div>

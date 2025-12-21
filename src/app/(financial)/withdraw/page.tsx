@@ -1,69 +1,65 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 import WithdrawSummary from "./components/WithdrawSummary";
-import ClientWithdrawForm from "./components/ClientWithdrawForm";
 import FreelancerWithdrawForm from "./components/FreelancerWithdrawForm";
 import { useAuth } from "@/contexts/AuthContext";
-import { getUserProfile } from "@/service/profile";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function WithdrawPage() {
-  const { user } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const { t } = useTranslationContext();
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState<"client" | "freelancer" | null>(null);
+  const router = useRouter();
 
+  // Redirect clients immediately
   useEffect(() => {
-    if (!user?.uid) return;
-    getUserProfile(user.uid).then((data) => {
-      if (!data) {
-        setLoading(false);
-        return;
+    if (!authLoading && profile) {
+      if (profile.role === "client") {
+        router.push("/dashboard");
       }
-      
-      setProfile(data);
-      setLoading(false);
+    }
+  }, [profile, authLoading, router]);
 
-      // Detect user role
-      if ((data as any).role === "freelancer") {
-        setUserRole("freelancer");
-      } else if ((data as any).role === "client") {
-        setUserRole("client");
-      }
-    });
-  }, [user]);
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full"></div>
+      </div>
+    );
+  }
+
+  // Block clients - show access denied message
+  if (!user || profile?.role !== "freelancer") {
+    return (
+      <div className="min-h-screen px-4 py-8 bg-background">
+        <div className="rounded-2xl border border-error/20 bg-error/5 dark:bg-error/10 p-8 text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-error/20 dark:bg-error/30 flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-error" />
+            </div>
+          </div>
+          <h2 className="text-xl font-bold text-text-primary mb-2">
+            {t("withdraw.accessDenied.title") || "Access Restricted"}
+          </h2>
+          <p className="text-text-secondary mb-6">
+            {t("withdraw.accessDenied.message") ||
+              "Withdrawal is only available for freelancers. Credits cannot be withdrawn as they are used for platform services."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-4 py-8 bg-background">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Skeleton loading */}
-        {loading && (
-          <div className="space-y-6 animate-pulse">
-            <div className="h-28 rounded-2xl bg-background-secondary"></div>
-            <div className="h-80 rounded-2xl bg-background-secondary"></div>
-            <div className="h-40 rounded-2xl bg-background-secondary"></div>
-          </div>
-        )}
+      {/* Summary */}
+      <WithdrawSummary profile={profile} userRole="freelancer" />
 
-        {!loading && profile && (
-          <>
-            <WithdrawSummary profile={profile} userRole={userRole} />
-            {userRole === "client" && (
-              <ClientWithdrawForm user={user} profile={profile} />
-            )}
-            {userRole === "freelancer" && (
-              <FreelancerWithdrawForm user={user} profile={profile} />
-            )}
-            {!userRole && (
-              <div className="backdrop-blur-xl border border-border bg-background rounded-2xl p-6 text-center text-text-secondary">
-                {t("common.accessRestrictedTitle")}
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* Withdraw Form */}
+      <FreelancerWithdrawForm user={user} profile={profile} />
     </div>
   );
 }

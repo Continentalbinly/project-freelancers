@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   collection,
   query,
@@ -12,7 +12,7 @@ import {
   getDoc,
   doc,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { formatEarnings } from "@/service/currencyUtils";
 import { timeAgo } from "@/service/timeUtils";
@@ -20,6 +20,7 @@ import Avatar from "@/app/utils/avatarHandler";
 
 export default function PortfolioSection() {
   const { t, currentLanguage } = useTranslationContext();
+  const router = useRouter();
   const [completedProjects, setCompletedProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +32,7 @@ export default function PortfolioSection() {
     try {
       setLoading(true);
       const q = query(
-        collection(db, "projects"),
+        collection(requireDb(), "projects"),
         where("status", "==", "completed"),
         where("acceptedFreelancerId", "!=", null),
         orderBy("completedAt", "desc"),
@@ -45,7 +46,7 @@ export default function PortfolioSection() {
           let freelancer = null;
           if (data.acceptedFreelancerId) {
             const freelancerRef = doc(
-              db,
+              requireDb(),
               "profiles",
               data.acceptedFreelancerId
             );
@@ -151,9 +152,9 @@ export default function PortfolioSection() {
         </div>
 
         <div className="text-center mt-10">
-          <Link href="/projects" className="btn btn-primary px-8 py-3 text-lg">
+          <button onClick={() => router.push("/projects")} className="btn btn-primary px-8 py-3 text-lg cursor-pointer">
             {t("freelancersPage.portfolio.viewMore")}
-          </Link>
+          </button>
         </div>
       </div>
     </section>

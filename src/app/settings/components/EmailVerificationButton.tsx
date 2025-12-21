@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { sendEmailVerification } from "firebase/auth";
 import { useAuth } from "@/contexts/AuthContext";
+import { ensureDisplayName, getVerificationContinueUrl } from "@/service/auth-client";
 
 export default function EmailVerificationButton() {
   const { user } = useAuth();
@@ -16,9 +17,17 @@ export default function EmailVerificationButton() {
     if (!user) return;
     setLoading(true);
     try {
+      // ✅ Ensure displayName is set (required for %DISPLAY_NAME% in email template)
+      await ensureDisplayName(user);
+
+      // 📧 Send verification email with proper continueUrl
+      // Firebase generates: https://[domain]/__/auth/action?mode=verifyEmail&oobCode=[code]
+      // continueUrl is where users are redirected AFTER clicking the link
       await sendEmailVerification(user, {
-        url: `${window.location.origin}/auth/login`,
+        url: getVerificationContinueUrl(),
+        handleCodeInApp: false,
       });
+      
       setStatus({
         text: "Verification email sent! Please check your inbox.",
         type: "info",

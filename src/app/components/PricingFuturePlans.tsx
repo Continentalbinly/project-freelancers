@@ -10,7 +10,7 @@ import {
   getDoc,
   setDoc,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import en from "@/lib/i18n/en";
 import lo from "@/lib/i18n/lo";
 import { useRouter } from "next/navigation";
@@ -37,7 +37,7 @@ export default function PricingFuturePlans() {
       }
 
       try {
-        const profileRef = doc(db, "profiles", user.uid);
+        const profileRef = doc(requireDb(), "profiles", user.uid);
         const snapshot = await getDoc(profileRef);
 
         if (!snapshot.exists()) {
@@ -179,8 +179,8 @@ export default function PricingFuturePlans() {
             </ul>
             <div className="text-center text-green-700 dark:text-green-400 font-medium">
               {userPlan === "basic"
-                ? "You have the Basic plan"
-                : "Free plan included"}
+                ? t("pricing.futurePlans.basic.youHaveTheBasicPlan")
+                : t("pricing.futurePlans.basic.freePlanIncluded")}
             </div>
           </div>
 
@@ -277,16 +277,17 @@ export default function PricingFuturePlans() {
                 )
               )}
             </ul>
-            <a
-              href="/contact"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/contact");
+              }}
               className="btn btn-outline w-full"
             >
-              💬 Contact Admin
-            </a>
+              {t("pricing.futurePlans.enterprise.contactAdmin")}
+            </button>
             <p className="text-xs text-gray-600 dark:text-gray-300 text-center mt-2">
-              For enterprise access, please message our admin.
+              {t("pricing.futurePlans.enterprise.contactAdminNote")}
             </p>
           </div>
         </div>

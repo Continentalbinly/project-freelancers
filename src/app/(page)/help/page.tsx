@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslationContext } from '@/app/components/LanguageProvider'
 
 export default function HelpPage() {
   const { t } = useTranslationContext()
+  const router = useRouter()
 
   return (
     <div>
@@ -218,12 +220,12 @@ export default function HelpPage() {
             {t('help.contactSupport.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/contact" className="btn btn-primary px-8 py-3">
+            <button onClick={() => router.push("/contact")} className="btn btn-primary px-8 py-3 cursor-pointer">
               {t('help.contactSupport.contactSupport')}
-            </Link>
-            <Link href="/faq" className="btn btn-outline px-8 py-3">
+            </button>
+            <button onClick={() => router.push("/faq")} className="btn btn-outline px-8 py-3 cursor-pointer">
               {t('help.contactSupport.viewFaq')}
-            </Link>
+            </button>
           </div>
         </div>
       </section>

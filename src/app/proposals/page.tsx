@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   collection,
   query,
@@ -11,52 +11,47 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
-import ProposalsTabs from "./components/ProposalsTabs";
 import ProposalsFilter from "./components/ProposalsFilter";
 import ProposalsList from "./components/ProposalsList";
 import ProposalsSkeleton from "./components/ProposalsSkeleton";
 import ProposalsEmptyState from "./components/ProposalsEmptyState";
 
 export default function ProposalsPage() {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { t } = useTranslationContext();
 
   const [proposals, setProposals] = useState<any[]>([]);
   const [loadingProposals, setLoadingProposals] = useState(true);
-  const [activeTab, setActiveTab] = useState<"submitted" | "received">(
-    "submitted"
-  );
   const [statusFilter, setStatusFilter] = useState("all");
+
+  // Determine user role and set proposal view type accordingly
+  const isClient = profile?.role === "client";
+  const isFreelancer = profile?.role === "freelancer";
+  const activeTab: "submitted" | "received" = isClient ? "received" : "submitted";
 
   useEffect(() => {
     if (!loading && !user) router.push("/auth/login");
   }, [user, loading, router]);
 
   useEffect(() => {
-    const tab = searchParams.get("tab");
-    if (tab === "received" || tab === "submitted") setActiveTab(tab);
-    else router.replace("/proposals?tab=submitted", { scroll: false });
-  }, [searchParams, router]);
-
-  useEffect(() => {
-    if (user) fetchProposals();
-  }, [user, activeTab, statusFilter]);
+    if (user && profile) fetchProposals();
+  }, [user, profile, activeTab, statusFilter]);
 
   const fetchProposals = async () => {
     try {
       setLoadingProposals(true);
       if (!user) return;
+      const firestore = requireDb();
 
       // Fetch submitted proposals
       const submittedSnap = await getDocs(
         query(
-          collection(db, "proposals"),
+          collection(firestore, "proposals"),
           where("freelancerId", "==", user.uid),
           orderBy("createdAt", "desc")
         )
@@ -68,14 +63,14 @@ export default function ProposalsPage() {
 
       // Fetch received proposals (client)
       const projectSnap = await getDocs(
-        query(collection(db, "projects"), where("clientId", "==", user.uid))
+        query(collection(firestore, "projects"), where("clientId", "==", user.uid))
       );
       const projectIds = projectSnap.docs.map((doc) => doc.id);
 
       let received: any[] = [];
       if (projectIds.length) {
         const allProposals = await getDocs(
-          query(collection(db, "proposals"), orderBy("createdAt", "desc"))
+          query(collection(firestore, "proposals"), orderBy("createdAt", "desc"))
         );
         received = allProposals.docs
           .filter((p) => projectIds.includes(p.data().projectId))
@@ -85,11 +80,11 @@ export default function ProposalsPage() {
       const all = activeTab === "submitted" ? submitted : received;
       const detailed = await Promise.all(
         all.map(async (p) => {
-          const projectDoc = await getDoc(doc(db, "projects", p.projectId));
+          const projectDoc = await getDoc(doc(firestore, "projects", p.projectId));
           const project = projectDoc.exists() ? projectDoc.data() : null;
 
           const freelancerDoc = await getDoc(
-            doc(db, "profiles", p.freelancerId)
+            doc(firestore, "profiles", p.freelancerId)
           );
           const freelancer = freelancerDoc.exists()
             ? freelancerDoc.data()
@@ -97,7 +92,7 @@ export default function ProposalsPage() {
 
           let client = null;
           if (project?.clientId) {
-            const cDoc = await getDoc(doc(db, "profiles", project.clientId));
+            const cDoc = await getDoc(doc(firestore, "profiles", project.clientId));
             client = cDoc.exists() ? cDoc.data() : null;
           }
 
@@ -131,7 +126,6 @@ export default function ProposalsPage() {
           </div>
         </div>
 
-        <ProposalsTabs activeTab={activeTab} onChange={setActiveTab} t={t} />
         <ProposalsFilter
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}

@@ -11,7 +11,7 @@ import {
   writeBatch,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { UserRole } from "./utils";
@@ -174,15 +174,16 @@ export default function StepInProgress({
       );
 
       // 2️⃣ Replace old originals before saving new ones
+      const firestore = requireDb();
       const deliverablesRef = collection(
-        db,
+        firestore,
         "projects",
         project.id,
         "finalDeliverables"
       );
       const existingDocsSnap = await getDocs(deliverablesRef);
       if (!existingDocsSnap.empty) {
-        const batch = writeBatch(db);
+        const batch = writeBatch(firestore);
         existingDocsSnap.forEach((doc) => batch.delete(doc.ref));
         await batch.commit();
       }

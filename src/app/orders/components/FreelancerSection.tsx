@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { FileText, Clock, Github, Upload, MessageSquare, X } from "lucide-react";
+import { FileText, Clock, Github, Upload, MessageSquare, X, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
+import { convertTimestampToDate } from "@/service/timeUtils";
 import type { Order, OrderStatus } from "@/types/order";
 
 interface FreelancerSectionProps {
@@ -13,6 +14,8 @@ interface FreelancerSectionProps {
   setDeliveryNote: (note: string) => void;
   onUpdateStatus: (status: OrderStatus) => Promise<void>;
   onDeliver: (type: "text" | "github" | "file", files?: string[], screenshots?: string[]) => Promise<void>;
+  onAcceptRevision?: () => Promise<void>;
+  onDeclineRevision?: () => Promise<void>;
 }
 
 export default function FreelancerSection({
@@ -22,6 +25,8 @@ export default function FreelancerSection({
   setDeliveryNote,
   onUpdateStatus,
   onDeliver,
+  onAcceptRevision,
+  onDeclineRevision,
 }: FreelancerSectionProps) {
   const { t } = useTranslationContext();
   const [deliveryType, setDeliveryType] = useState<"text" | "github" | "file">("text");
@@ -200,8 +205,69 @@ export default function FreelancerSection({
         </div>
       )}
 
-      {/* Step 3: Submit Delivery (In Progress) */}
-      {order.status === "in_progress" && (
+      {/* Revision Request Handling - Show when revisionPending is true (regardless of status) */}
+      {order.revisionPending && (
+        <div className="space-y-4">
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm text-amber-700 font-medium flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              {t("orderDetail.revisionRequested") || "Revision Requested"}
+            </p>
+            <p className="text-xs text-amber-600 mt-2">
+              {t("orderDetail.revisionRequestedDesc") || "The client has requested revisions. Please review and accept or decline."}
+            </p>
+          </div>
+
+          {/* Show latest revision request */}
+          {order.revisionRequests && order.revisionRequests.length > 0 && (
+            <div className="p-4 bg-background border border-border rounded-lg">
+              <p className="text-sm font-medium text-text-primary mb-2">
+                {t("orderDetail.latestRevision") || "Latest Revision Request"}
+              </p>
+              {(() => {
+                const latestRequest = order.revisionRequests[order.revisionRequests.length - 1];
+                return (
+                  <div className="space-y-2">
+                    <p className="text-xs text-text-secondary">
+                      {t("orderDetail.requestedAt") || "Requested at"}: {convertTimestampToDate(latestRequest.requestedAt).toLocaleString()}
+                    </p>
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <p className="text-sm text-amber-900 font-medium mb-1">
+                        {t("orderDetail.revisionReason") || "Reason"}
+                      </p>
+                      <p className="text-sm text-amber-800">{latestRequest.reason}</p>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-border">
+            <button
+              onClick={onDeclineRevision}
+              disabled={updating || !onDeclineRevision}
+              className="px-6 py-2.5 rounded-lg border border-error text-error font-medium hover:bg-error/10 transition-all disabled:opacity-50"
+            >
+              {updating
+                ? t("common.processing") || "Processing..."
+                : t("orderDetail.declineRevision") || "Decline Revision"}
+            </button>
+            <button
+              onClick={onAcceptRevision}
+              disabled={updating || !onAcceptRevision}
+              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium hover:shadow-lg hover:shadow-amber-500/30 transition-all disabled:opacity-50"
+            >
+              {updating
+                ? t("common.processing") || "Processing..."
+                : t("orderDetail.acceptRevision") || "Accept Revision"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Submit Delivery (In Progress) - Only show when no revision is pending */}
+      {order.status === "in_progress" && !order.revisionPending && (
         <div className="space-y-4">
           {/* Delivery Type Selection */}
           <div>
@@ -399,8 +465,9 @@ export default function FreelancerSection({
         </div>
       )}
 
+
       {/* Step 4: Awaiting Client Review (Delivered) */}
-      {order.status === "delivered" && (
+      {order.status === "delivered" && !order.revisionPending && (
         <div className="space-y-4">
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-sm text-green-700 font-medium flex items-center gap-2">

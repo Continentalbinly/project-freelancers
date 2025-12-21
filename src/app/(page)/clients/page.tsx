@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import ProjectImage, {
   getProjectImageProps,
 } from "@/app/utils/projectImageHandler";
@@ -39,7 +39,7 @@ export default function ClientsPage() {
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
-      const q = query(collection(db, "projects"));
+      const q = query(collection(requireDb(), "projects"));
       const snap = await getDocs(q);
       const projectList = snap.docs.map((doc) => ({
         id: doc.id,
@@ -64,7 +64,7 @@ export default function ClientsPage() {
       for (let i = 0; i < creatorIds.length; i += 10) {
         const batch = creatorIds.slice(i, i + 10);
         const q = query(
-          collection(db, "profiles"),
+          collection(requireDb(), "profiles"),
           where("__name__", "in", batch)
         );
         const snap = await getDocs(q);

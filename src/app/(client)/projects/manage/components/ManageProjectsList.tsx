@@ -1,7 +1,7 @@
 "use client";
 
 import ProjectCard from "./ProjectCard";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 export default function ManageProjectsList({
@@ -10,6 +10,7 @@ export default function ManageProjectsList({
   t,
   onProjectDeleted,
 }: any) {
+  const router = useRouter();
   const filtered = projects.filter((p: any) => {
     const matchStatus = filters.status === "all" || p.status === filters.status;
     const matchCat =
@@ -33,10 +34,10 @@ export default function ManageProjectsList({
         </p>
 
         {projects.length === 0 && (
-          <Link href="/projects/create" className="btn btn-primary">
+          <button onClick={() => router.push("/projects/create")} className="btn btn-primary cursor-pointer">
             <PlusIcon className="w-5 h-5 mr-2" />
             {t("manageProjects.postFirstProject")}
-          </Link>
+          </button>
         )}
       </div>
     );

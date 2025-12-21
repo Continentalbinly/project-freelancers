@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Coins, AlertCircle, CheckCircle } from "lucide-react";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 // Same fee structure as project posting
@@ -69,6 +69,7 @@ export default function CheckoutModal({
       setLoading(true);
       setError("");
 
+      const db = requireDb();
       // Fetch user credits from profiles collection
       const profileDoc = await getDoc(doc(db, "profiles", userId));
       if (profileDoc.exists()) {
@@ -105,6 +106,7 @@ export default function CheckoutModal({
 
       const newBalance = userCredits - orderFee;
 
+      const db = requireDb();
       // Deduct credits from user profile
       await updateDoc(doc(db, "profiles", userId), {
         credit: newBalance,
@@ -152,6 +154,19 @@ export default function CheckoutModal({
         newBalance: newBalance,
         description: `Order placed for ${catalogTitle} - ${pkg.name}`,
       });
+
+      // Create notifications for both client and freelancer
+      const { createOrderCreatedNotification } = await import("@/app/orders/utils/notificationService");
+      const orderData = {
+        id: orderRef.id,
+        catalogId,
+        buyerId: userId,
+        sellerId: ownerId,
+        packageName: pkg.name,
+        catalogTitle,
+        status: "pending" as const,
+      };
+      await createOrderCreatedNotification(orderData, orderFee, userCredits, newBalance);
 
       setSuccess(true);
       setUserCredits(newBalance);

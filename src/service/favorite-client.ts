@@ -10,6 +10,9 @@ export interface FavoriteResponse {
 
 export async function addToFavorites(projectId: string): Promise<FavoriteResponse> {
   try {
+    if (!auth) {
+      return { success: false, error: 'Authentication not initialized' }
+    }
     const user = auth.currentUser
     if (!user) {
       return { success: false, error: 'User not authenticated' }
@@ -38,6 +41,9 @@ export async function addToFavorites(projectId: string): Promise<FavoriteRespons
 
 export async function removeFromFavorites(projectId: string): Promise<FavoriteResponse> {
   try {
+    if (!auth) {
+      return { success: false, error: 'Authentication not initialized' }
+    }
     const user = auth.currentUser
     if (!user) {
       return { success: false, error: 'User not authenticated' }
@@ -66,6 +72,9 @@ export async function removeFromFavorites(projectId: string): Promise<FavoriteRe
 
 export async function checkFavoriteStatus(projectId: string): Promise<FavoriteResponse> {
   try {
+    if (!auth) {
+      return { success: false, error: 'Authentication not initialized' }
+    }
     const user = auth.currentUser
     if (!user) {
       return { success: false, error: 'User not authenticated' }
@@ -94,6 +103,9 @@ export async function checkFavoriteStatus(projectId: string): Promise<FavoriteRe
 
 export async function getUserFavorites(): Promise<FavoriteResponse> {
   try {
+    if (!auth) {
+      return { success: false, error: 'Authentication not initialized' }
+    }
     const user = auth.currentUser
     if (!user) {
       return { success: false, error: 'User not authenticated' }

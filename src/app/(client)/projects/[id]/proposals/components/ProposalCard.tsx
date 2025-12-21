@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import Avatar from "@/app/utils/avatarHandler";
 import { timeAgo } from "@/service/timeUtils";
 import { formatEarnings } from "@/service/currencyUtils";
@@ -42,6 +42,7 @@ export default function ProposalCard({
 
       if (!profileId) return;
 
+      const db = requireDb();
       const snap = await getDoc(doc(db, "profiles", profileId));
       if (snap.exists()) {
         const data = snap.data();

@@ -8,7 +8,7 @@ export default function SignupPage() {
   const { t } = useTranslationContext();
 
   return (
-    <div className="min-h-screen bg-background py-6 px-4 sm:px-6">
+    <div className="min-h-screen py-6 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-10">

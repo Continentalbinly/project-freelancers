@@ -1,9 +1,10 @@
 "use client";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProjectActions({ project, t }: any) {
   const { user, profile } = useAuth();
+  const router = useRouter();
   const isOwner = user?.uid === project.clientId;
 
   const isFreelancer = profile?.role === "freelancer";
@@ -17,12 +18,12 @@ export default function ProjectActions({ project, t }: any) {
       <div className="space-y-3">
         {/* ✅ Submit Proposal (freelancer only + not owner + open) */}
         {user && project.status === "open" && !isOwner && isFreelancer && (
-          <Link
-            href={`/projects/${project.id}/propose`}
-            className="btn btn-primary w-full"
+          <button
+            onClick={() => router.push(`/projects/${project.id}/propose`)}
+            className="btn btn-primary w-full cursor-pointer"
           >
             {t("projectDetail.submitProposal")}
-          </Link>
+          </button>
         )}
 
         {/* 🚫 Cannot propose own project */}
@@ -45,18 +46,18 @@ export default function ProjectActions({ project, t }: any) {
 
         {/* ✏️ Edit Project — only if owner AND project is open */}
         {user && isOwner && project.status === "open" && (
-          <Link
-            href={`/projects/${project.id}/edit`}
-            className="btn btn-outline w-full"
+          <button
+            onClick={() => router.push(`/projects/${project.id}/edit`)}
+            className="btn btn-outline w-full cursor-pointer"
           >
             {t("projectDetail.editProject")}
-          </Link>
+          </button>
         )}
 
         {/* 🔙 Back to home */}
-        <Link href="/" className="btn btn-outline w-full">
+        <button onClick={() => router.push("/")} className="btn btn-outline w-full cursor-pointer">
           {t("common.back2home")}
-        </Link>
+        </button>
       </div>
     </div>
   );

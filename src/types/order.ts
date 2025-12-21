@@ -36,6 +36,8 @@ export interface Order {
   revisionCount?: number;
   revisionRequests?: { requestedAt: Record<string, unknown>; reason: string; freelancerNote?: string }[];
   revisionPending?: boolean;
+  clientRated?: boolean;
+  freelancerRated?: boolean;
   status: OrderStatus;
   createdAt?: Record<string, unknown>;
   updatedAt?: Record<string, unknown>;

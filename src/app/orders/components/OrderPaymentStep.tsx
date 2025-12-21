@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { toast } from "react-toastify";
 import type { Order } from "@/types/order";
 
@@ -42,6 +42,7 @@ export default function OrderPaymentStep({ order, onPaymentConfirmed }: OrderPay
 
   // Load order transaction
   const loadOrderTransaction = async () => {
+    const db = requireDb();
     const snap = await getDoc(doc(db, "orders", order.id));
     if (!snap.exists()) return toast.error("Order not found");
 
@@ -54,6 +55,7 @@ export default function OrderPaymentStep({ order, onPaymentConfirmed }: OrderPay
 
   // Load QR from transaction
   const loadExistingQR = async (txId: string) => {
+    const db = requireDb();
     const snap = await getDoc(doc(db, "transactions", txId));
 
     if (!snap.exists()) {
@@ -144,6 +146,7 @@ export default function OrderPaymentStep({ order, onPaymentConfirmed }: OrderPay
     clearInterval(pollInterval.current);
 
     pollInterval.current = setInterval(async () => {
+      const db = requireDb();
       const snap = await getDoc(doc(db, "transactions", txId));
       if (snap.exists() && snap.data().status === "confirmed") {
         clearInterval(timerInterval.current);

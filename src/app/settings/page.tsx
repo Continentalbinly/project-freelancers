@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Bell, Lock, UserCog2 } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
 export default function SettingsOverviewPage() {
   const { t } = useTranslationContext();
+  const router = useRouter();
 
   const cards = [
     {
@@ -41,10 +42,10 @@ export default function SettingsOverviewPage() {
 
       <div className="space-y-4">
         {cards.map(({ key, title, desc, icon: Icon }) => (
-          <Link
+          <button
             key={key}
-            href={`/settings/${key}`} // ✅ Now links to /settings/privacy, etc.
-            className="bg-background rounded-xl border border-border shadow-sm p-4 flex items-center justify-between hover:shadow-md active:scale-[0.99] transition-all"
+            onClick={() => router.push(`/settings/${key}`)}
+            className="bg-background rounded-xl border border-border shadow-sm p-4 flex items-center justify-between hover:shadow-md active:scale-[0.99] transition-all cursor-pointer w-full text-left"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary/10 rounded-lg">
@@ -56,7 +57,7 @@ export default function SettingsOverviewPage() {
               </div>
             </div>
             <span className="text-gray-400 dark:text-gray-500 text-sm">›</span>
-          </Link>
+          </button>
         ))}
       </div>
     </div>

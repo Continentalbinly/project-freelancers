@@ -1,9 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
-import { db } from "@/service/firebase";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { User as FirebaseUser } from "firebase/auth";
+import { requireDb } from "@/service/firebase";
+import { collection, getDocs, query, orderBy, limit, Timestamp } from "firebase/firestore";
+import { Profile } from "@/types/profile";
 
-export function useDashboardData(user: any, profile: any, t: any) {
+interface DashboardActivity {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  date: Date;
+}
+
+export function useDashboardData(
+  user: FirebaseUser | null,
+  profile: Profile | null,
+  t: (key: string) => string
+) {
   const [stats, setStats] = useState({
     activeProjects: 0,
     totalEarned: 0,
@@ -13,7 +27,7 @@ export function useDashboardData(user: any, profile: any, t: any) {
     proposalsReceived: 0,
     rating: 0,
   });
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<DashboardActivity[]>([]);
   const [loadingActivity, setLoadingActivity] = useState(true);
 
   useEffect(() => {
@@ -21,8 +35,8 @@ export function useDashboardData(user: any, profile: any, t: any) {
     const fetchData = async () => {
       setLoadingActivity(true);
       try {
-        const projectsRef = collection(db, "projects");
-        const proposalsRef = collection(db, "proposals");
+        const projectsRef = collection(requireDb(), "projects");
+        const proposalsRef = collection(requireDb(), "proposals");
 
         const [projectsSnap, proposalsSnap] = await Promise.all([
           getDocs(query(projectsRef, orderBy("updatedAt", "desc"), limit(20))),
@@ -72,21 +86,26 @@ export function useDashboardData(user: any, profile: any, t: any) {
         });
 
         // recent activity
-        const activities: any[] = [];
+        const activities: DashboardActivity[] = [];
         projects.forEach((doc) => {
           const data = doc.data();
           if (data.status === "completed") {
+            const updatedAt = data.updatedAt;
+            const date = updatedAt instanceof Timestamp
+              ? updatedAt.toDate()
+              : updatedAt?.toDate?.() || new Date();
+            
             activities.push({
               id: doc.id,
               type: "project_completed",
-              title: data.title,
-              description: `${data.title} completed.`,
-              date: data.updatedAt?.toDate() || new Date(),
+              title: data.title || "Untitled Project",
+              description: `${data.title || "Project"} completed.`,
+              date,
             });
           }
         });
         setRecentActivity(
-          activities.sort((a, b) => b.date - a.date).slice(0, 6)
+          activities.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 6)
         );
       } catch (err) {
         //console.error("Dashboard data error:", err);

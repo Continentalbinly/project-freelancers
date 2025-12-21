@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, db } from '@/service/firebase'
+import { auth, requireDb } from '@/service/firebase'
 import { doc, setDoc, deleteDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'
 import { getAuth } from 'firebase-admin/auth'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
 
 async function addFavorite(userId: string, projectId: string) {
   try {
+    const db = requireDb();
     // Check if project exists
     const projectRef = doc(db, 'projects', projectId)
     const projectSnap = await getDoc(projectRef)
@@ -117,6 +118,7 @@ async function addFavorite(userId: string, projectId: string) {
 
 async function removeFavorite(userId: string, projectId: string) {
   try {
+    const db = requireDb();
     const favoriteId = `${userId}_${projectId}`
     const favoriteRef = doc(db, 'projectFavorites', favoriteId)
     
@@ -137,6 +139,7 @@ async function removeFavorite(userId: string, projectId: string) {
 
 async function checkFavorite(userId: string, projectId: string) {
   try {
+    const db = requireDb();
     const favoriteId = `${userId}_${projectId}`
     const favoriteRef = doc(db, 'projectFavorites', favoriteId)
     const favoriteSnap = await getDoc(favoriteRef)
@@ -156,6 +159,7 @@ async function checkFavorite(userId: string, projectId: string) {
 
 async function getUserFavorites(userId: string) {
   try {
+    const db = requireDb();
     const favoritesQuery = query(
       collection(db, 'projectFavorites'),
       where('userId', '==', userId)

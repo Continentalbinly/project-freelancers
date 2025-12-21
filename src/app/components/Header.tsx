@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,7 @@ export default function Header() {
   const { t } = useTranslationContext();
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -21,7 +22,7 @@ export default function Header() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Left: Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <button onClick={() => router.push("/")} className="flex items-center space-x-2 cursor-pointer">
               <Image
                 src="/favicon.svg"
                 alt="UniJobs logo"
@@ -30,7 +31,7 @@ export default function Header() {
                 className="rounded-md"
                 priority
               />
-            </Link>
+            </button>
           </div>
 
           {/* Center: Navigation (absolutely centered) */}

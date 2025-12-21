@@ -17,6 +17,9 @@ export interface ProposalResponse {
 
 export async function createProposal(proposalData: ProposalData): Promise<ProposalResponse> {
   try {
+    if (!auth) {
+      return { success: false, error: 'Authentication not initialized' }
+    }
     const user = auth.currentUser
     if (!user) {
       return { success: false, error: 'User not authenticated' }
@@ -45,6 +48,9 @@ export async function createProposal(proposalData: ProposalData): Promise<Propos
 
 export async function getProposals(projectId: string): Promise<ProposalResponse> {
   try {
+    if (!auth) {
+      return { success: false, error: 'Authentication not initialized' }
+    }
     const user = auth.currentUser
     if (!user) {
       return { success: false, error: 'User not authenticated' }
@@ -76,6 +82,9 @@ export async function updateProposalStatus(
   status: 'accepted' | 'rejected' | 'pending'
 ): Promise<ProposalResponse> {
   try {
+    if (!auth) {
+      return { success: false, error: 'Authentication not initialized' }
+    }
     const user = auth.currentUser
     if (!user) {
       return { success: false, error: 'User not authenticated' }

@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { auth } from '@/service/firebase'
 import { sendPasswordResetEmail } from 'firebase/auth'
 
 export default function ForgotPasswordPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
@@ -25,7 +26,6 @@ export default function ForgotPasswordPage() {
       await sendPasswordResetEmail(auth, email)
       setSuccess('If an account with that email exists, a password reset link has been sent.')
     } catch (err: any) {
-      //console.error('Password reset error:', err)
       setError(err.message || 'Failed to send reset email. Please try again later.')
     } finally {
       setLoading(false)
@@ -77,9 +77,9 @@ export default function ForgotPasswordPage() {
       <div className="mt-4 sm:mt-6 text-center">
         <p className="text-text-secondary text-sm sm:text-base">
           Remembered your password?{' '}
-          <Link href="/auth/login" className="text-primary hover:text-primary-hover font-medium">
+          <button onClick={() => router.push("/auth/login")} className="text-primary hover:text-primary-hover font-medium cursor-pointer">
             Sign in
-          </Link>
+          </button>
         </p>
       </div>
     </div>

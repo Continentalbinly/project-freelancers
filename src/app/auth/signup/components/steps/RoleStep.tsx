@@ -2,6 +2,8 @@
 
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { SignupCredentials } from "@/types/auth";
+import { LightBulbIcon } from "@heroicons/react/24/outline";
+import { NotebookText, UserSearch } from "lucide-react";
 
 interface RoleStepProps {
   formData: SignupCredentials;
@@ -14,13 +16,13 @@ export default function RoleStep({ formData, setFormData }: RoleStepProps) {
   const roles = [
     {
       id: "freelancer",
-      icon: "💼",
+      icon: <NotebookText className="w-8 h-8 text-green-500" />,
       title: t("auth.signup.roles.freelancer.title") || "Freelancer",
       description: t("auth.signup.roles.freelancer.description") || "Offer your skills and services",
     },
     {
       id: "client",
-      icon: "🎯",
+      icon: <UserSearch className="w-8 h-8 text-blue-500" />,
       title: t("auth.signup.roles.client.title") || "Client",
       description: t("auth.signup.roles.client.description") || "Hire talented professionals",
     },
@@ -73,7 +75,7 @@ export default function RoleStep({ formData, setFormData }: RoleStepProps) {
 
       {/* Info Box */}
       <div className="mt-8 p-4 rounded-lg text-sm" style={{ backgroundColor: "color-mix(in oklab, var(--info) 10%, transparent)", border: "1px solid color-mix(in oklab, var(--info) 30%, transparent)", color: "var(--info)" }}>
-        <p className="font-medium mb-1">💡 {t("common.tip") || "Tip"}:</p>
+        <p className="font-medium mb-1"><LightBulbIcon className="inline-block w-5 h-5 mr-1" /> {t("common.tip") || "Tip"}:</p>
         <p>
           {formData.role === "freelancer"
             ? t("auth.signup.roles.freelancer.info") ||

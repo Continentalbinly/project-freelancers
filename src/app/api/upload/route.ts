@@ -3,16 +3,59 @@ import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
 import { uploadToCloudinary } from "@/service/cloudinary";
+import { getAuth } from "firebase-admin/auth";
+import { initializeApp, getApps, cert } from "firebase-admin/app";
 
 const MAX_SIZE_MB = 2000; // ✅ up to 2 GB
-const AUTH_KEY = process.env.NEXT_UPLOAD_KEY || "my_secure_upload_token";
+// Support both server-side and client-side env var names
+const AUTH_KEY = process.env.NEXT_UPLOAD_KEY || process.env.NEXT_PUBLIC_UPLOAD_KEY || "my_secure_upload_token";
+
+// Initialize Firebase Admin for auth token verification
+let adminAuth: ReturnType<typeof getAuth> | null = null;
+try {
+  if (!getApps().length && process.env.FIREBASE_PROJECT_ID) {
+    initializeApp({
+      credential: cert({
+        projectId: process.env.FIREBASE_PROJECT_ID!,
+        clientEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+        privateKey: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+      }),
+    });
+  }
+  if (getApps().length) {
+    adminAuth = getAuth();
+  }
+} catch (error) {
+  // Firebase Admin not available, will use upload key only
+  console.warn("Firebase Admin not initialized for upload route");
+}
 
 /** 🔹 Main Upload Route */
 export async function POST(request: NextRequest) {
   try {
-    // ✅ Authorization check (optional but recommended)
+    // ✅ Authorization check - accept Firebase auth token OR upload key
     const authHeader = request.headers.get("authorization");
-    if (!authHeader || authHeader !== `Bearer ${AUTH_KEY}`) {
+    let isAuthorized = false;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split("Bearer ")[1];
+      
+      // Check if it's the upload key
+      if (token === AUTH_KEY) {
+        isAuthorized = true;
+      } 
+      // Check if it's a Firebase auth token (for authenticated users)
+      else if (adminAuth) {
+        try {
+          await adminAuth.verifyIdToken(token);
+          isAuthorized = true;
+        } catch (error) {
+          // Not a valid Firebase token, continue to check upload key
+        }
+      }
+    }
+
+    if (!isAuthorized) {
       return NextResponse.json(
         { success: false, error: "Unauthorized upload request" },
         { status: 403 }
@@ -55,6 +98,17 @@ export async function POST(request: NextRequest) {
 
     // 🔹 CASE 2 — proposalsImage (Cloudinary direct)
     if (folderType === "proposalsImage") {
+      return await handleCloudinaryUpload(
+        buffer,
+        file,
+        fileName,
+        folderType,
+        subfolder
+      );
+    }
+
+    // 🔹 CASE 2.5 — portfolio (Cloudinary direct for better image/video handling)
+    if (folderType === "portfolio") {
       return await handleCloudinaryUpload(
         buffer,
         file,

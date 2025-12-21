@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   collection,
   query,
@@ -10,12 +11,14 @@ import {
   getDoc,
   orderBy,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import ProjectCard from "./components/ProjectCard";
 import type { Project } from "@/types/project";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import MyProjectsSkeleton from "./components/MyProjectsSkeleton";
+import { Timestamp } from "firebase/firestore";
+import { convertTimestamp } from "@/service/firebase";
 
 export default function MyProjectsPage() {
   const { user } = useAuth();
@@ -32,11 +35,11 @@ export default function MyProjectsPage() {
       try {
         // 🔹 Queries for client + freelancer roles
         const clientQ = query(
-          collection(db, "projects"),
+          collection(requireDb(), "projects"),
           where("clientId", "==", user.uid)
         );
         const freelancerQ = query(
-          collection(db, "projects"),
+          collection(requireDb(), "projects"),
           where("acceptedFreelancerId", "==", user.uid)
         );
 
@@ -59,12 +62,16 @@ export default function MyProjectsPage() {
 
         // 🕒 Sort by createdAt DESC (latest first)
         uniqueProjects.sort((a, b) => {
-          const aTime =
-            (a.createdAt as any)?.toMillis?.() ||
-            new Date(a.createdAt || 0).getTime();
-          const bTime =
-            (b.createdAt as any)?.toMillis?.() ||
-            new Date(b.createdAt || 0).getTime();
+          const aTime = a.createdAt instanceof Timestamp
+            ? a.createdAt.toMillis()
+            : a.createdAt instanceof Date
+            ? a.createdAt.getTime()
+            : new Date(a.createdAt || 0).getTime();
+          const bTime = b.createdAt instanceof Timestamp
+            ? b.createdAt.toMillis()
+            : b.createdAt instanceof Date
+            ? b.createdAt.getTime()
+            : new Date(b.createdAt || 0).getTime();
           return bTime - aTime;
         });
 
@@ -79,7 +86,7 @@ export default function MyProjectsPage() {
         const profileDocs = await Promise.all(
           profileIds.map(async (pid) => {
             try {
-              const ref = doc(db, "profiles", pid);
+              const ref = doc(requireDb(), "profiles", pid);
               const snap = await getDoc(ref);
               return snap.exists() ? { id: snap.id, ...snap.data() } : null;
             } catch {
@@ -131,12 +138,12 @@ export default function MyProjectsPage() {
         <p className="text-text-secondary mb-6 max-w-sm">
           {t("common.NoProjectsYetDesc")}
         </p>
-        <button
-          onClick={() => (window.location.href = "/")}
-          className="px-6 cursor-pointer py-2.5 bg-primary text-white font-medium rounded-md hover:bg-primary-dark transition-all shadow-sm"
+        <Link
+          href="/"
+          className="inline-block px-6 cursor-pointer py-2.5 bg-primary text-white font-medium rounded-md hover:bg-primary-dark transition-all shadow-sm"
         >
           {t("common.browseProject")}
-        </button>
+        </Link>
       </div>
     );
   }

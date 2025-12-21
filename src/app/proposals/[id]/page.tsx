@@ -3,37 +3,15 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { doc, getDoc, Timestamp } from "firebase/firestore";
+import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { ProposalWithDetails } from "@/types/proposal";
 
 import ProposalMain from "./components/ProposalMain";
 import ProposalSidebar from "./components/ProposalSidebar";
 import ProposalImageModal from "./components/ProposalImageModal";
 import ProposalSkeleton from "./components/ProposalSkeleton";
-
-interface Proposal {
-  id: string;
-  projectId: string;
-  freelancerId: string;
-  coverLetter: string;
-  proposedBudget: number;
-  proposedRate: number;
-  estimatedDuration: string;
-  status: "pending" | "accepted" | "rejected" | "withdrawn";
-  workSamples?: any[];
-  workPlan?: string;
-  milestones?: any[];
-  availability?: string;
-  communicationPreferences?: string;
-  createdAt: any;
-  updatedAt: any;
-  processedAt?: any;
-  processedBy?: string;
-  project?: any | null;
-  freelancer?: any | null;
-  client?: any | null;
-}
 
 export default function ProposalDetailPage() {
   const { user, loading } = useAuth();
@@ -41,7 +19,7 @@ export default function ProposalDetailPage() {
   const params = useParams();
   const { t } = useTranslationContext();
 
-  const [proposal, setProposal] = useState<Proposal | null>(null);
+  const [proposal, setProposal] = useState<ProposalWithDetails | null>(null);
   const [loadingProposal, setLoadingProposal] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -57,24 +35,25 @@ export default function ProposalDetailPage() {
     try {
       setLoadingProposal(true);
       if (!user || !params.id) return;
+      const firestore = requireDb();
 
-      const proposalDocRef = doc(db, "proposals", params.id as string);
+      const proposalDocRef = doc(firestore, "proposals", params.id as string);
       const proposalDoc = await getDoc(proposalDocRef);
       if (!proposalDoc.exists()) return router.push("/proposals");
 
       const proposalData = proposalDoc.data();
       const projectDoc = await getDoc(
-        doc(db, "projects", proposalData.projectId)
+        doc(firestore, "projects", proposalData.projectId)
       );
       const freelancerDoc = await getDoc(
-        doc(db, "profiles", proposalData.freelancerId)
+        doc(firestore, "profiles", proposalData.freelancerId)
       );
 
       let clientData = null;
       let projectData = projectDoc.exists() ? projectDoc.data() : null;
       if (projectData) {
         const clientDoc = await getDoc(
-          doc(db, "profiles", projectData.clientId)
+          doc(firestore, "profiles", projectData.clientId)
         );
         clientData = clientDoc.exists() ? clientDoc.data() : null;
       }
@@ -82,10 +61,33 @@ export default function ProposalDetailPage() {
       setProposal({
         id: proposalDoc.id,
         ...proposalData,
-        project: projectData,
-        freelancer: freelancerDoc.exists() ? freelancerDoc.data() : null,
-        client: clientData,
-      } as Proposal);
+        project: projectData ? {
+          id: projectDoc.id,
+          title: projectData.title || "",
+          description: projectData.description,
+          budget: projectData.budget,
+          clientId: projectData.clientId,
+          skillsRequired: projectData.skillsRequired,
+          status: projectData.status,
+          acceptedFreelancerId: projectData.acceptedFreelancerId,
+        } : undefined,
+        freelancer: freelancerDoc.exists() ? {
+          id: freelancerDoc.id,
+          fullName: freelancerDoc.data().fullName || "",
+          avatar: freelancerDoc.data().avatarUrl,
+          rating: freelancerDoc.data().rating,
+          totalProjects: freelancerDoc.data().totalProjects,
+          hourlyRate: freelancerDoc.data().hourlyRate,
+          skills: freelancerDoc.data().skills,
+        } : undefined,
+        client: clientData ? {
+          id: clientData.id || "",
+          fullName: clientData.fullName || "",
+          avatar: clientData.avatarUrl,
+          rating: clientData.rating,
+          totalProjects: clientData.totalProjects,
+        } : undefined,
+      } as ProposalWithDetails);
     } catch (err) {
       //console.error("Error fetching proposal:", err);
     } finally {

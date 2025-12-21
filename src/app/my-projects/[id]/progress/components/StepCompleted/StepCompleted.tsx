@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 
 import FinalMessage from "./FinalMessage";
@@ -24,8 +24,9 @@ export default function StepCompleted({ project }: { project: any }) {
   useEffect(() => {
     const loadFiles = async () => {
       setLoadingFiles(true);
+      const firestore = requireDb();
       const q = query(
-        collection(db, "projects", project.id, "finalDeliverables"),
+        collection(firestore, "projects", project.id, "finalDeliverables"),
         orderBy("uploadedAt", "desc")
       );
       const snap = await getDocs(q);
@@ -41,8 +42,9 @@ export default function StepCompleted({ project }: { project: any }) {
 
     const checkRating = async () => {
       setLoadingRating(true);
+      const firestore = requireDb();
       const q = query(
-        collection(db, "ratings"),
+        collection(firestore, "ratings"),
         where("projectId", "==", project.id),
         where("raterId", "==", user.uid)
       );

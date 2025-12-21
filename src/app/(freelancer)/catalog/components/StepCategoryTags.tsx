@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import type { CatalogForm } from "./types";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { FolderOpen, Search, Tag, X, Plus, CheckCircle2 } from "lucide-react";
@@ -18,7 +18,7 @@ export default function StepCategoryTags({ form, setForm }: { form: CatalogForm;
   useEffect(() => {
     (async () => {
       try {
-        const snap = await getDocs(collection(db, "categories"));
+        const snap = await getDocs(collection(requireDb(), "categories"));
         const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
         setCategories(rows as Category[]);
       } finally {

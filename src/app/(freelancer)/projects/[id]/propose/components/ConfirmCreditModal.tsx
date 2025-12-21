@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Dialog } from "@headlessui/react";
 
 export default function ConfirmCreditModal({
@@ -10,6 +11,7 @@ export default function ConfirmCreditModal({
   hasEnoughCredit,
   t,
 }: any) {
+  const router = useRouter();
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
@@ -54,7 +56,7 @@ export default function ConfirmCreditModal({
             ) : (
               <button
                 className="btn btn-primary"
-                onClick={() => (window.location.href = "/wallet/top-up")}
+                onClick={() => router.push("/topup")}
               >
                 {t("proposePage.topUpCredits")}
               </button>

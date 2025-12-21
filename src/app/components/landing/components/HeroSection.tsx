@@ -1,7 +1,9 @@
-import Link from "next/link";
+"use client";
+import { useRouter } from "next/navigation";
 import SearchBar from "./SearchBar";
 
 export default function HeroSection({ t }: any) {
+  const router = useRouter();
   return (
     <section className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950/20 py-20 sm:py-24 lg:py-28 overflow-hidden">
       {/* 🎨 Decorative background elements */}
@@ -23,18 +25,18 @@ export default function HeroSection({ t }: any) {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 relative z-20">
-          <Link
-            href="/auth/signup?type=freelancer"
-            className="btn btn-primary px-8 py-4 text-lg font-semibold hover:shadow-lg transition-all duration-300"
+          <button
+            onClick={() => router.push("/auth/signup?type=freelancer")}
+            className="btn btn-primary px-8 py-4 text-lg font-semibold hover:shadow-lg transition-all duration-300 cursor-pointer"
           >
             {t("landingPage.hero.startEarning")}
-          </Link>
-          <Link
-            href="/how-it-works"
-            className="btn btn-outline px-8 py-4 text-lg font-semibold hover:shadow-lg transition-all duration-300 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+          </button>
+          <button
+            onClick={() => router.push("/how-it-works")}
+            className="btn btn-outline px-8 py-4 text-lg font-semibold hover:shadow-lg transition-all duration-300 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
           >
             {t("landingPage.hero.learnHow")}
-          </Link>
+          </button>
         </div>
       </div>
     </section>

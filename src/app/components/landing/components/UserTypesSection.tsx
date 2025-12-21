@@ -1,6 +1,8 @@
-import Link from "next/link";
+"use client";
+import { useRouter } from "next/navigation";
 
 export default function UserTypesSection({ t }: any) {
+  const router = useRouter();
   const userTypes = [
     {
       key: "freelancers",
@@ -80,13 +82,13 @@ export default function UserTypesSection({ t }: any) {
                 </ul>
 
                 {/* Button */}
-                <Link
-                  href={signup}
+                <button
+                  onClick={() => router.push(signup)}
                   className={`inline-block px-8 py-3 rounded-lg font-semibold shadow-md hover:shadow-xl ${buttonStyle} 
-                             transition-all duration-300 hover:scale-105 active:scale-95`}
+                             transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer`}
                 >
                   {t(`landingPage.userTypes.${key}.joinButton`)}
-                </Link>
+                </button>
               </div>
             </div>
           ))}

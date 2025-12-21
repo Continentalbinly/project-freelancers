@@ -1,4 +1,4 @@
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 /**
@@ -6,6 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
  */
 export async function getUserProfile(userId: string) {
   try {
+    const db = requireDb();
     const ref = doc(db, "profiles", userId);
     const snap = await getDoc(ref);
     if (snap.exists()) {

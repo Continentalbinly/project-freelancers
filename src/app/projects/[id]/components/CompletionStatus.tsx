@@ -12,7 +12,7 @@ import {
   getDocs,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { convertTimestampToDate } from "@/service/timeUtils";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -62,8 +62,9 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
   useEffect(() => {
     const checkIfRated = async () => {
       if (!user || !localProject?.id) return;
+      const firestore = requireDb();
       const q = query(
-        collection(db, "ratings"),
+        collection(firestore, "ratings"),
         where("projectId", "==", localProject.id),
         where("raterId", "==", user.uid)
       );
@@ -103,7 +104,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
     if (!isFreelancer) return;
     try {
       setUpdating(true);
-      const ref = doc(db, "projects", localProject.id);
+      const firestore = requireDb();
+      const ref = doc(firestore, "projects", localProject.id);
       const data = {
         freelancerCompleted: {
           userId: user.uid,
@@ -135,7 +137,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
     if (!isClient || !freelancerDone) return;
     try {
       setUpdating(true);
-      const projectRef = doc(db, "projects", localProject.id);
+      const firestore = requireDb();
+      const projectRef = doc(firestore, "projects", localProject.id);
       const freelancerId = localProject.acceptedFreelancerId;
       const clientId = localProject.clientId;
       const projectBudget = Number(localProject.budget || 0);
@@ -153,7 +156,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
 
       // 🔹 Update freelancer totalEarned + projectsCompleted
       if (freelancerId && projectBudget > 0) {
-        const freelancerRef = doc(db, "profiles", freelancerId);
+        const freelancerRef = doc(firestore, "profiles", freelancerId);
         const snap = await getDoc(freelancerRef);
         if (snap.exists()) {
           const freelancerData = snap.data();
@@ -168,9 +171,9 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
         }
       }
 
-      // 🔹 Update client’s projectsCompleted count as well
+      // 🔹 Update client's projectsCompleted count as well
       if (clientId) {
-        const clientRef = doc(db, "profiles", clientId);
+        const clientRef = doc(firestore, "profiles", clientId);
         const snap = await getDoc(clientRef);
         if (snap.exists()) {
           const clientData = snap.data();
@@ -225,7 +228,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       const raterType = isClient ? "client" : "freelancer";
 
       // ✅ Add rating record
-      await addDoc(collection(db, "ratings"), {
+      const firestore = requireDb();
+      await addDoc(collection(firestore, "ratings"), {
         projectId: localProject.id,
         raterId: user.uid,
         raterType,
@@ -241,7 +245,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       });
 
       // ✅ Update target profile average
-      const targetRef = doc(db, "profiles", ratedUserId);
+      const targetRef = doc(firestore, "profiles", ratedUserId);
       const targetSnap = await getDoc(targetRef);
       if (targetSnap.exists()) {
         const data = targetSnap.data();

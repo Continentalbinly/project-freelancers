@@ -23,10 +23,14 @@ import {
   setDoc,
   increment,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { toast } from "react-toastify";
+import { 
+  createProposalAcceptedNotification, 
+  createProposalRejectedNotification 
+} from "@/app/orders/utils/notificationService";
 
 export default function ProposalSidebar({ proposal, t, isClient }: any) {
   const router = useRouter();
@@ -60,8 +64,9 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
           : proposal.project?.clientId;
 
         if (!userId) return;
+        const firestore = requireDb();
 
-        const profileDoc = await getDoc(doc(db, "profiles", userId));
+        const profileDoc = await getDoc(doc(firestore, "profiles", userId));
         if (profileDoc.exists()) setProfileData(profileDoc.data());
       } finally {
         setLoadingProfile(false);
@@ -78,17 +83,41 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
     setLoadingAction(true);
 
     try {
-      await updateDoc(doc(db, "proposals", proposal.id), {
+      const firestore = requireDb();
+      // Get project title for notification
+      const projectSnap = await getDoc(doc(firestore, "projects", proposal.projectId));
+      const projectTitle = projectSnap.exists() 
+        ? (projectSnap.data().title ?? "Unknown Project")
+        : "Unknown Project";
+      
+      const clientId = proposal.project?.clientId || (projectSnap.exists() ? projectSnap.data().clientId : null);
+
+      await updateDoc(doc(firestore, "proposals", proposal.id), {
         status: "accepted",
         processedAt: serverTimestamp(),
       });
 
-      await updateDoc(doc(db, "projects", proposal.projectId), {
+      await updateDoc(doc(firestore, "projects", proposal.projectId), {
         acceptedFreelancerId: proposal.freelancerId,
         acceptedProposalId: proposal.id,
         status: "in_progress",
         updatedAt: serverTimestamp(),
       });
+
+      // Create notification for freelancer
+      if (clientId) {
+        try {
+          await createProposalAcceptedNotification(
+            clientId,
+            proposal.freelancerId,
+            proposal.projectId,
+            projectTitle,
+            proposal.id
+          );
+        } catch (notifError) {
+          console.error("Error creating proposal accepted notification:", notifError);
+        }
+      }
 
       toast.success(t("common.acceptSuccess"));
       router.push(`/messages?project=${proposal.projectId}`);
@@ -135,8 +164,9 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
     setLoadingAction(true);
 
     try {
+      const firestore = requireDb();
       /** Load project fee */
-      const projectSnap = await getDoc(doc(db, "projects", proposal.projectId));
+      const projectSnap = await getDoc(doc(firestore, "projects", proposal.projectId));
       if (!projectSnap.exists()) throw new Error("Project missing.");
 
       const project = projectSnap.data();
@@ -144,7 +174,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
       const projectTitle = project.title ?? "Unknown Project";
 
       /** Load freelancer */
-      const freelancerRef = doc(db, "profiles", proposal.freelancerId);
+      const freelancerRef = doc(firestore, "profiles", proposal.freelancerId);
       const freelancerSnap = await getDoc(freelancerRef);
 
       if (!freelancerSnap.exists()) throw new Error("Freelancer not found");
@@ -159,7 +189,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
       });
 
       /** Save transaction */
-      const transactionRef = doc(collection(db, "transactions"));
+      const transactionRef = doc(collection(firestore, "transactions"));
       await setDoc(transactionRef, {
         id: transactionRef.id,
         userId: proposal.freelancerId,
@@ -176,11 +206,28 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
       });
 
       /** Update proposal */
-      await updateDoc(doc(db, "proposals", proposal.id), {
+      await updateDoc(doc(firestore, "proposals", proposal.id), {
         status: "rejected",
         refundedAmount: refundAmount,
         processedAt: serverTimestamp(),
       });
+
+      // Create notification for freelancer about rejection and refund
+      const clientId = project.clientId;
+      if (clientId) {
+        try {
+          await createProposalRejectedNotification(
+            clientId,
+            proposal.freelancerId,
+            proposal.projectId,
+            projectTitle,
+            proposal.id,
+            refundAmount
+          );
+        } catch (notifError) {
+          console.error("Error creating proposal rejected notification:", notifError);
+        }
+      }
 
       toast.success(t("common.rejectSuccess"));
       window.location.reload();
@@ -281,19 +328,19 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("accept")}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-md flex justify-center"
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-md flex items-center justify-center gap-2"
             >
-              <CheckCircleIcon className="w-4 h-4 mr-1" />
-              {t("proposals.detail.accept")}
+              <CheckCircleIcon className="w-5 h-5" />
+              <span>{t("proposals.detail.accept")}</span>
             </button>
 
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("reject")}
-              className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-md flex justify-center"
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-md flex items-center justify-center gap-2"
             >
-              <XCircleIcon className="w-4 h-4 mr-1" />
-              {t("proposals.detail.reject")}
+              <XCircleIcon className="w-5 h-5" />
+              <span>{t("proposals.detail.reject")}</span>
             </button>
           </>
         )}
@@ -302,12 +349,12 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
           <button
             onClick={handleStartChat}
             disabled={loadingChat}
-            className={`w-full bg-primary text-white py-2.5 rounded-md flex justify-center hover:bg-primary-hover ${
+            className={`w-full bg-primary text-white py-2.5 rounded-md flex items-center justify-center gap-2 hover:bg-primary-hover ${
               loadingChat ? "opacity-70 pointer-events-none" : ""
             }`}
           >
-            <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1" />
-            {loadingChat ? (t("proposals.proposalCard.openingChat") || "Opening...") : t("proposals.detail.startChat")}
+            <ChatBubbleLeftRightIcon className="w-5 h-5" />
+            <span>{loadingChat ? (t("proposals.proposalCard.openingChat") || "Opening...") : t("proposals.detail.startChat")}</span>
           </button>
         )}
 

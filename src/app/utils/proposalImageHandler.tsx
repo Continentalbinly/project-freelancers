@@ -161,7 +161,7 @@ export default function ProposalImage({
 
 // Utility function to get proposal image props
 export function getProposalImageProps(
-  proposal: any,
+  proposal: { imageUrl?: string; workSampleUrl?: string; title?: string } | null | undefined,
   type: "work-sample" | "attachment" | "portfolio" = "work-sample"
 ) {
   const props = {

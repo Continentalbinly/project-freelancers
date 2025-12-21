@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useProjects } from "./components/useProjects";
@@ -67,11 +68,21 @@ export default function ProjectsPage() {
   // -------------------------------------
   // Page UI
   // -------------------------------------
+  // Show skeleton during auth loading
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-b-2 border-primary rounded-full" />
-        <p className="mt-4 text-text-secondary text-sm">{t("common.loading")}</p>
+      <div className="bg-background min-h-screen">
+        <div className="py-4 border-b border-border">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="h-10 w-full bg-background-secondary dark:bg-gray-800 rounded animate-pulse" />
+          </div>
+        </div>
+        <section className="py-8">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="h-7 w-40 bg-background-secondary dark:bg-gray-800 rounded mb-6 animate-pulse" />
+            <ProjectsSkeleton />
+          </div>
+        </section>
       </div>
     );
   }
@@ -100,7 +111,7 @@ export default function ProjectsPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center mb-6">
             {loading ? (
-              <div className="h-7 w-40 bg-background-tertiary rounded" />
+              <div className="h-7 w-40 bg-background-secondary dark:bg-gray-800 rounded animate-pulse" />
             ) : (
               <h2 className="text-2xl font-bold text-text-primary">
                 {filteredProjects.length} {t("projects.results.title")}
@@ -108,9 +119,9 @@ export default function ProjectsPage() {
             )}
 
             {user && isClient && (
-              <a href="/projects/create" className="btn btn-primary">
+              <Link href="/projects/create" className="btn btn-primary">
                 {t("projects.postProject")}
-              </a>
+              </Link>
             )}
           </div>
 

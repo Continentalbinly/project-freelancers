@@ -24,8 +24,8 @@ export default function ClientSection({
   const [revisionReason, setRevisionReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Only show for delivered status
-  if (order.status !== "delivered") return null;
+  // Only show for delivered status AND when no revision is pending
+  if (order.status !== "delivered" || order.revisionPending) return null;
 
   const revisionLimit = order.revisionLimit || 2;
   const revisionCount = order.revisionCount || 0;

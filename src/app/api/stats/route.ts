@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/service/firebase'
+import { requireDb } from '@/service/firebase'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 
 export async function GET() {
   try {
+    const db = requireDb();
     // Get all profiles to count freelancers and clients
     const profilesRef = collection(db, 'profiles')
     const profilesSnapshot = await getDocs(profilesRef)

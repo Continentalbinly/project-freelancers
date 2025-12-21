@@ -66,6 +66,12 @@ export interface Profile {
     title: string;
     company: string;
     period: string;
+    startDate?: string; // Start date (YYYY-MM-DD)
+    endDate?: string; // End date (YYYY-MM-DD) or empty for current
+    type?: {
+      en: string;
+      lo: string;
+    };
     description: string;
   }>;
   projects?: Array<{

@@ -4,7 +4,7 @@ import { markCompleted, createChangeRequest } from "./actions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -50,8 +50,9 @@ export default function StepInReviewClient({ project }: { project: any }) {
   // ✅ Load submissions
   useEffect(() => {
     const fetchSubmissions = async () => {
+      const firestore = requireDb();
       const q = query(
-        collection(db, "projects", project.id, "submissions"),
+        collection(firestore, "projects", project.id, "submissions"),
         orderBy("createdAt", "desc")
       );
       const snap = await getDocs(q);
@@ -64,8 +65,9 @@ export default function StepInReviewClient({ project }: { project: any }) {
   useEffect(() => {
     const fetchPendingRequests = async () => {
       setCheckingPending(true);
+      const firestore = requireDb();
       const q = query(
-        collection(db, "projects", project.id, "changeRequests"),
+        collection(firestore, "projects", project.id, "changeRequests"),
         orderBy("createdAt", "desc")
       );
       const snap = await getDocs(q);

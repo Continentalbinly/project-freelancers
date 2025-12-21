@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { Project } from "@/types/project";
@@ -42,8 +42,9 @@ export default function ManageProjectsPage() {
     try {
       if (!user) return;
       setLoadingProjects(true);
+      const firestore = requireDb();
 
-      const projectsRef = collection(db, "projects");
+      const projectsRef = collection(firestore, "projects");
       const projectsQuery = query(
         projectsRef,
         where("clientId", "==", user.uid),
@@ -56,7 +57,7 @@ export default function ManageProjectsPage() {
           const data = docSnap.data();
           const proposalsSnap = await getDocs(
             query(
-              collection(db, "proposals"),
+              collection(firestore, "proposals"),
               where("projectId", "==", docSnap.id)
             )
           );

@@ -1,4 +1,7 @@
-import { Star } from "lucide-react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { Star, User } from "lucide-react";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 
 interface OwnerProfile {
@@ -12,15 +15,23 @@ interface OwnerProfile {
 
 interface OwnerProfileCardProps {
   owner: OwnerProfile;
+  currentUserId?: string;
   t: (key: string) => string;
 }
 
-export default function OwnerProfileCard({ owner, t }: OwnerProfileCardProps) {
+export default function OwnerProfileCard({ owner, currentUserId, t }: OwnerProfileCardProps) {
+  const router = useRouter();
+
+  const handleViewProfile = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push(`/profile/${owner.id}`);
+  };
+
   return (
     <div className="bg-gradient-to-br from-primary/5 dark:from-primary-dark/10 to-secondary/5 dark:to-secondary-dark/10 border-2 border-primary/20 dark:border-primary-dark/30 rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
       {/* Header */}
-      <div className="text-center mb-6 pb-6 border-b border-primary/20 dark:border-primary-dark/30">
-        <p className="text-xs font-semibold text-text-secondary dark:text-text-secondary-dark uppercase tracking-wide mb-4">
+      <div className="text-center mb-4 border-b border-primary/20 dark:border-primary-dark/30">
+        <p className="text-md font-semibold text-text-secondary dark:text-text-secondary-dark uppercase tracking-wide mb-4">
           {t("catalogDetail.freelancerProfile")}
         </p>
       </div>
@@ -73,6 +84,19 @@ export default function OwnerProfileCard({ owner, t }: OwnerProfileCardProps) {
       <p className="text-xs text-text-secondary dark:text-text-secondary-dark text-center mt-4">
         {t("catalogDetail.verifiedFreelancer")}
       </p>
+
+      {/* View Profile Button - Only show if current user is not the owner */}
+      {currentUserId && currentUserId !== owner.id && (
+        <div className="mt-6 pt-6 border-t border-primary/20 dark:border-primary-dark/30">
+          <button
+            onClick={handleViewProfile}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium text-sm cursor-pointer"
+          >
+            <User className="w-4 h-4" />
+            {t("orderDetail.viewProfile") || "View Profile"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

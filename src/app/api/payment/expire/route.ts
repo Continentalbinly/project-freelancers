@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 export async function POST(req: Request) {
   try {
+    const db = requireDb();
     const { transactionId } = await req.json();
 
     if (!transactionId) {

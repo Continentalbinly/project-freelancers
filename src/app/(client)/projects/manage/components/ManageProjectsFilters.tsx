@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
 export default function ManageProjectsFilters({ t, filters, setFilters }: any) {
+  const router = useRouter();
   const categories = [
     { value: "all", label: t("manageProjects.allCategories") },
     { value: "web-development", label: t("manageProjects.webDevelopment") },
@@ -28,13 +29,13 @@ export default function ManageProjectsFilters({ t, filters, setFilters }: any) {
         <h2 className="text-2xl font-bold text-text-primary">
           {t("manageProjects.title") || "Manage Projects"}
         </h2>
-        <Link
-          href="/projects/create"
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
+        <button
+          onClick={() => router.push("/projects/create")}
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all cursor-pointer"
         >
           <Plus className="w-5 h-5" />
           {t("manageProjects.createProject") || "Create Project"}
-        </Link>
+        </button>
       </div>
       
       <div className="bg-background-secondary rounded-xl shadow-sm border border-border p-6 text-text-primary">

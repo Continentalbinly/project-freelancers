@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { Project } from "@/types/project";
 
@@ -11,6 +11,7 @@ interface RecentProjectsProps {
 
 export default function RecentProjects({ projects, isLoading }: RecentProjectsProps) {
   const { t } = useTranslationContext();
+  const router = useRouter();
 
   return (
     <div className="rounded-lg border border-border bg-background-secondary shadow-sm p-8">
@@ -18,12 +19,15 @@ export default function RecentProjects({ projects, isLoading }: RecentProjectsPr
         <h2 className="text-2xl font-bold  ">
           {t("dashboard.recentProjects") || "Recent Projects"}
         </h2>
-        <Link
-          href="/my-projects"
-          className="text-primary font-medium"
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            router.push("/my-projects");
+          }}
+          className="text-primary font-medium cursor-pointer hover:underline"
         >
           {t("common.viewAll")} 
-        </Link>
+        </button>
       </div>
 
       {isLoading ? (
@@ -35,10 +39,21 @@ export default function RecentProjects({ projects, isLoading }: RecentProjectsPr
       ) : projects && projects.length > 0 ? (
         <div className="space-y-4">
           {projects.map((project) => (
-            <Link
+            <div
               key={project.id}
-              href={`/my-projects/${project.id}/progress`}
-              className="flex items-center justify-between p-4 border border-border bg-background rounded-lg transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push(`/my-projects/${project.id}/progress`);
+              }}
+              className="flex items-center justify-between p-4 border border-border bg-background rounded-lg transition-colors cursor-pointer hover:border-primary/50"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  router.push(`/my-projects/${project.id}/progress`);
+                }
+              }}
             >
               <div className="flex-1">
                 <h3 className="font-semibold">
@@ -56,7 +71,7 @@ export default function RecentProjects({ projects, isLoading }: RecentProjectsPr
                   {project.status}
                 </span>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       ) : (
@@ -64,12 +79,15 @@ export default function RecentProjects({ projects, isLoading }: RecentProjectsPr
           <p className="text-text-secondary mb-4">
             {t("common.NoProjectsYet") || "No projects yet"}
           </p>
-          <Link
-            href="/projects/create"
-            className="btn bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark"
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              router.push("/projects/create");
+            }}
+            className="btn bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark cursor-pointer"
           >
             {t("common.postProject") || "Post Your First Project"}
-          </Link>
+          </button>
         </div>
       )}
     </div>

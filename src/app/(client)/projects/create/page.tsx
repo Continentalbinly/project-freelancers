@@ -13,7 +13,7 @@ import {
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -88,8 +88,13 @@ export default function CreateProjectPage() {
   useEffect(() => {
     const loadProfile = async () => {
       if (!user) return;
-      const snap = await getDoc(doc(db, "profiles", user.uid));
-      if (snap.exists()) setUserProfile(snap.data());
+      try {
+        const db = requireDb();
+        const snap = await getDoc(doc(db, "profiles", user.uid));
+        if (snap.exists()) setUserProfile(snap.data());
+      } catch (err) {
+        console.error("Failed to load profile:", err);
+      }
     };
     loadProfile();
   }, [user]);
@@ -98,6 +103,7 @@ export default function CreateProjectPage() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
+        const db = requireDb();
         const snap = await getDocs(collection(db, "categories"));
         const cats = snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as any) }));
         setCategories(cats as any[]);
@@ -147,6 +153,7 @@ export default function CreateProjectPage() {
       if (!user) return;
 
       try {
+        const db = requireDb();
         const draftRef = doc(db, "project_drafts", user.uid);
         const snap = await getDoc(draftRef);
         let data: any = null;
@@ -265,13 +272,14 @@ export default function CreateProjectPage() {
 
   const handleSaveDraft = async () => {
     if (!user) throw new Error("Please login first");
+    const firestore = requireDb();
     
     try {
-      const draftRef = doc(db, "project_drafts", user.uid);
+      const draftRef = doc(firestore, "project_drafts", user.uid);
       await updateDoc(draftRef, removeUndefined(formData));
       localStorage.setItem(LOCAL_KEY, JSON.stringify(formData));
     } catch {
-      const draftRef = doc(db, "project_drafts", user.uid);
+      const draftRef = doc(firestore, "project_drafts", user.uid);
       await updateDoc(draftRef, removeUndefined(formData));
       localStorage.setItem(LOCAL_KEY, JSON.stringify(formData));
     }
@@ -291,7 +299,8 @@ export default function CreateProjectPage() {
     setSaving(true);
 
     try {
-      const pRef = doc(db, "profiles", user.uid);
+      const firestore = requireDb();
+      const pRef = doc(firestore, "profiles", user.uid);
       const snap = await getDoc(pRef);
 
       if (!snap.exists()) throw new Error("Profile not found");
@@ -305,7 +314,7 @@ export default function CreateProjectPage() {
       if (currentCredit < postingFee)
         throw new Error("Not enough credit to post project");
 
-      const projectRef = await addDoc(collection(db, "projects"), {
+      const projectRef = await addDoc(collection(firestore, "projects"), {
         ...removeUndefined(formData),
         // Convert timeline ID to full timeline object with both languages
         timeline: formData.timeline ? getTimelineData(formData.timeline) : null,
@@ -328,7 +337,7 @@ export default function CreateProjectPage() {
         .substring(2, 8)
         .toUpperCase()}`;
 
-      await addDoc(collection(db, "transactions"), {
+      await addDoc(collection(firestore, "transactions"), {
         userId: user.uid,
         transactionId,
         type: "posting_fee",
@@ -344,7 +353,7 @@ export default function CreateProjectPage() {
       });
 
       localStorage.removeItem(LOCAL_KEY);
-      if (user) await deleteDoc(doc(db, "project_drafts", user.uid));
+      if (user) await deleteDoc(doc(firestore, "project_drafts", user.uid));
 
       router.push("/projects/manage");
     } catch (err: any) {

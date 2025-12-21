@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useParams } from "next/navigation";
 
@@ -25,7 +25,7 @@ export default function ProjectProgressPage() {
 
   useEffect(() => {
     const load = async () => {
-      const ref = doc(db, "projects", id as string);
+      const ref = doc(requireDb(), "projects", id as string);
       const snap = await getDoc(ref);
       if (snap.exists()) setProject({ id: snap.id, ...snap.data() });
       setLoading(false);

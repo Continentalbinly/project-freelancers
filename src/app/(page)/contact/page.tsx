@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useTranslationContext } from '@/app/components/LanguageProvider'
 
 export default function ContactPage() {
@@ -209,9 +210,9 @@ export default function ContactPage() {
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
                   {t('contact.quickHelpDesc')}
                 </p>
-                <a href="/faq" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                <Link href="/faq" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                   {t('contact.viewFaq')}
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -273,9 +274,9 @@ export default function ContactPage() {
           </div>
 
           <div className="text-center mt-8">
-            <a href="/faq" className="btn btn-primary px-8 py-3">
+            <Link href="/faq" className="btn btn-primary px-8 py-3">
               {t('contact.viewAllFaq')}
-            </a>
+            </Link>
           </div>
         </div>
       </section>

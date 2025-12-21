@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ChevronLeftIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 export default function ManageProjectsHeader({ t, router }: any) {
@@ -22,13 +21,13 @@ export default function ManageProjectsHeader({ t, router }: any) {
           </p>
         </div>
       </div>
-      <Link
-        href="/projects/create"
-        className="btn btn-primary inline-flex items-center shadow-sm"
+      <button
+        onClick={() => router.push("/projects/create")}
+        className="btn btn-primary inline-flex items-center shadow-sm cursor-pointer"
       >
         <PlusIcon className="w-5 h-5 mr-2" />
         {t("manageProjects.postNewProject")}
-      </Link>
+      </button>
     </div>
   );
 }

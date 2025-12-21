@@ -10,7 +10,7 @@ import {
   updateDoc,
   getDoc,
 } from "firebase/firestore";
-import { db } from "@/service/firebase";
+import { requireDb } from "@/service/firebase";
 import { Project } from "@/types/project";
 
 export function useProjects() {
@@ -30,7 +30,8 @@ export function useProjects() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+      const firestore = requireDb();
+      const q = query(collection(firestore, "projects"), orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
       const data: Project[] = [];
 
@@ -55,7 +56,8 @@ export function useProjects() {
   // 🔁 Increment views
   const incrementProjectViews = async (projectId: string) => {
     try {
-      const projectRef = doc(db, "projects", projectId);
+      const firestore = requireDb();
+      const projectRef = doc(firestore, "projects", projectId);
       const snap = await getDoc(projectRef);
       if (!snap.exists()) return;
       const currentViews = snap.data().views || 0;
