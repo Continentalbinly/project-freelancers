@@ -19,13 +19,14 @@ import ProposalsFilter from "./components/ProposalsFilter";
 import ProposalsList from "./components/ProposalsList";
 import ProposalsSkeleton from "./components/ProposalsSkeleton";
 import ProposalsEmptyState from "./components/ProposalsEmptyState";
+import type { ProposalWithDetails } from "@/types/proposal";
 
 export default function ProposalsPage() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
   const { t } = useTranslationContext();
 
-  const [proposals, setProposals] = useState<any[]>([]);
+  const [proposals, setProposals] = useState<ProposalWithDetails[]>([]);
   const [loadingProposals, setLoadingProposals] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -101,8 +102,8 @@ export default function ProposalsPage() {
       );
 
       setProposals(detailed);
-    } catch (err) {
-      //console.error("❌ Error loading proposals:", err);
+    } catch {
+      //console.error("❌ Error loading proposals");
     } finally {
       setLoadingProposals(false);
     }

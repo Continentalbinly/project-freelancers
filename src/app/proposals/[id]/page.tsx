@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { doc, getDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { ProposalWithDetails } from "@/types/proposal";
@@ -50,7 +50,7 @@ export default function ProposalDetailPage() {
       );
 
       let clientData = null;
-      let projectData = projectDoc.exists() ? projectDoc.data() : null;
+      const projectData = projectDoc.exists() ? projectDoc.data() : null;
       if (projectData) {
         const clientDoc = await getDoc(
           doc(firestore, "profiles", projectData.clientId)
@@ -88,8 +88,8 @@ export default function ProposalDetailPage() {
           totalProjects: clientData.totalProjects,
         } : undefined,
       } as ProposalWithDetails);
-    } catch (err) {
-      //console.error("Error fetching proposal:", err);
+    } catch {
+      //console.error("Error fetching proposal");
     } finally {
       setLoadingProposal(false);
     }

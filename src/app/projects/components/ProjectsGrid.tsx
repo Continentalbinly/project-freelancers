@@ -1,12 +1,19 @@
 "use client";
 
 import ProjectCard from "./ProjectCard";
+import type { Project } from "@/types/project";
+
+interface ProjectsGridProps {
+  projects: Project[];
+  t: (key: string) => string;
+  incrementProjectViews: (projectId: string) => Promise<void>;
+}
 
 export default function ProjectsGrid({
   projects,
   t,
   incrementProjectViews,
-}: any) {
+}: ProjectsGridProps) {
   if (!projects.length) {
     return (
       <div className="text-center py-12">
@@ -22,7 +29,7 @@ export default function ProjectsGrid({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {projects.map((project: any) => (
+      {projects.map((project) => (
         <ProjectCard
           key={project.id}
           project={project}

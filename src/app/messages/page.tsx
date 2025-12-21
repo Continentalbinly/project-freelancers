@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -21,7 +21,7 @@ import { createOrOpenChatRoom, createOrOpenChatRoomForOrder } from "@/app/utils/
 import { ArrowLeftIcon } from "lucide-react";
 import MessagesSkeleton from "./components/MessagesSkeleton";
 
-export default function MessagesPage() {
+function MessagesPageContent() {
   const { user } = useAuth();
   const { t } = useTranslationContext();
   const router = useRouter();
@@ -133,5 +133,13 @@ export default function MessagesPage() {
       />
       <ChatRoom chatRoom={selectedRoom} onBack={() => setSelectedRoom(null)} />
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<MessagesSkeleton />}>
+      <MessagesPageContent />
+    </Suspense>
   );
 }

@@ -1,7 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-export default function ProposalsEmptyState({ activeTab, t }: any) {
+interface ProposalsEmptyStateProps {
+  activeTab: "submitted" | "received";
+  t: (key: string) => string;
+}
+
+export default function ProposalsEmptyState({ activeTab, t }: ProposalsEmptyStateProps) {
   const router = useRouter();
   return (
     <div className="text-center py-16">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,7 +10,7 @@ import ProjectsFilters from "./components/ProjectsFilters";
 import ProjectsGrid from "./components/ProjectsGrid";
 import ProjectsSkeleton from "./components/ProjectsSkeleton";
 
-export default function ProjectsPage() {
+function ProjectsPageContent() {
   const { t } = useTranslationContext();
   const { user, profile, loading: authLoading } = useAuth();
   const {
@@ -44,7 +44,7 @@ export default function ProjectsPage() {
     const urlCategory = searchParams.get("category") || "all";
     const urlStatus = searchParams.get("status") || "all";
 
-    setFilters((prev: any) => ({
+    setFilters((prev) => ({
       ...prev,
       search: urlSearch,
       category: urlCategory,
@@ -137,5 +137,13 @@ export default function ProjectsPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function ProjectsPage() {
+  return (
+    <Suspense fallback={<ProjectsSkeleton />}>
+      <ProjectsPageContent />
+    </Suspense>
   );
 }

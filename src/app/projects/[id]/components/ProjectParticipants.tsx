@@ -71,9 +71,9 @@ export default function ProjectParticipants({
         {freelancerProfile ? (
           <div className="flex items-center space-x-3 p-4 bg-background-secondary rounded-lg">
             <Avatar
-              {...getAvatarProps(freelancerProfile, {
+              {...getAvatarProps(freelancerProfile, project.acceptedFreelancerId ? {
                 uid: project.acceptedFreelancerId,
-              })}
+              } : undefined)}
               size="lg"
             />
             <div className="flex-1">

@@ -28,8 +28,7 @@ import ProjectDetailSkeleton from "./components/ProjectDetailSkeleton";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { t } = useTranslationContext();
 
   const [project, setProject] = useState<any>(null);

@@ -21,7 +21,7 @@ export interface PortfolioItem {
   featured?: boolean; // Show in featured section
   isCover?: boolean; // Use as portfolio cover image/video
   order?: number; // Display order
-  createdAt: Date | any;
-  updatedAt: Date | any;
+  createdAt: Date | Record<string, unknown>;
+  updatedAt: Date | Record<string, unknown>;
 }
 

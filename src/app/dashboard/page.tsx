@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import ClientDashboard from "./components/client";
 import FreelancerDashboard from "./components/freelancer";
+import DashboardSkeleton from "./components/DashboardSkeleton";
 
-export default function Dashboard(): React.ReactElement {
+function DashboardContent(): React.ReactElement {
   const { user, profile, loading } = useAuth();
   const { t } = useTranslationContext();
   const router = useRouter();
@@ -44,17 +45,19 @@ export default function Dashboard(): React.ReactElement {
     }
   }, [user, profile, loading, router, displayRole, isClient, isFreelancer]);
 
-  // Show loading state while auth is being checked or profile is loading
+  // Show skeleton loading state while auth is being checked or profile is loading
+  // This allows the page structure to be visible while loading
   if (loading || !user || !profile) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-text-secondary">{t("common.loading")}</p>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return displayRole === "client" ? <ClientDashboard /> : <FreelancerDashboard />;
+}
+
+export default function Dashboard(): React.ReactElement {
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent />
+    </Suspense>
+  );
 }

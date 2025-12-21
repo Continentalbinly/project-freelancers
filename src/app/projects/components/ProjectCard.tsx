@@ -23,15 +23,23 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
+import type { Project } from "@/types/project";
+import type { Profile } from "@/types/profile";
+
+interface ProjectCardProps {
+  project: Project;
+  t: (key: string) => string;
+  incrementProjectViews: (projectId: string) => Promise<void>;
+}
 
 export default function ProjectCard({
   project,
   t,
   incrementProjectViews,
-}: any) {
+}: ProjectCardProps) {
   const { currentLanguage } = useTranslationContext();
   const router = useRouter();
-  const [owner, setOwner] = useState<any>(null);
+  const [owner, setOwner] = useState<Profile | null>(null);
   const [loadingOwner, setLoadingOwner] = useState(true);
 
   /* 🔹 Fetch project owner profile */
@@ -46,9 +54,9 @@ export default function ProjectCard({
         const firestore = requireDb();
         const ref = doc(firestore, "profiles", project.clientId);
         const snap = await getDoc(ref);
-        if (snap.exists()) setOwner({ id: snap.id, ...snap.data() });
-      } catch (err) {
-        //console.error("❌ Failed to fetch owner profile:", err);
+        if (snap.exists()) setOwner({ id: snap.id, ...snap.data() } as Profile);
+      } catch {
+        //console.error("❌ Failed to fetch owner profile");
       } finally {
         setLoadingOwner(false);
       }
@@ -126,8 +134,8 @@ export default function ProjectCard({
     try {
       await incrementProjectViews(project.id);
       router.push(`/projects/${project.id}`);
-    } catch (err) {
-      //console.error("❌ Failed to increment views:", err);
+    } catch {
+      //console.error("❌ Failed to increment views");
       router.push(`/projects/${project.id}`);
     }
   };
@@ -271,7 +279,7 @@ export default function ProjectCard({
                 </h4>
               </div>
               <p className="text-sm text-text-primary font-medium">
-                {project.proposalsCount || project.proposals?.length || 0}
+                {project.proposalsCount || 0}
               </p>
             </div>
           </div>

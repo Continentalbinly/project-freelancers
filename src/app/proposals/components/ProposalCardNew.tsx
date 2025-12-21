@@ -20,11 +20,13 @@ import { StarIcon } from "@heroicons/react/24/solid";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
+import type { ProposalWithDetails } from "@/types/proposal";
+import type { Profile } from "@/types/profile";
 
 interface ProposalCardNewProps {
-  proposal: any;
+  proposal: ProposalWithDetails;
   activeTab: "submitted" | "received";
-  t: any;
+  t: (key: string) => string;
 }
 
 export default function ProposalCardNew({
@@ -34,7 +36,7 @@ export default function ProposalCardNew({
 }: ProposalCardNewProps) {
   const { currentLanguage } = useTranslationContext();
   const { user } = useAuth();
-  const [profileData, setProfileData] = useState<any>(null);
+  const [profileData, setProfileData] = useState<Profile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
@@ -61,7 +63,7 @@ export default function ProposalCardNew({
         const firestore = requireDb();
         const profileDoc = await getDoc(doc(firestore, "profiles", userId));
         if (profileDoc.exists()) {
-          setProfileData(profileDoc.data());
+          setProfileData({ id: profileDoc.id, ...profileDoc.data() } as Profile);
         }
       } finally {
         setLoadingProfile(false);
@@ -213,9 +215,9 @@ export default function ProposalCardNew({
       {/* Card Body */}
       <div className="p-6 space-y-4">
         {/* Skills Tags */}
-        {proposal.project?.skillsRequired?.length > 0 && (
+        {(proposal.project?.skillsRequired?.length ?? 0) > 0 && (
           <div className="flex flex-wrap gap-2">
-            {proposal.project.skillsRequired.slice(0, 4).map((skill: string, i: number) => (
+            {proposal.project?.skillsRequired?.slice(0, 4).map((skill: string, i: number) => (
               <span
                 key={i}
                 className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20"
@@ -223,9 +225,9 @@ export default function ProposalCardNew({
                 {skill}
               </span>
             ))}
-            {proposal.project.skillsRequired.length > 4 && (
+            {(proposal.project?.skillsRequired?.length ?? 0) > 4 && (
               <span className="px-3 py-1 bg-background-secondary text-text-secondary text-xs font-medium rounded-full border border-border">
-                +{proposal.project.skillsRequired.length - 4}
+                +{(proposal.project?.skillsRequired?.length ?? 0) - 4}
               </span>
             )}
           </div>
@@ -256,7 +258,9 @@ export default function ProposalCardNew({
             </div>
             <p className="text-sm text-text-secondary">
               {timeAgo(
-                proposal.createdAt?.toDate?.() || proposal.createdAt,
+                proposal.createdAt && typeof proposal.createdAt === 'object' && 'toDate' in proposal.createdAt 
+                  ? (proposal.createdAt as any).toDate() 
+                  : proposal.createdAt as Date,
                 currentLanguage
               )}
             </p>
