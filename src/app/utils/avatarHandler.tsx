@@ -36,13 +36,13 @@ export default function Avatar({
 
   const initials = fallback || getInitials(name || "U");
 
-  const { w, h } = {
-    sm: { w: 64, h: 64 },
-    md: { w: 128, h: 128 },
-    lg: { w: 256, h: 256 },
-    xl: { w: 384, h: 384 },
-    "2xl": { w: 512, h: 512 },
-  }[size] || { w: 128, h: 128 };
+  const sizeConfig = {
+    sm: { width: 64, height: 64 },
+    md: { width: 128, height: 128 },
+    lg: { width: 256, height: 256 },
+    xl: { width: 384, height: 384 },
+    "2xl": { width: 512, height: 512 },
+  }[size] || { width: 128, height: 128 };
 
   const getCloudPublicId = (path: string): string | null => {
     const match = path.match(/profileImage-[^/]+$/i);
@@ -178,13 +178,41 @@ if (
   document.head.appendChild(styleEl);
 }
 
-export function getAvatarProps(profile: any, user?: any) {
+import type { Profile } from "@/types/profile";
+import type { User as FirebaseUser } from "firebase/auth";
+
+type AvatarProfile = {
+  avatarUrl?: string | null;
+  fullName?: string | null;
+};
+
+type UserParam = 
+  | FirebaseUser 
+  | { uid?: string; email?: string | null }
+  | null 
+  | undefined;
+
+export function getAvatarProps(
+  profile: Profile | AvatarProfile | null | undefined,
+  user?: UserParam
+) {
+  const avatarUrl = profile?.avatarUrl;
+  const fullName = profile?.fullName;
+  
+  // Extract email from user, handling both FirebaseUser and simple objects, and converting null to undefined
+  let userEmail: string | undefined = undefined;
+  if (user) {
+    if ('email' in user && user.email !== null && user.email !== undefined) {
+      userEmail = user.email;
+    }
+  }
+  
   return {
-    src: profile?.avatarUrl,
-    alt: profile?.fullName,
-    name: profile?.fullName || user?.email || "User",
-    fallback: profile?.fullName
-      ? profile.fullName
+    src: avatarUrl === null ? undefined : avatarUrl, // Convert null to undefined
+    alt: fullName === null ? undefined : fullName, // Convert null to undefined
+    name: fullName || userEmail || "User",
+    fallback: fullName
+      ? fullName
           .split(" ")
           .map((word: string) => word.charAt(0))
           .join("")

@@ -86,7 +86,7 @@ export default function ProfileProjectsSection({ profileId }: ProfileProjectsSec
             key={project.id}
             project={project}
             t={t}
-            incrementProjectViews={() => {}}
+            incrementProjectViews={async () => {}}
           />
         ))}
       </div>

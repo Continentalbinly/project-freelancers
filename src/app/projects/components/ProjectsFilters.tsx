@@ -6,9 +6,16 @@ import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { AnimatePresence, motion } from "framer-motion";
 
+interface ProjectFilters {
+  search: string;
+  category: string;
+  status: string;
+  budgetType: string;
+}
+
 interface Props {
-  filters: any;
-  setFilters: (f: any) => void;
+  filters: ProjectFilters;
+  setFilters: (f: ProjectFilters) => void;
   t: (key: string) => string;
   onReset?: () => void;
 }
@@ -38,6 +45,7 @@ export default function ProjectsFilters({
       search: "",
       category: "all",
       status: "all",
+      budgetType: "all",
     });
 
   // 🔹 Fetch categories
@@ -51,8 +59,8 @@ export default function ProjectsFilters({
           ...(d.data() as Omit<Category, "id">),
         }));
         setCategories(list);
-      } catch (err) {
-        //console.error("❌ Failed to fetch categories:", err);
+      } catch {
+        //console.error("❌ Failed to fetch categories");
       } finally {
         setLoading(false);
       }

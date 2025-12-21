@@ -152,8 +152,10 @@ export default function ProjectImage({
   )
 }
 
+import type { Project } from "@/types/project";
+
 // Utility function to get project image props
-export function getProjectImageProps(project: any) {
+export function getProjectImageProps(project: Project | null | undefined) {
   const props = {
     src: project?.imageUrl,
     alt: project?.title,
@@ -182,7 +184,7 @@ export async function deleteProjectImage(url: string): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })
     })
-  } catch (err) {
-    //console.error('Failed to delete project image:', err)
+  } catch {
+    //console.error('Failed to delete project image')
   }
 } 

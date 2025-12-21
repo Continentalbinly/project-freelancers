@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -57,7 +57,7 @@ export interface UserProfile {
   avatarUrl?: string;
 }
 
-export default function AdminTransactionsPage() {
+function AdminTransactionsPageContent() {
   const { user } = useAuth();
   const router = useRouter();
   const params = useParams();
@@ -307,5 +307,17 @@ export default function AdminTransactionsPage() {
         onReject={handleReject}
       />
     </div>
+  );
+}
+
+export default function AdminTransactionsPage() {
+  return (
+    <Suspense
+      fallback={
+        <GlobalStatus type="loading" message="Loading transactions..." />
+      }
+    >
+      <AdminTransactionsPageContent />
+    </Suspense>
   );
 }
