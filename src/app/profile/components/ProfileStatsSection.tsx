@@ -7,6 +7,7 @@ import { Calendar, Briefcase, Award, TrendingUp, DollarSign } from "lucide-react
 import { convertTimestampToDate } from "@/service/timeUtils";
 import { requireDb } from "@/service/firebase";
 import { collection, query, where, getCountFromServer } from "firebase/firestore";
+import type { Timestamp } from "firebase/firestore";
 
 interface ProfileStatsSectionProps {
   profile: Profile;
@@ -15,11 +16,16 @@ interface ProfileStatsSectionProps {
 export default function ProfileStatsSection({ profile }: ProfileStatsSectionProps) {
   const { t } = useTranslationContext();
   const [projectsPostedCount, setProjectsPostedCount] = useState<number | null>(null);
-
-  const formatDate = (date: any) => {
+  
+  const formatDate = (date: Date | Timestamp | Record<string, unknown> | string | number | null | undefined) => {
     if (!date) return t("profile.personalInfo.notSet") || "Not set";
     try {
-      const d = convertTimestampToDate(date);
+      const dateValue = typeof date === 'object' && 'toDate' in date
+        ? (date as Timestamp).toDate()
+        : date instanceof Date
+        ? date
+        : date;
+      const d = convertTimestampToDate(dateValue);
       if (isNaN(d.getTime())) {
         return t("profile.personalInfo.notSet") || "Not set";
       }
@@ -40,8 +46,8 @@ export default function ProfileStatsSection({ profile }: ProfileStatsSectionProp
           );
           const snapshot = await getCountFromServer(projectsQuery);
           setProjectsPostedCount(snapshot.data().count);
-        } catch (error) {
-          console.error("Error fetching projects count:", error);
+        } catch {
+          // Silent fail
           setProjectsPostedCount(profile.projectsPosted || 0);
         }
       };

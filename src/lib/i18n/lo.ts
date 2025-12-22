@@ -2352,6 +2352,7 @@ const lo = {
       proposedBudget: "ງົບປະມານທີ່ສະເໜີ",
       duration: "ໄລຍະເວລາ:",
       submitted: "ສົ່ງແລ້ວ",
+      received: "ໄດ້ຮັບ",
       coverLetter: "ຈົດໝາຍສະເໜີ",
       workSamples: "ຕົວຢ່າງຜົນງານ",
       viewDetails: "ເບິ່ງລາຍລະອຽດ",

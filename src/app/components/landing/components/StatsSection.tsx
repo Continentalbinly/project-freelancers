@@ -1,9 +1,21 @@
+interface StatsSectionProps {
+  t: (key: string) => string;
+  stats: {
+    freelancers: number;
+    clients: number;
+    projects: number;
+    totalEarned: number;
+  };
+  loading: boolean;
+  formatEarnings: (amount: number) => string;
+}
+
 export default function StatsSection({
   t,
   stats,
   loading,
   formatEarnings,
-}: any) {
+}: StatsSectionProps) {
   const items = [
     { key: "freelancers", color: "primary", value: `${stats.freelancers}+` },
     { key: "clients", color: "secondary", value: `${stats.clients}+` },

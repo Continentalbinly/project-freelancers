@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
     let decodedToken
     try {
       decodedToken = await adminAuth.verifyIdToken(token)
-    } catch (error) {
-      logger.apiError('/api/proposals', error instanceof Error ? error : new Error('Invalid token'), { action })
+    } catch {
+      logger.apiError('/api/proposals', new Error('Invalid token'), { action })
       return NextResponse.json(
         { success: false, error: 'Invalid authorization token' },
         { status: 401 }
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
     }
-  } catch (error) {
-    logger.apiError('/api/proposals', error instanceof Error ? error : new Error(String(error)))
+  } catch {
+    logger.apiError('/api/proposals', new Error('Internal server error'))
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -156,8 +156,8 @@ async function createProposal(freelancerId: string, data: unknown) {
       data: { ...proposalData, id: proposalRef.id },
       message: 'Proposal submitted successfully'
     })
-  } catch (error) {
-    logger.firebaseError('createProposal', error instanceof Error ? error : new Error(String(error)), { freelancerId })
+  } catch {
+    logger.firebaseError('createProposal', new Error('Failed to create proposal'), { freelancerId })
     return NextResponse.json(
       { success: false, error: 'Failed to create proposal' },
       { status: 500 }
@@ -190,8 +190,8 @@ async function getProposals(projectId: string) {
       success: true,
       data: proposals
     })
-  } catch (error) {
-    logger.firebaseError('getProposals', error instanceof Error ? error : new Error(String(error)), { projectId })
+  } catch {
+    logger.firebaseError('getProposals', new Error('Failed to get proposals'), { projectId })
     return NextResponse.json(
       { success: false, error: 'Failed to get proposals' },
       { status: 500 }
@@ -244,8 +244,8 @@ async function updateProposalStatus(userId: string, data: unknown) {
       success: true,
       message: 'Proposal status updated successfully'
     })
-  } catch (error) {
-    logger.firebaseError('updateProposalStatus', error instanceof Error ? error : new Error(String(error)), { userId })
+  } catch {
+    logger.firebaseError('updateProposalStatus', new Error('Failed to update proposal status'), { userId })
     return NextResponse.json(
       { success: false, error: 'Failed to update proposal status' },
       { status: 500 }

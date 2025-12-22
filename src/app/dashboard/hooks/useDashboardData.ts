@@ -107,7 +107,7 @@ export function useDashboardData(
         setRecentActivity(
           activities.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 6)
         );
-      } catch (err) {
+      } catch  {
         //console.error("Dashboard data error:", err);
       } finally {
         setLoadingActivity(false);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, requireDb } from '@/service/firebase'
+import { requireDb } from '@/service/firebase'
 import { doc, setDoc, deleteDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'
 import { getAuth } from 'firebase-admin/auth'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     let decodedToken
     try {
       decodedToken = await adminAuth.verifyIdToken(token)
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { success: false, error: 'Invalid authorization token' },
         { status: 401 }
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
     }
-  } catch (error) {
+  } catch {
     //console.error('API Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
@@ -107,7 +107,7 @@ async function addFavorite(userId: string, projectId: string) {
       success: true,
       message: 'Project added to favorites'
     })
-  } catch (error) {
+  } catch {
     //console.error('Add favorite error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to add favorite' },
@@ -128,7 +128,7 @@ async function removeFavorite(userId: string, projectId: string) {
       success: true,
       message: 'Project removed from favorites'
     })
-  } catch (error) {
+  } catch {
     //console.error('Remove favorite error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to remove favorite' },
@@ -148,7 +148,7 @@ async function checkFavorite(userId: string, projectId: string) {
       success: true,
       isFavorited: favoriteSnap.exists()
     })
-  } catch (error) {
+  } catch {
     //console.error('Check favorite error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to check favorite status' },
@@ -180,7 +180,7 @@ async function getUserFavorites(userId: string) {
       success: true,
       data: favorites
     })
-  } catch (error) {
+  } catch {
     //console.error('Get user favorites error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to get user favorites' },

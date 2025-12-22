@@ -31,7 +31,7 @@ export default function ReviewStep({ formData, setFormData }: ReviewStepProps) {
   };
 
   const getOccupationLabel = () => {
-    const occ = formData.occupation as any;
+    const occ = formData.occupation;
     if (!occ) return "";
     if (typeof occ === "string") {
       // Backward compatibility for legacy string values
@@ -95,7 +95,7 @@ export default function ReviewStep({ formData, setFormData }: ReviewStepProps) {
       <div className="p-6 sm:p-8 rounded-xl border-2 border-border bg-background dark:bg-background-secondary shadow-lg">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
           {/* Avatar */}
-          <div className="relative flex-shrink-0">
+          <div className="relative shrink-0">
             {formData.avatarUrl ? (
               <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-primary shadow-lg ring-4 ring-primary/20">
                 <Image
@@ -320,9 +320,9 @@ export default function ReviewStep({ formData, setFormData }: ReviewStepProps) {
               )}
             </div>
             {formData.acceptTerms ? (
-              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
             ) : (
-              <XCircle className="w-5 h-5 text-error/50 flex-shrink-0" />
+              <XCircle className="w-5 h-5 text-error/50 shrink-0" />
             )}
           </label>
 
@@ -350,9 +350,9 @@ export default function ReviewStep({ formData, setFormData }: ReviewStepProps) {
               )}
             </div>
             {formData.acceptPrivacyPolicy ? (
-              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
             ) : (
-              <XCircle className="w-5 h-5 text-error/50 flex-shrink-0" />
+              <XCircle className="w-5 h-5 text-error/50 shrink-0" />
             )}
           </label>
 
@@ -378,9 +378,9 @@ export default function ReviewStep({ formData, setFormData }: ReviewStepProps) {
               </p>
             </div>
             {formData.acceptMarketingEmails ? (
-              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
             ) : (
-              <div className="w-5 h-5 flex-shrink-0" />
+              <div className="w-5 h-5 shrink-0" />
             )}
           </label>
         </div>
@@ -389,7 +389,7 @@ export default function ReviewStep({ formData, setFormData }: ReviewStepProps) {
       {/* Confirmation Message */}
       <div className="p-4 sm:p-6 bg-success/10 dark:bg-success/20 dark:border-success/40 border-2 border-success/30 rounded-xl">
         <div className="flex items-start gap-3">
-          <CheckCircle2 className="w-6 h-6 text-success flex-shrink-0 mt-0.5" />
+          <CheckCircle2 className="w-6 h-6 text-success shrink-0 mt-0.5" />
           <div>
             <p className="text-success font-semibold mb-1">
               {t("auth.signup.review.ready") ||
@@ -416,11 +416,11 @@ function ReviewField({ icon, label, value }: ReviewFieldProps) {
   return (
     <div className="flex items-start gap-3">
       {icon && (
-        <div className="text-text-secondary mt-0.5 flex-shrink-0">{icon}</div>
+        <div className="text-text-secondary mt-0.5 shrink-0">{icon}</div>
       )}
       <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
         <p className="text-sm font-medium text-text-secondary">{label}</p>
-        <div className="text-text font-medium text-right sm:text-left sm:max-w-[60%] break-words">
+        <div className="text-text font-medium text-right sm:text-left sm:max-w-[60%] wrap-break-word">
           {typeof value === "string" ? value : value}
         </div>
       </div>

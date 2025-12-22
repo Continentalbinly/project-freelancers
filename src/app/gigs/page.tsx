@@ -130,8 +130,7 @@ export default function GigsPage() {
               totalRatings: ownerData.totalRatings || 0,
             });
           }
-        } catch (error) {
-          console.error(`Failed to fetch owner ${ownerId}:`, error);
+        } catch {
         }
       });
       
@@ -303,7 +302,7 @@ export default function GigsPage() {
                   onClick={() => setSelectedCategory(null)}
                   className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
                     !selectedCategory
-                      ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
+                      ? "bg-linear-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
                       : "bg-background border border-border text-text-primary hover:border-primary/30"
                   }`}
                 >
@@ -318,7 +317,7 @@ export default function GigsPage() {
                       onClick={() => setSelectedCategory(cat.id)}
                       className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
                         selectedCategory === cat.id
-                          ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
+                          ? "bg-linear-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
                           : "bg-background border border-border text-text-primary hover:border-primary/30"
                       }`}
                     >
@@ -343,7 +342,7 @@ export default function GigsPage() {
                     className="flex-1 px-2 sm:px-3 py-2 border border-border rounded-lg bg-background focus:border-primary focus:ring-2 focus:ring-primary/10 text-sm"
                     placeholder={t("gigsPage.minPrice") || "Min"}
                   />
-                  <span className="text-text-secondary flex-shrink-0">-</span>
+                  <span className="text-text-secondary shrink-0">-</span>
                   <input
                     type="number"
                     value={priceRange[1]}
@@ -387,7 +386,7 @@ export default function GigsPage() {
                 setSelectedCategory(null);
                 setPriceRange([0, 500000]);
               }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all"
             >
               {t("gigsPage.clearFilters") || "Clear Filters"}
             </button>

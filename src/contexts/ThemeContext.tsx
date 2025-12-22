@@ -26,7 +26,6 @@ const applyTheme = (newTheme: Theme) => {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
 
   // Initialize theme from localStorage and system preference
   useEffect(() => {
@@ -39,7 +38,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(initialTheme);
     applyTheme(initialTheme);
     localStorage.setItem("theme", initialTheme);
-    setMounted(true);
   }, []);
 
   const toggleTheme = () => {

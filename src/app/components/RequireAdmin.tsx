@@ -14,7 +14,7 @@ export default function RequireAdmin({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, profile, loading: authLoading } = useAuth() as any;
+  const { user, profile, loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [checking, setChecking] = useState(true);

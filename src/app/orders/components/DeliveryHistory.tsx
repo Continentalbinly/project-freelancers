@@ -80,7 +80,7 @@ export default function DeliveryHistory({ order }: DeliveryHistoryProps) {
               rel="noopener noreferrer"
               className="flex items-center gap-2 p-3 bg-background border border-border rounded-lg text-sm text-primary hover:bg-primary/5 transition-colors"
             >
-              <FileText className="w-4 h-4 flex-shrink-0" />
+              <FileText className="w-4 h-4 shrink-0" />
               <span className="truncate flex-1">{url.split("/").pop()}</span>
             </a>
           ))}

@@ -2,11 +2,14 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { UserRole } from "./utils";
+import type { Project } from "@/types/project";
 
-export default function StepOpen({}: {
-  project: any;
+interface StepOpenProps {
+  project: Project;
   role: UserRole;
-}) {
+}
+
+export default function StepOpen({ project, role }: StepOpenProps) {
   useAuth();
   const { t } = useTranslationContext();
 

@@ -26,11 +26,17 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/service/firebase";
 
+interface HeaderDrawerProps {
+  isDrawerOpen: boolean;
+  setIsDrawerOpen: (open: boolean) => void;
+  t: (key: string) => string;
+}
+
 export default function HeaderDrawer({
   isDrawerOpen,
   setIsDrawerOpen,
   t,
-}: any) {
+}: HeaderDrawerProps) {
   const { user, profile } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();

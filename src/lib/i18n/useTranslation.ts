@@ -22,22 +22,22 @@ export function useTranslation() {
     }, [])
 
     const t = useCallback((key: string) => {
-        const currentTranslations = translations[currentLanguage]
-        const defaultTranslations = translations[defaultLanguage]
+        const currentTranslations = translations[currentLanguage] as unknown as Record<string, unknown>
+        const defaultTranslations = translations[defaultLanguage] as unknown as Record<string, unknown>
         
         // Handle nested keys with dot notation
         const keys = key.split('.')
-        let value = currentTranslations
+        let value: unknown = currentTranslations
         
         for (const k of keys) {
             if (value && typeof value === 'object' && k in value) {
-                value = (value as any)[k]
+                value = (value as Record<string, unknown>)[k]
             } else {
                 // Fallback to default language
                 value = defaultTranslations
                 for (const fallbackKey of keys) {
                     if (value && typeof value === 'object' && fallbackKey in value) {
-                        value = (value as any)[fallbackKey]
+                        value = (value as Record<string, unknown>)[fallbackKey]
                     } else {
                         return key // Return the key if not found
                     }

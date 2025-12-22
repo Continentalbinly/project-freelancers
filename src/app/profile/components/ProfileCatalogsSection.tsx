@@ -119,7 +119,7 @@ export default function ProfileCatalogsSection({ profileId }: ProfileCatalogsSec
             }}
           >
             {/* Cover Image */}
-            <div className="h-40 bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
+            <div className="h-40 bg-linear-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
               {catalog.images?.[0] ? (
                 <img
                   src={catalog.images[0]}

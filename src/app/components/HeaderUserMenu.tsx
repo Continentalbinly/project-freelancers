@@ -9,7 +9,12 @@ import { useTheme } from "@/contexts/ThemeContext";
 import NotificationsDropdown from "./NotificationsDropdown";
 import { useNotifications } from "./hooks/useNotifications";
 
-export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
+interface HeaderUserMenuProps {
+  setIsDrawerOpen: (open: boolean) => void;
+  t: (key: string) => string;
+}
+
+export default function HeaderUserMenu({ setIsDrawerOpen, t }: HeaderUserMenuProps) {
   const { user, profile, loading } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -94,7 +99,7 @@ export default function HeaderUserMenu({ setIsDrawerOpen, t }: any) {
           <button
             suppressHydrationWarning
             onClick={() => setIsDrawerOpen(true)}
-            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer flex-shrink-0"
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer shrink-0"
             title={t("header.account") || profile?.fullName || user?.email || "Account"}
           >
             {user && (

@@ -41,24 +41,24 @@ export default function TroubleshootingPage() {
             </h2>
 
             <p className="text-text-secondary mb-6">
-              We're creating a comprehensive troubleshooting guide. This guide will help you with:
+              We&apos;re creating a comprehensive troubleshooting guide. This guide will help you with:
             </p>
 
             <ul className="text-left max-w-md mx-auto space-y-3 mb-8">
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Common technical issues and solutions</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Account and login problems</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Payment and billing issues</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Getting additional support</span>
               </li>
             </ul>

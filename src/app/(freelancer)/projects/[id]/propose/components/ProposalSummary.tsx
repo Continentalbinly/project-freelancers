@@ -1,12 +1,20 @@
 "use client";
 
+interface ProposalSummaryProps {
+  t: (key: string) => string;
+  proposedBudget: number;
+  proposedRate: number;
+  estimatedDuration: string;
+  budgetType: "fixed" | "hourly";
+}
+
 export default function ProposalSummary({
   t,
   proposedBudget,
   proposedRate,
   estimatedDuration,
   budgetType,
-}: any) {
+}: ProposalSummaryProps) {
   return (
     <div className="bg-background-secondary rounded-lg p-4">
       <h3 className="font-semibold text-text-primary mb-2">

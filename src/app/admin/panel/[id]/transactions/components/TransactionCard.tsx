@@ -137,7 +137,13 @@ export default function TransactionCard({
       <div className="text-[11px] text-text-secondary flex flex-wrap justify-between border-t border-border pt-2">
         <p className="truncate">
           {tx.createdAt
-            ? new Date(tx.createdAt.toDate()).toLocaleString()
+            ? new Date(
+                typeof tx.createdAt === 'object' && 'toDate' in tx.createdAt
+                  ? (tx.createdAt as Record<string, unknown> & { toDate: () => Date }).toDate()
+                  : tx.createdAt instanceof Date
+                  ? tx.createdAt
+                  : new Date()
+              ).toLocaleString()
             : "—"}
         </p>
         <p className="font-mono truncate">{tx.transactionId || tx.id}</p>

@@ -3,12 +3,17 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Project } from "@/types/project";
 
 import FinalMessage from "./FinalMessage";
 import FreelancerView from "./FreelancerView";
 import ClientView from "./ClientView";
 
-export default function StepCompleted({ project }: { project: any }) {
+interface StepCompletedProps {
+  project: Project;
+}
+
+export default function StepCompleted({ project }: StepCompletedProps) {
   const { user } = useAuth();
 
   const isClient = user?.uid === project.clientId;
@@ -83,7 +88,7 @@ export default function StepCompleted({ project }: { project: any }) {
 
   if (isFreelancer)
     return (
-      <FreelancerView project={project} hasRated={hasRated} files={files} />
+      <FreelancerView project={project} hasRated={hasRated} />
     );
 
   if (isClient)

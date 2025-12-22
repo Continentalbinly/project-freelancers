@@ -79,7 +79,7 @@ export default function OrderSidebar({
         <div className="space-y-3 text-sm">
           {/* Order Created */}
           <div className="flex gap-3">
-            <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2"></div>
+            <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2"></div>
             <div>
               <p className="font-medium text-text-primary">
                 {t("orderDetail.orderCreated") || "Order Created"}
@@ -100,7 +100,7 @@ export default function OrderSidebar({
                 return (
                   <div key={idx} className="flex gap-3">
                     <div
-                      className={`w-2 h-2 rounded-full flex-shrink-0 mt-2 ${
+                      className={`w-2 h-2 rounded-full shrink-0 mt-2 ${
                         isRevisionRequest 
                           ? "bg-amber-500" 
                           : isCompleted 
@@ -140,7 +140,7 @@ export default function OrderSidebar({
             <>
               {(order.revisionRequests || []).map((rev, idx) => (
                 <div key={`rev-${idx}`} className="flex gap-3">
-                  <div className="w-2 h-2 rounded-full bg-error flex-shrink-0 mt-2"></div>
+                  <div className="w-2 h-2 rounded-full bg-error shrink-0 mt-2"></div>
                   <div>
                     <p className="font-medium text-error">
                       {t("orderDetail.revisionRequested") || "Revision Requested"}

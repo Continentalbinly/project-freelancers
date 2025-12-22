@@ -2,10 +2,14 @@
 import { useRouter } from "next/navigation";
 import SearchBar from "./SearchBar";
 
-export default function HeroSection({ t }: any) {
+interface HeroSectionProps {
+  t: (key: string) => string;
+}
+
+export default function HeroSection({ t }: HeroSectionProps) {
   const router = useRouter();
   return (
-    <section className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950/20 py-20 sm:py-24 lg:py-28 overflow-hidden">
+    <section className="relative bg-linear-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950/20 py-20 sm:py-24 lg:py-28 overflow-hidden">
       {/* 🎨 Decorative background elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-secondary/5 dark:bg-secondary/10 rounded-full blur-3xl -ml-40 -mb-40"></div>

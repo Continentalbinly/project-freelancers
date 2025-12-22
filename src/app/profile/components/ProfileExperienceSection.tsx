@@ -2,7 +2,7 @@
 
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { Profile } from "@/types/profile";
-import { Briefcase, Plus } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import ExperienceManager from "./ExperienceManager";
 
 interface ProfileExperienceSectionProps {

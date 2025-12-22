@@ -9,7 +9,7 @@ interface StepperProps {
 }
 
 export default function ProjectStepper({ current }: StepperProps) {
-  const { currentLanguage } = useTranslationContext() as any;
+  const { currentLanguage } = useTranslationContext();
   const lang = currentLanguage === "lo" ? "lo" : "en";
 
   const currentIndex = statusSteps.indexOf(current);

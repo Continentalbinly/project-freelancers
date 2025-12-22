@@ -19,7 +19,7 @@ export default function SubscribePageLAK() {
   return (
     <div className="bg-background text-text-primary min-h-screen">
       {/* Header */}
-      <section className="border-b border-border bg-gradient-to-br from-primary/5 to-secondary/5">
+      <section className="border-b border-border bg-linear-to-br from-primary/5 to-secondary/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold">
             {t("pricing.blockedFeature.title")}

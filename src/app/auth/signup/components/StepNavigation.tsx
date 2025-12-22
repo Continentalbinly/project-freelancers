@@ -44,7 +44,7 @@ export default function StepNavigation({
         type="button"
         onClick={isLastStep ? onNext : onNext}
         disabled={!isValid || loading || uploading}
-        className="sm:flex-1 px-4 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="sm:flex-1 px-4 py-3 rounded-lg font-medium text-white bg-linear-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
           <>

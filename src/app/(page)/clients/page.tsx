@@ -11,20 +11,68 @@ import ProjectImage, {
   getProjectImageProps,
 } from "@/app/utils/projectImageHandler";
 import Avatar from "@/app/utils/avatarHandler";
+import type { Project } from "@/types/project";
+import type { Profile } from "@/types/profile";
 
 export default function ClientsPage() {
   const { t } = useTranslationContext();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [profiles, setProfiles] = useState<{ [id: string]: any }>({});
+  const [profiles, setProfiles] = useState<{ [id: string]: Profile }>({});
 
   useEffect(() => {
     if (!authLoading && user) {
       router.push("/dashboard");
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user) return;
+    const fetchProjects = async () => {
+      setLoading(true);
+      const q = query(collection(requireDb(), "projects"));
+      const snap = await getDocs(q);
+      const projectList = snap.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+        } as Project;
+      });
+      setProjects(projectList);
+      setLoading(false);
+    };
+    fetchProjects();
+  }, [user]);
+
+  // Fetch creator profiles in batches of 10 (Firestore 'in' limitation)
+  useEffect(() => {
+    if (user) return;
+    if (projects.length === 0) return;
+    const creatorIds = Array.from(
+      new Set(projects.map((p) => p.clientId).filter(Boolean) as string[])
+    );
+    if (creatorIds.length === 0) return;
+
+    const fetchProfiles = async () => {
+      const allProfiles: { [id: string]: Profile } = {};
+      for (let i = 0; i < creatorIds.length; i += 10) {
+        const batch = creatorIds.slice(i, i + 10);
+        const q = query(
+          collection(requireDb(), "profiles"),
+          where("__name__", "in", batch)
+        );
+        const snap = await getDocs(q);
+        snap.forEach((doc) => {
+          allProfiles[doc.id] = doc.data() as Profile;
+        });
+      }
+      setProfiles(allProfiles);
+    };
+    fetchProfiles();
+  }, [projects, user]);
 
   if (authLoading) {
     return (
@@ -35,47 +83,6 @@ export default function ClientsPage() {
   }
 
   if (user) return null;
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      const q = query(collection(requireDb(), "projects"));
-      const snap = await getDocs(q);
-      const projectList = snap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setProjects(projectList);
-      setLoading(false);
-    };
-    fetchProjects();
-  }, []);
-
-  // Fetch creator profiles in batches of 10 (Firestore 'in' limitation)
-  useEffect(() => {
-    if (projects.length === 0) return;
-    const creatorIds = Array.from(
-      new Set(projects.map((p) => p.userId || p.clientId).filter(Boolean))
-    );
-    if (creatorIds.length === 0) return;
-
-    const fetchProfiles = async () => {
-      let allProfiles: { [id: string]: any } = {};
-      for (let i = 0; i < creatorIds.length; i += 10) {
-        const batch = creatorIds.slice(i, i + 10);
-        const q = query(
-          collection(requireDb(), "profiles"),
-          where("__name__", "in", batch)
-        );
-        const snap = await getDocs(q);
-        snap.forEach((doc) => {
-          allProfiles[doc.id] = doc.data();
-        });
-      }
-      setProfiles(allProfiles);
-    };
-    fetchProfiles();
-  }, [projects]);
 
   const getStatusBadge = (status: string) => {
     const statusMap: { [key: string]: { color: string; label: string } } = {
@@ -109,7 +116,7 @@ export default function ClientsPage() {
   return (
     <div className="bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-secondary via-secondary-hover to-info dark:from-secondary/90 dark:via-secondary dark:to-secondary-hover py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+      <section className="bg-linear-to-br from-secondary via-secondary-hover to-info dark:from-secondary/90 dark:via-secondary dark:to-secondary-hover py-12 sm:py-16 lg:py-20 relative overflow-hidden">
         {/* Decorative element */}
         <div className="absolute top-0 right-0 -mt-40 -mr-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
@@ -197,7 +204,7 @@ export default function ClientsPage() {
               </div>
             ) : (
               projects.map((project) => {
-                const creatorId = project.userId || project.clientId;
+                const creatorId = project.clientId;
                 const creator = profiles[creatorId];
                 return (
                   <div
@@ -233,11 +240,9 @@ export default function ClientsPage() {
                           <span className="text-sm text-text-secondary font-medium">
                             {creator?.fullName || "Unknown"}
                           </span>
-                          {creator?.userType && (
+                          {creator?.role && (
                             <div className="text-xs text-primary font-semibold">
-                              {Array.isArray(creator.userType)
-                                ? creator.userType.join(" / ")
-                                : creator.userType}
+                              {creator.role}
                             </div>
                           )}
                         </div>
@@ -612,7 +617,7 @@ export default function ClientsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-secondary via-secondary to-secondary-hover relative overflow-hidden">
+      <section className="py-12 sm:py-16 lg:py-20 bg-linear-to-r from-secondary via-secondary to-secondary-hover relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -mr-48"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full blur-3xl -ml-40"></div>

@@ -79,7 +79,7 @@ export function PublicProfileSkeleton() {
         <div className="bg-background-secondary dark:bg-gray-800/50 rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 border border-border dark:border-gray-700/50 animate-pulse">
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
             {/* Avatar Skeleton */}
-            <div className="flex-shrink-0 mx-auto lg:mx-0">
+            <div className="shrink-0 mx-auto lg:mx-0">
               <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-200 dark:bg-gray-700"></div>
             </div>
             {/* Main Content Skeleton */}

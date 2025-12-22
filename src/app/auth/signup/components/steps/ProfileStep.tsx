@@ -167,8 +167,10 @@ export default function ProfileStep({
   })();
 
   const buildOccupationObject = (id: string) => {
-    const enName = (en as any)?.auth?.signup?.occupations?.[id] || id;
-    const loName = (lo as any)?.auth?.signup?.occupations?.[id] || id;
+    const enTranslations = en as unknown as Record<string, any>;
+    const loTranslations = lo as unknown as Record<string, any>;
+    const enName = enTranslations?.auth?.signup?.occupations?.[id] || id;
+    const loName = loTranslations?.auth?.signup?.occupations?.[id] || id;
     return { id, name_en: enName, name_lo: loName };
   };
 
@@ -452,7 +454,7 @@ export default function ProfileStep({
             >
               <span className="truncate text-left">{selectedGenderLabel}</span>
               <ChevronDown
-                className={`w-4 h-4 text-text-secondary transition-transform flex-shrink-0 ml-2 ${
+                className={`w-4 h-4 text-text-secondary transition-transform shrink-0 ml-2 ${
                   isGenderOpen ? "rotate-180" : ""
                 }`}
               />
@@ -482,7 +484,7 @@ export default function ProfileStep({
                       onClick={() => {
                         setFormData({
                           ...formData,
-                          gender: option.value as any,
+                          gender: option.value as "male" | "female" | "other" | "prefer_not_to_say",
                         });
                         setIsGenderOpen(false);
                       }}

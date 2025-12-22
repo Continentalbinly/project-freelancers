@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { CreditCard, Info, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { User as FirebaseUser } from "firebase/auth";
+import type { Profile } from "@/types/profile";
+
+interface FreelancerWithdrawFormProps {
+  user: FirebaseUser;
+  profile: Profile;
+}
 
 const formatCurrency = (value: string): string => {
   const num = value.replace(/\D/g, "");
@@ -14,7 +21,7 @@ const parseAmount = (value: string): number => {
   return Number(value.replace(/\D/g, "")) || 0;
 };
 
-export default function FreelancerWithdrawForm({ user, profile }: any) {
+export default function FreelancerWithdrawForm({ user, profile }: FreelancerWithdrawFormProps) {
   const { t } = useTranslationContext();
   const [accountName, setAccountName] = useState(profile.fullName || "");
   const [accountNumber, setAccountNumber] = useState("");
@@ -44,7 +51,7 @@ export default function FreelancerWithdrawForm({ user, profile }: any) {
     return true;
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateAmount()) return;
     setShowConfirm(true);
@@ -91,8 +98,9 @@ export default function FreelancerWithdrawForm({ user, profile }: any) {
         setError(data.error || t("withdraw.errors.failed") || "Failed to submit withdrawal request");
         setMessage("");
       }
-    } catch (err: any) {
-      setError(t("withdraw.errors.unknown") || "An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : t("withdraw.errors.unknown") || "An unexpected error occurred. Please try again.";
+      setError(errorMessage);
       setMessage("");
     } finally {
       setLoading(false);
@@ -201,7 +209,7 @@ export default function FreelancerWithdrawForm({ user, profile }: any) {
         {/* Error Message */}
         {error && (
           <div className="flex items-start gap-3 p-4 rounded-xl bg-error/10 dark:bg-error/20 border border-error/20 dark:border-error/30">
-            <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-error shrink-0 mt-0.5" />
             <p className="text-sm text-error font-medium">{error}</p>
           </div>
         )}
@@ -214,9 +222,9 @@ export default function FreelancerWithdrawForm({ user, profile }: any) {
               : "bg-error/10 dark:bg-error/20 border border-error/20 dark:border-error/30"
           }`}>
             {message.startsWith("✅") ? (
-              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-5 h-5 text-success shrink-0 mt-0.5" />
             ) : (
-              <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-error shrink-0 mt-0.5" />
             )}
             <p className={`text-sm font-medium ${
               message.startsWith("✅") ? "text-success" : "text-error"
@@ -233,7 +241,7 @@ export default function FreelancerWithdrawForm({ user, profile }: any) {
           className={`w-full py-3.5 rounded-xl text-white font-semibold shadow-lg transition-all flex items-center justify-center gap-2 ${
             loading || parsedAmount <= 0 || parsedAmount > totalEarned
               ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-              : "bg-gradient-to-r from-primary to-primary-hover hover:from-primary/90 hover:to-primary-hover/90 active:scale-[0.98]"
+              : "bg-linear-to-r from-primary to-primary-hover hover:from-primary/90 hover:to-primary-hover/90 active:scale-[0.98]"
           }`}
         >
           {loading ? (
@@ -286,7 +294,7 @@ export default function FreelancerWithdrawForm({ user, profile }: any) {
 
               <div className="pt-2 space-y-2 text-xs text-text-secondary dark:text-gray-400">
                 <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <Info className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{t("withdraw.confirm.note") || "Processing typically takes 1-3 business days."}</span>
                 </div>
               </div>
@@ -304,7 +312,7 @@ export default function FreelancerWithdrawForm({ user, profile }: any) {
                 type="button"
                 onClick={confirmWithdraw}
                 disabled={loading}
-                className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-hover text-white font-semibold hover:from-primary/90 hover:to-primary-hover/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 rounded-xl bg-linear-to-r from-primary to-primary-hover text-white font-semibold hover:from-primary/90 hover:to-primary-hover/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

@@ -40,24 +40,24 @@ export default function FreelancersGuidePage() {
             </h2>
 
             <p className="text-text-secondary mb-6">
-              We're creating a comprehensive guide for freelancers. This guide will cover:
+              We&apos;re creating a comprehensive guide for freelancers. This guide will cover:
             </p>
 
             <ul className="text-left max-w-md mx-auto space-y-3 mb-8">
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Finding and applying to projects</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Writing winning proposals</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Managing your profile and portfolio</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Getting paid and building your reputation</span>
               </li>
             </ul>

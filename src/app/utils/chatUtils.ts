@@ -9,6 +9,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
+import type { Order } from "@/types/order";
+import type { Profile } from "@/types/profile";
 
 /**
  * Ensures a chat room exists for the project (creates one if missing)
@@ -76,8 +78,8 @@ export async function createOrOpenChatRoom(
     message: "Hi, Welcome!",
     senderId: clientId,
     receiverId: freelancerId,
-    senderName: client.fullName || "Client",
-    senderAvatar: client.avatarUrl || "",
+    senderName: client?.fullName || "Client",
+    senderAvatar: client?.avatarUrl || "",
     read: false,
     timestamp: serverTimestamp(),
   });
@@ -101,7 +103,8 @@ export async function createOrOpenChatRoomForOrder(
   const orderSnap = await getDoc(orderRef);
   if (!orderSnap.exists()) return null;
 
-  const order = orderSnap.data() as any;
+  const orderData = orderSnap.data();
+  const order = orderData as Order;
   const buyerId = order.buyerId;
   const sellerId = order.sellerId;
   const title = order.catalogTitle || order.packageName || "Order";
@@ -122,8 +125,8 @@ export async function createOrOpenChatRoomForOrder(
   // Load both profiles
   const buyerSnap = await getDoc(doc(db, "profiles", buyerId));
   const sellerSnap = await getDoc(doc(db, "profiles", sellerId));
-  const buyer = buyerSnap.exists() ? buyerSnap.data() : {};
-  const seller = sellerSnap.exists() ? sellerSnap.data() : {};
+  const buyer = buyerSnap.exists() ? (buyerSnap.data() as Profile) : null;
+  const seller = sellerSnap.exists() ? (sellerSnap.data() as Profile) : null;
 
   // Create new chat room
   const newRoom = {
@@ -131,12 +134,12 @@ export async function createOrOpenChatRoomForOrder(
     projectTitle: title,
     participants: [buyerId, sellerId],
     participantNames: {
-      [buyerId]: (buyer as any).fullName || "Client",
-      [sellerId]: (seller as any).fullName || "Freelancer",
+      [buyerId]: buyer?.fullName || "Client",
+      [sellerId]: seller?.fullName || "Freelancer",
     },
     participantAvatars: {
-      [buyerId]: (buyer as any).avatarUrl || "",
-      [sellerId]: (seller as any).avatarUrl || "",
+      [buyerId]: buyer?.avatarUrl || "",
+      [sellerId]: seller?.avatarUrl || "",
     },
     lastMessage: "Hi, Welcome!",
     lastMessageTime: serverTimestamp(),
@@ -153,12 +156,12 @@ export async function createOrOpenChatRoomForOrder(
     receiverId: currentUserId === buyerId ? sellerId : buyerId,
     senderName:
       currentUserId === buyerId
-        ? (buyer as any).fullName || "Client"
-        : (seller as any).fullName || "Freelancer",
+        ? buyer?.fullName || "Client"
+        : seller?.fullName || "Freelancer",
     senderAvatar:
       currentUserId === buyerId
-        ? (buyer as any).avatarUrl || ""
-        : (seller as any).avatarUrl || "",
+        ? buyer?.avatarUrl || ""
+        : seller?.avatarUrl || "",
     read: false,
     timestamp: serverTimestamp(),
   });

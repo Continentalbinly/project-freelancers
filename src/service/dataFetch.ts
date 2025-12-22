@@ -7,23 +7,21 @@
  * - Error handling and retry logic
  */
 
-interface CacheEntry<T> {
+  interface CacheEntry<T = unknown> {
   data: T;
   timestamp: number;
   ttl: number;
 }
 
 interface PendingRequest {
-  promise: Promise<any>;
+  promise: Promise<unknown>;
   abortController: AbortController;
 }
 
-const CACHE = new Map<string, CacheEntry<any>>();
+const CACHE = new Map<string, CacheEntry<unknown>>();
 const PENDING_REQUESTS = new Map<string, PendingRequest>();
 
 const DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
-const PROFILE_TTL = 10 * 60 * 1000; // 10 minutes for profile data
-const DASHBOARD_TTL = 3 * 60 * 1000; // 3 minutes for dashboard data
 
 /**
  * Check if cache entry is still valid
@@ -39,10 +37,10 @@ function isCacheValid<T>(entry: CacheEntry<T> | undefined): entry is CacheEntry<
 export function getFromCache<T>(key: string): T | null {
   const entry = CACHE.get(key);
   if (isCacheValid(entry)) {
-    return entry.data;
+    return entry.data as T;
   }
   CACHE.delete(key);
-  return null;
+  return null as T | null;
 }
 
 /**
@@ -120,7 +118,7 @@ export async function fetchWithCache<T>(
   // Check if request is already in flight
   const pending = PENDING_REQUESTS.get(key);
   if (pending && !forceRefresh) {
-    return pending.promise;
+    return pending.promise as Promise<T>;
   }
 
   // Create new request
@@ -146,7 +144,7 @@ export async function fetchFromAPI<T>(
   endpoint: string,
   options: {
     method?: string;
-    body?: Record<string, any>;
+    body?: Record<string, unknown>;
     headers?: Record<string, string>;
     ttl?: number;
     useCache?: boolean;

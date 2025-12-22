@@ -91,8 +91,8 @@ export async function createOrderNotification(
       relatedUserId: relatedUserId || undefined,
       createdAt: serverTimestamp(),
     });
-  } catch (error) {
-    console.error("Error creating order notification:", error);
+  } catch {
+    // Silent fail
     // Don't throw - notification failure shouldn't break order updates
   }
 }
@@ -148,8 +148,8 @@ export async function createRevisionNotification(
       relatedUserId: freelancerId,
       createdAt: serverTimestamp(),
     });
-  } catch (error) {
-    console.error("Error creating revision notification:", error);
+  } catch {
+    // Silent fail
   }
 }
 
@@ -204,8 +204,8 @@ export async function createRevisionDecisionNotification(
         createdAt: serverTimestamp(),
       });
     }
-  } catch (error) {
-    console.error("Error creating revision decision notification:", error);
+  } catch {
+    // Silent fail
   }
 }
 
@@ -241,8 +241,8 @@ export async function createTopupNotification(
       read: false,
       createdAt: serverTimestamp(),
     });
-  } catch (error) {
-    throw error; // Re-throw to be caught by webhook handler
+  } catch {
+    // Silent fail
   }
 }
 
@@ -292,8 +292,8 @@ export async function createOrderCreatedNotification(
       relatedUserId: clientId,
       createdAt: serverTimestamp(),
     });
-  } catch (error) {
-    console.error("Error creating order creation notification:", error);
+  } catch {
+    // Silent fail
   }
 }
 
@@ -338,8 +338,8 @@ export async function createProposalSubmittedNotification(
       relatedUserId: clientId,
       createdAt: serverTimestamp(),
     });
-  } catch (error) {
-    console.error("Error creating proposal notification:", error);
+  } catch {
+    // Silent fail
   }
 }
 
@@ -368,8 +368,8 @@ export async function createProposalAcceptedNotification(
       relatedUserId: clientId,
       createdAt: serverTimestamp(),
     });
-  } catch (error) {
-    console.error("Error creating proposal accepted notification:", error);
+  } catch {
+    // Silent fail
   }
 }
 
@@ -401,8 +401,8 @@ export async function createProposalRejectedNotification(
       relatedUserId: clientId,
       createdAt: serverTimestamp(),
     });
-  } catch (error) {
-    console.error("Error creating proposal rejected notification:", error);
+  } catch {
+    // Silent fail
   }
 }
 

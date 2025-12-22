@@ -4,8 +4,14 @@ import { CheckCircle, Loader2 } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { submitRating } from "./ratingLogic";
 import RatingForm from "./RatingForm";
+import type { Project } from "@/types/project";
 
-export default function FreelancerView({ project, hasRated }: any) {
+interface FreelancerViewProps {
+  project: Project;
+  hasRated: boolean;
+}
+
+export default function FreelancerView({ project, hasRated }: FreelancerViewProps) {
   const { t } = useTranslationContext();
 
   const [form, setForm] = useState({

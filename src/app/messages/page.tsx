@@ -16,8 +16,9 @@ import {
 } from "firebase/firestore";
 
 import ChatList from "./components/ChatList";
-import ChatRoom from "./components/ChatRoom";
+import ChatRoomComponent from "./components/ChatRoom";
 import { createOrOpenChatRoom, createOrOpenChatRoomForOrder } from "@/app/utils/chatUtils";
+import type { ChatRoom } from "@/types/chat";
 import { ArrowLeftIcon } from "lucide-react";
 import MessagesSkeleton from "./components/MessagesSkeleton";
 
@@ -26,8 +27,8 @@ function MessagesPageContent() {
   const { t } = useTranslationContext();
   const router = useRouter();
 
-  const [chatRooms, setChatRooms] = useState<any[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<any>(null);
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
   const [profileCache, setProfileCache] = useState<
     Record<string, { fullName: string; avatarUrl: string }>
   >({});
@@ -50,7 +51,21 @@ function MessagesPageContent() {
     );
 
     const unsub = onSnapshot(q, (snapshot) => {
-      setChatRooms(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+      setChatRooms(snapshot.docs.map((d) => {
+        const data = d.data();
+        return {
+          id: d.id,
+          participants: data.participants || [],
+          projectId: data.projectId,
+          orderId: data.orderId,
+          projectTitle: data.projectTitle,
+          lastMessage: data.lastMessage,
+          lastMessageTime: data.lastMessageTime,
+          unreadCount: data.unreadCount,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        } as ChatRoom;
+      }));
       setLoading(false);
     });
     return () => unsub();
@@ -62,14 +77,18 @@ function MessagesPageContent() {
     if (projectId) {
       (async () => {
         const room = await createOrOpenChatRoom(projectId, user.uid);
-        if (room) setSelectedRoom(room);
+        if (room && 'participants' in room && Array.isArray(room.participants)) {
+          setSelectedRoom(room as ChatRoom);
+        }
       })();
       return;
     }
     if (orderId) {
       (async () => {
         const room = await createOrOpenChatRoomForOrder(orderId, user.uid);
-        if (room) setSelectedRoom(room);
+        if (room && 'participants' in room && Array.isArray(room.participants)) {
+          setSelectedRoom(room as ChatRoom);
+        }
       })();
     }
   }, [user, projectId, orderId]);
@@ -121,7 +140,7 @@ function MessagesPageContent() {
         loading={loading}
         profileCache={profileCache}
         selectedRoom={selectedRoom}
-        onSelect={(room: any) => {
+        onSelect={(room: ChatRoom) => {
           if (window.innerWidth < 1024) {
             // 📱 Mobile → go to dedicated page
             router.push(`/messages/${room.id}`);
@@ -131,7 +150,7 @@ function MessagesPageContent() {
           }
         }}
       />
-      <ChatRoom chatRoom={selectedRoom} onBack={() => setSelectedRoom(null)} />
+      <ChatRoomComponent chatRoom={selectedRoom} onBack={() => setSelectedRoom(null)} />
     </div>
   );
 }

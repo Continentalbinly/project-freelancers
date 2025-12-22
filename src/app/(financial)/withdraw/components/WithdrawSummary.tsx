@@ -1,16 +1,22 @@
 "use client";
 
-import { Wallet, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import type { Profile } from "@/types/profile";
 
-export default function WithdrawSummary({ profile, userRole }: any) {
+interface WithdrawSummaryProps {
+  profile: Profile;
+  userRole: "freelancer" | "client" | "admin";
+}
+
+export default function WithdrawSummary({ profile, userRole }: WithdrawSummaryProps) {
   const { t } = useTranslationContext();
 
   // Freelancer: show earned only
   if (userRole === "freelancer") {
     const totalEarned = profile.totalEarned || 0;
     return (
-      <div className="rounded-2xl border border-success/20 dark:border-success/30 bg-gradient-to-br from-success/10 to-success/5 dark:from-success/20 dark:to-success/10 p-6 md:p-8 shadow-sm">
+      <div className="rounded-2xl border border-success/20 dark:border-success/30 bg-linear-to-br from-success/10 to-success/5 dark:from-success/20 dark:to-success/10 p-6 md:p-8 shadow-sm">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-3">

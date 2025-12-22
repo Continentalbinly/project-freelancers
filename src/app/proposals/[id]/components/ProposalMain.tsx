@@ -9,8 +9,15 @@ import {
   FlagIcon,
 } from "@heroicons/react/24/outline";
 import { formatEarnings } from "@/service/currencyUtils";
+import type { ProposalWithDetails, Milestone, WorkSample } from "@/types/proposal";
 
-export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
+interface ProposalMainProps {
+  proposal: ProposalWithDetails;
+  t: (key: string) => string;
+  setSelectedImage: (url: string | null) => void;
+}
+
+export default function ProposalMain({ proposal, t, setSelectedImage }: ProposalMainProps) {
   return (
     <div className="lg:col-span-2 space-y-8">
       {/* ==== Project Info ==== */}
@@ -64,7 +71,7 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
       )}
 
       {/* ==== Milestones ==== */}
-      {proposal.milestones?.length > 0 && (
+      {proposal.milestones && proposal.milestones.length > 0 && (
         <section className="border border-border bg-background backdrop-blur rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <FlagIcon className="w-5 h-5 text-secondary" />
@@ -75,31 +82,38 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
           </h3>
 
           <ul className="divide-y divide-border">
-            {proposal.milestones.map((m: any, index: number) => (
-              <li key={index} className="py-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-sm mb-1">
-                      {m.title}
-                    </p>
-                    {m.description && (
-                      <p className="text-xs text-text-secondary leading-snug">
-                        {m.description}
+            {proposal.milestones.map((m: Milestone, index: number) => {
+              const dueDateStr = m.dueDate instanceof Date 
+                ? m.dueDate.toLocaleDateString()
+                : typeof m.dueDate === 'string' 
+                ? m.dueDate 
+                : 'N/A';
+              return (
+                <li key={index} className="py-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-medium text-sm mb-1">
+                        {m.title}
                       </p>
-                    )}
+                      {m.description && (
+                        <p className="text-xs text-text-secondary leading-snug">
+                          {m.description}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs text-text-secondary whitespace-nowrap">
+                      {t("proposals.detail.due")}: {dueDateStr}
+                    </span>
                   </div>
-                  <span className="text-xs text-text-secondary whitespace-nowrap">
-                    {t("proposals.detail.due")}: {m.dueDate}
-                  </span>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}
 
       {/* ==== Work Samples ==== */}
-      {proposal.workSamples?.length > 0 && (
+      {proposal.workSamples && proposal.workSamples.length > 0 && (
         <section className="border border-border bg-background backdrop-blur rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-5 flex items-center gap-2">
             <PhotoIcon className="w-5 h-5 text-secondary" />
@@ -110,7 +124,7 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
           </h3>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {proposal.workSamples.map((sample: any, index: number) => (
+            {proposal.workSamples.map((sample: WorkSample, index: number) => (
               <div
                 key={index}
                 onClick={() => setSelectedImage(sample.url)}
@@ -119,9 +133,9 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
                 <div className="aspect-square overflow-hidden">
                   <ProposalImage
                     src={sample.url}
-                    alt={sample.name}
+                    alt={sample.title}
                     type="work-sample"
-                    proposalTitle={sample.name}
+                    proposalTitle={sample.title}
                     size="lg"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
@@ -129,9 +143,9 @@ export default function ProposalMain({ proposal, t, setSelectedImage }: any) {
                 <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
                   <EyeIcon className="w-6 h-6 text-white" />
                 </div>
-                <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/60 to-transparent px-2 py-1">
+                <div className="absolute bottom-0 w-full bg-linear-to-t from-black/60 to-transparent px-2 py-1">
                   <p className="text-[11px] text-white truncate text-center">
-                    {sample.name}
+                    {sample.title}
                   </p>
                 </div>
               </div>

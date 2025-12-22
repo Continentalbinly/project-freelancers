@@ -2,6 +2,7 @@
 
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import type { Category } from "@/types/category";
 
 const CATEGORY_POSTING_FEES: Record<string, number> = {
   // Marketing
@@ -43,7 +44,7 @@ interface Props {
   formData: ProjectFormData;
   setFormData: Dispatch<SetStateAction<ProjectFormData>>;
   t: (key: string) => string;
-  categories: any[];
+  categories: Category[];
   categoriesLoading: boolean;
   timelines: Array<{ id: string; label: string }>;
 }
@@ -52,7 +53,7 @@ export default function ProjectDetails({ formData, setFormData, t, categories, c
   const { currentLanguage } = useTranslationContext();
 
   const selectedPostingFee = useMemo(() => {
-    const cat = categories.find((c: any) => c.id === formData.categoryId);
+    const cat = categories.find((c: Category) => c.id === formData.categoryId);
     return (
       safeFee(cat?.postingFee) ||
       safeFee(CATEGORY_POSTING_FEES[formData.categoryId || ""]) ||
@@ -62,7 +63,7 @@ export default function ProjectDetails({ formData, setFormData, t, categories, c
 
   const labelFor = useMemo(
     () =>
-      (cat: any) =>
+      (cat: Category) =>
         currentLanguage === "lo"
           ? cat?.name_lo || cat?.name_en || cat?.id
           : cat?.name_en || cat?.name_lo || cat?.id,
@@ -88,7 +89,7 @@ export default function ProjectDetails({ formData, setFormData, t, categories, c
         <select
           value={formData.categoryId}
           onChange={(e) => {
-            const cat = categories.find((c: any) => c.id === e.target.value);
+            const cat = categories.find((c: Category) => c.id === e.target.value);
             const fee = safeFee(cat?.postingFee) || safeFee(CATEGORY_POSTING_FEES[e.target.value]);
             setFormData((p: ProjectFormData) => ({
               ...p,

@@ -8,6 +8,15 @@ import {
 import Avatar from "@/app/utils/avatarHandler";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import type { ChatRoom, ProfileCache } from "@/types/chat";
+
+interface ChatListProps {
+  chatRooms: ChatRoom[];
+  loading: boolean;
+  profileCache: ProfileCache;
+  selectedRoom: ChatRoom | null;
+  onSelect: (room: ChatRoom) => void;
+}
 
 export default function ChatList({
   chatRooms,
@@ -15,14 +24,14 @@ export default function ChatList({
   profileCache,
   selectedRoom,
   onSelect,
-}: any) {
+}: ChatListProps) {
   const { user } = useAuth();
   const { t } = useTranslationContext();
   const [search, setSearch] = useState("");
 
-  const filtered = chatRooms.filter((r: any) => {
+  const filtered = chatRooms.filter((r: ChatRoom) => {
     const other = r.participants?.find((id: string) => id !== user?.uid);
-    const name = profileCache[other]?.fullName?.toLowerCase() || "";
+    const name = (other ? profileCache[other]?.fullName?.toLowerCase() : "") || "";
     const title = r.projectTitle?.toLowerCase() || "";
     return (
       !search ||
@@ -60,7 +69,7 @@ export default function ChatList({
                 key={idx}
                 className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border bg-background shadow-sm"
               >
-                <div className="h-12 w-12 rounded-full-tertiary flex-shrink-0" />
+                <div className="h-12 w-12 rounded-full-tertiary shrink-0" />
                 <div className="flex-1 space-y-2 min-w-0">
                   <div className="h-4 w-32 bg-background-tertiary rounded" />
                   <div className="h-3 w-44 bg-background-tertiary rounded" />
@@ -81,13 +90,13 @@ export default function ChatList({
             </p>
           </div>
         ) : (
-          filtered.map((room: any) => {
+          filtered.map((room: ChatRoom) => {
             const otherId = room.participants?.find(
               (id: string) => id !== user?.uid
             );
-            const name = profileCache[otherId]?.fullName || "Unknown";
-            const avatar = profileCache[otherId]?.avatarUrl || "";
-            const profileLoaded = !!profileCache[otherId];
+            const name = (otherId ? profileCache[otherId]?.fullName : undefined) || "Unknown";
+            const avatar = (otherId ? profileCache[otherId]?.avatarUrl : undefined) || "";
+            const profileLoaded = !!(otherId && profileCache[otherId]);
 
             const last = room.lastMessage
               ? room.lastMessage.length > 40
@@ -97,7 +106,13 @@ export default function ChatList({
 
             const timeLabel = room.lastMessageTime
               ? new Date(
-                  room.lastMessageTime.seconds * 1000
+                  typeof room.lastMessageTime === 'object' && 'seconds' in room.lastMessageTime
+                    ? (room.lastMessageTime as any).seconds * 1000
+                    : room.lastMessageTime instanceof Date
+                    ? room.lastMessageTime.getTime()
+                    : typeof room.lastMessageTime === 'number'
+                    ? room.lastMessageTime
+                    : Date.now()
                 ).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -117,7 +132,7 @@ export default function ChatList({
                 }`}
               >
                 {!profileLoaded ? (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer flex-shrink-0" />
+                  <div className="w-12 h-12 rounded-full bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer shrink-0" />
                 ) : (
                   <Avatar src={avatar} name={name} size="lg" />
                 )}
@@ -130,7 +145,7 @@ export default function ChatList({
                     }`}>
                       {name}
                     </p>
-                    <span className="text-[11px] text-text-secondary whitespace-nowrap flex-shrink-0">
+                    <span className="text-[11px] text-text-secondary whitespace-nowrap shrink-0">
                       {timeLabel}
                     </span>
                   </div>

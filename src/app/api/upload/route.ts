@@ -25,7 +25,7 @@ try {
   if (getApps().length) {
     adminAuth = getAuth();
   }
-} catch (error) {
+} catch {
   // Firebase Admin not available, will use upload key only
   console.warn("Firebase Admin not initialized for upload route");
 }
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         try {
           await adminAuth.verifyIdToken(token);
           isAuthorized = true;
-        } catch (error) {
+        } catch {
           // Not a valid Firebase token, continue to check upload key
         }
       }
@@ -150,12 +150,12 @@ export async function POST(request: NextRequest) {
         storage: "local",
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("❌ Upload error:", err);
     return NextResponse.json(
       {
         success: false,
-        error: err?.message || "Unexpected upload failure",
+        error: (err instanceof Error ? err.message : String(err)) || "Unexpected upload failure",
       },
       { status: 500 }
     );
@@ -193,7 +193,7 @@ async function handleProfileUpload(
         storage: "local",
       },
     });
-  } catch (error) {
+  } catch {
     // console.error("Local profile upload failed:", error);
     try {
       const result = await uploadToCloudinary(
@@ -249,8 +249,8 @@ async function handleCloudinaryUpload(
         cloudinaryId: result.public_id,
       },
     });
-  } catch (err) {
-    console.error("Cloudinary upload failed:", err);
+  } catch  {
+    // Silent fail
     return NextResponse.json(
       { success: false, error: "Failed to upload to Cloudinary" },
       { status: 500 }

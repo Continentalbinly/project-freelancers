@@ -88,7 +88,10 @@ export default function OrdersListPage(): React.ReactElement {
     const q = query(collection(db, "orders"), where(field, "==", user.uid), orderBy("createdAt", "desc"));
     
     const unsub = onSnapshot(q, (snap) => {
-      const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      const rows = snap.docs.map((d) => {
+        const orderData = d.data() as Order;
+        return { ...orderData, id: d.id } as Order;
+      });
       setOrders(rows as Order[]);
       setLoading(false);
     });
@@ -201,9 +204,9 @@ export default function OrdersListPage(): React.ReactElement {
         <div className="mb-6 flex flex-wrap gap-2 overflow-x-auto pb-2">
           <button
             onClick={() => setStatus("all")}
-            className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
+            className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
               status === "all"
-                ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
+                ? "bg-linear-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
                 : "bg-background border-2 border-border text-text-primary hover:border-primary/30"
             }`}
           >
@@ -218,9 +221,9 @@ export default function OrdersListPage(): React.ReactElement {
               <button
                 key={s}
                 onClick={() => setStatus(s)}
-                className={`px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center gap-1 sm:gap-2 whitespace-nowrap flex-shrink-0 ${
+                className={`px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-lg font-medium text-xs sm:text-sm transition-all flex items-center gap-1 sm:gap-2 whitespace-nowrap shrink-0 ${
                   status === s
-                    ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
+                    ? "bg-linear-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
                     : "bg-background border-2 border-border text-text-primary hover:border-primary/30"
                 }`}
               >
@@ -276,7 +279,7 @@ export default function OrdersListPage(): React.ReactElement {
                   {/* Left: Order Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2 sm:gap-3">
-                      <div className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg ${config.bgColor} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                      <div className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg ${config.bgColor} flex items-center justify-center shrink-0 mt-0.5`}>
                         {config.icon && <div className={`${config.color} text-xs sm:text-base`}>{config.icon}</div>}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -285,16 +288,16 @@ export default function OrdersListPage(): React.ReactElement {
                         </h3>
                         <div className="flex items-center gap-2 sm:gap-4 mt-1 sm:mt-2 flex-wrap text-xs sm:text-sm text-text-secondary">
                           <div className="flex items-center gap-1">
-                            <DollarSign className="w-3 sm:w-3.5 h-3 sm:h-3.5 flex-shrink-0" />
+                            <DollarSign className="w-3 sm:w-3.5 h-3 sm:h-3.5 shrink-0" />
                             <span className="font-medium text-text-primary">₭{(order.packagePrice || 0).toLocaleString()}</span>
                           </div>
                           <div className="hidden sm:flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                            <Calendar className="w-3.5 h-3.5 shrink-0" />
                             <span>{convertTimestampToDate(order.createdAt).toLocaleDateString()}</span>
                           </div>
                           {!isFreelancer && (
                             <div className="flex items-center gap-1">
-                              <User className="w-3.5 h-3.5 flex-shrink-0" />
+                              <User className="w-3.5 h-3.5 shrink-0" />
                               <span>{t("ordersPage.freelancer") || "Freelancer"}</span>
                             </div>
                           )}
@@ -304,12 +307,12 @@ export default function OrdersListPage(): React.ReactElement {
                   </div>
 
                   {/* Right: Status & Action */}
-                  <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                  <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                     <div className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-semibold border whitespace-nowrap ${config.bgColor} ${config.color}`}>
                       <span className="hidden sm:inline">{statusLabel}</span>
                       <span className="sm:hidden">{statusLabel.substring(0, 3)}</span>
                     </div>
-                    <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5 text-text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
+                    <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5 text-text-secondary group-hover:text-primary transition-colors shrink-0" />
                   </div>
                 </div>
               );

@@ -88,7 +88,7 @@ export default function SignupWizard() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (currentStep === TOTAL_STEPS && isStepValid()) {
       // On last step, trigger form submission
-      handleSubmit(new Event('submit') as any);
+      handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
 
@@ -136,7 +136,7 @@ export default function SignupWizard() {
       } else {
         setError(result.error || t("auth.signup.errors.signupFailed"));
       }
-    } catch (err) {
+    } catch  {
       setError(t("auth.signup.errors.unexpectedError"));
     } finally {
       setLoading(false);
@@ -159,7 +159,7 @@ export default function SignupWizard() {
         {/* Error Alert */}
         {error && (
           <div className="mb-6 p-4 rounded-lg text-sm flex items-start gap-3" style={{ backgroundColor: "color-mix(in oklab, var(--error) 12%, transparent)", border: "1px solid color-mix(in oklab, var(--error) 30%, transparent)", color: "var(--error)" }}>
-            <span className="text-lg flex-shrink-0">⚠️</span>
+            <span className="text-lg shrink-0">⚠️</span>
             <span>{error}</span>
           </div>
         )}

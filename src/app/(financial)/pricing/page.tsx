@@ -33,7 +33,7 @@ export default function PricingPage() {
           <div className="max-w-4xl mx-auto mb-8">
             <div className="bg-background-tertiary border border-border rounded-xl p-6 sm:p-8">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-12 h-12 bg-primary/15 rounded-full flex items-center justify-center">
                     <span className="text-2xl">🚀</span>
                   </div>
@@ -158,7 +158,7 @@ export default function PricingPage() {
 
           <div className="space-y-6">
             {Object.entries(translations.pricing.faq.questions).map(
-              ([key, question]: [string, any]) => (
+              ([key, question]: [string, { question: string; answer: string }]) => (
                 <div
                   key={key}
                   className="rounded-xl shadow-sm border border-border bg-background p-6"

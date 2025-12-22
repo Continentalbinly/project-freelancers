@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   eslint: {
-    // Disable ESLint during builds
-    ignoreDuringBuilds: true,
+    // Enable ESLint during builds
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    // Disable TypeScript errors during builds
-    ignoreBuildErrors: true,
+    // Enable TypeScript errors during builds
+    ignoreBuildErrors: false,
   },
 
   // (Optional) — you can also enable strict mode or other Next.js flags here

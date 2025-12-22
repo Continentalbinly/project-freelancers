@@ -10,7 +10,7 @@ import GlobalStatus from "../components/GlobalStatus";
  * Ensures user is authenticated before redirecting.
  */
 export default function AdminPanelRedirectPage() {
-  const { user, profile, loading } = useAuth() as any;
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {

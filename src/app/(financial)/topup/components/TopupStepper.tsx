@@ -1,6 +1,11 @@
 "use client";
 
-export default function TopupStepper({ step, t }: any) {
+interface TopupStepperProps {
+  step: string;
+  t: (key: string) => string;
+}
+
+export default function TopupStepper({ step, t }: TopupStepperProps) {
   const steps = [
     { id: "select", label: t("topup.stepSelect") },
     { id: "payment", label: t("topup.stepPayment") },

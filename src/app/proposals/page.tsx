@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
   collection,
   query,
@@ -14,16 +13,15 @@ import {
 import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-
+import { redirect } from "next/navigation";
 import ProposalsFilter from "./components/ProposalsFilter";
 import ProposalsList from "./components/ProposalsList";
 import ProposalsSkeleton from "./components/ProposalsSkeleton";
 import ProposalsEmptyState from "./components/ProposalsEmptyState";
-import type { ProposalWithDetails } from "@/types/proposal";
+import type { Proposal, ProposalWithDetails } from "@/types/proposal";
 
 export default function ProposalsPage() {
   const { user, profile, loading } = useAuth();
-  const router = useRouter();
   const { t } = useTranslationContext();
 
   const [proposals, setProposals] = useState<ProposalWithDetails[]>([]);
@@ -32,12 +30,13 @@ export default function ProposalsPage() {
 
   // Determine user role and set proposal view type accordingly
   const isClient = profile?.role === "client";
-  const isFreelancer = profile?.role === "freelancer";
-  const activeTab: "submitted" | "received" = isClient ? "received" : "submitted";
+  const activeTab: "submitted" | "received" = isClient
+    ? "received"
+    : "submitted";
 
   useEffect(() => {
-    if (!loading && !user) router.push("/auth/login");
-  }, [user, loading, router]);
+    if (!loading && !user) redirect("/auth/login");
+  }, [user, loading]);
 
   useEffect(() => {
     if (user && profile) fetchProposals();
@@ -57,31 +56,67 @@ export default function ProposalsPage() {
           orderBy("createdAt", "desc")
         )
       );
-      const submitted = submittedSnap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const submitted: Proposal[] = submittedSnap.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          projectId: data.projectId,
+          freelancerId: data.freelancerId,
+          coverLetter: data.coverLetter || "",
+          proposedBudget: data.proposedBudget || 0,
+          proposedRate: data.proposedRate || 0,
+          estimatedDuration: data.estimatedDuration || "",
+          status: data.status || "pending",
+          createdAt: data.createdAt || new Date(),
+          updatedAt: data.updatedAt || new Date(),
+        } as Proposal;
+      });
 
       // Fetch received proposals (client)
       const projectSnap = await getDocs(
-        query(collection(firestore, "projects"), where("clientId", "==", user.uid))
+        query(
+          collection(firestore, "projects"),
+          where("clientId", "==", user.uid)
+        )
       );
       const projectIds = projectSnap.docs.map((doc) => doc.id);
 
-      let received: any[] = [];
+      let received: Proposal[] = [];
       if (projectIds.length) {
         const allProposals = await getDocs(
-          query(collection(firestore, "proposals"), orderBy("createdAt", "desc"))
+          query(
+            collection(firestore, "proposals"),
+            orderBy("createdAt", "desc")
+          )
         );
         received = allProposals.docs
-          .filter((p) => projectIds.includes(p.data().projectId))
-          .map((p) => ({ id: p.id, ...p.data() }));
+          .filter((p) => {
+            const data = p.data();
+            return data.projectId && projectIds.includes(data.projectId);
+          })
+          .map((p) => {
+            const data = p.data();
+            return {
+              id: p.id,
+              projectId: data.projectId,
+              freelancerId: data.freelancerId,
+              coverLetter: data.coverLetter || "",
+              proposedBudget: data.proposedBudget || 0,
+              proposedRate: data.proposedRate || 0,
+              estimatedDuration: data.estimatedDuration || "",
+              status: data.status || "pending",
+              createdAt: data.createdAt || new Date(),
+              updatedAt: data.updatedAt || new Date(),
+            } as Proposal;
+          });
       }
 
       const all = activeTab === "submitted" ? submitted : received;
       const detailed = await Promise.all(
         all.map(async (p) => {
-          const projectDoc = await getDoc(doc(firestore, "projects", p.projectId));
+          const projectDoc = await getDoc(
+            doc(firestore, "projects", p.projectId)
+          );
           const project = projectDoc.exists() ? projectDoc.data() : null;
 
           const freelancerDoc = await getDoc(
@@ -93,17 +128,18 @@ export default function ProposalsPage() {
 
           let client = null;
           if (project?.clientId) {
-            const cDoc = await getDoc(doc(firestore, "profiles", project.clientId));
+            const cDoc = await getDoc(
+              doc(firestore, "profiles", project.clientId)
+            );
             client = cDoc.exists() ? cDoc.data() : null;
           }
 
-          return { ...p, project, freelancer, client };
+          return { ...p, project, freelancer, client } as ProposalWithDetails;
         })
       );
 
       setProposals(detailed);
     } catch {
-      //console.error("❌ Error loading proposals");
     } finally {
       setLoadingProposals(false);
     }

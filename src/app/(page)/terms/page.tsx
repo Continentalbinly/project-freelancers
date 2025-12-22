@@ -64,7 +64,7 @@ export default function TermsOfServicePage() {
                 {t('termsPage.sections.userResponsibilities.content')}
               </p>
               <div className="space-y-4 text-gray-600 dark:text-gray-400">
-                {translations.termsPage.sections.userResponsibilities.items.map((item: any, index: number) => (
+                {translations.termsPage.sections.userResponsibilities.items.map((item: { role: string; description: string }, index: number) => (
                   <p key={index}>
                     <strong>{item.role}</strong> {item.description}
                   </p>

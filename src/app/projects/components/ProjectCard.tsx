@@ -146,7 +146,7 @@ export default function ProjectCard({
       className="group bg-background rounded-2xl border border-border hover:border-primary/50 hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
     >
       {/* 🖼️ Image with Gradient Overlay */}
-      <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5">
+      <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden bg-linear-to-br from-primary/5 via-secondary/5 to-primary/5">
         <ProjectImage
           src={project.imageUrl || "/default-project.png"}
           alt={project.title || "Project image"}
@@ -154,7 +154,7 @@ export default function ProjectCard({
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         {/* Gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         {/* Top badges */}
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2 z-10">
@@ -198,12 +198,12 @@ export default function ProjectCard({
         </div>
 
         {/* Details Section with Gradient */}
-        <div className="relative mb-4 rounded-xl overflow-hidden bg-gradient-to-b from-primary/5 via-secondary/5 to-primary/5 p-4">
+        <div className="relative mb-4 rounded-xl overflow-hidden bg-linear-to-b from-primary/5 via-secondary/5 to-primary/5 p-4">
           {/* Owner Info */}
           {loadingOwner ? (
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-pulse" />
-              <div className="flex-1 h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 rounded animate-pulse" />
+              <div className="w-8 h-8 rounded-full bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-pulse" />
+              <div className="flex-1 h-4 bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 rounded animate-pulse" />
             </div>
           ) : owner ? (
             <div className="flex items-center gap-3 mb-4">

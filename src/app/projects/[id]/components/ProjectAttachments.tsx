@@ -1,7 +1,17 @@
 "use client";
 import ProposalImage from "@/app/utils/proposalImageHandler";
 
-export default function ProjectAttachments({ attachments, t }: any) {
+interface Attachment {
+  url: string;
+  name?: string;
+}
+
+interface ProjectAttachmentsProps {
+  attachments?: Attachment[];
+  t: (key: string) => string;
+}
+
+export default function ProjectAttachments({ attachments, t }: ProjectAttachmentsProps) {
   if (!attachments || attachments.length === 0) return null;
 
   return (
@@ -11,7 +21,7 @@ export default function ProjectAttachments({ attachments, t }: any) {
       </h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {attachments.map((file: any, index: number) => (
+        {attachments.map((file: Attachment, index: number) => (
           <div key={index} className="flex flex-col">
             <ProposalImage
               src={file.url}

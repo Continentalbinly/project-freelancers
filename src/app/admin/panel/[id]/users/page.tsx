@@ -8,22 +8,24 @@ import {
   orderBy,
   limit,
   startAfter,
-  startAt,
 } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import GlobalStatus from "../../../../components/GlobalStatus";
 import UserCard from "./components/UserCard";
 import AdminSubHeader from "../components/AdminSubHeader";
+import type { DocumentSnapshot, Timestamp } from "firebase/firestore";
 
 export interface UserProfile {
   id: string;
   fullName?: string;
+  avatarUrl?: string;
   email?: string;
   role?: "freelancer" | "client" | "admin";
   userType?: string[] | string;
   isActive?: boolean;
   plan?: string;
-  createdAt?: any;
+  
+  createdAt?: Timestamp | Date | Record<string, unknown>;
 }
 
 export default function AdminUsersPage() {
@@ -31,7 +33,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(6); // small page for demo
-  const [pageCursors, setPageCursors] = useState<any[]>([]);
+  const [pageCursors, setPageCursors] = useState<DocumentSnapshot[]>([]);
   const [hasNext, setHasNext] = useState(false);
   const [hasPrev, setHasPrev] = useState(false);
 
@@ -60,7 +62,10 @@ export default function AdminUsersPage() {
 
     const snap = await getDocs(q);
     const docs = snap.docs.map(
-      (d) => ({ id: d.id, ...d.data() } as UserProfile)
+      (d) => {
+        const userData = d.data() as UserProfile;
+        return { ...userData, id: d.id } as UserProfile;
+      }
     );
     setUsers(docs);
     setLoading(false);
@@ -82,7 +87,6 @@ export default function AdminUsersPage() {
     if (page <= 1) return;
     setLoading(true);
     const profilesRef = collection(requireDb(), "profiles");
-    const cursor = pageCursors[page - 2]; // cursor before current
     let q;
     if (page === 2) {
       // back to first page
@@ -99,7 +103,10 @@ export default function AdminUsersPage() {
 
     const snap = await getDocs(q);
     const docs = snap.docs.map(
-      (d) => ({ id: d.id, ...d.data() } as UserProfile)
+      (d) => {
+        const userData = d.data() as UserProfile;
+        return { ...userData, id: d.id } as UserProfile;
+      }
     );
     setUsers(docs);
     setLoading(false);

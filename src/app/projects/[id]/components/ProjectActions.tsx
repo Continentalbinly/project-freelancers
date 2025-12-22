@@ -1,8 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import type { Project } from "@/types/project";
 
-export default function ProjectActions({ project, t }: any) {
+interface ProjectActionsProps {
+  project: Project;
+  t: (key: string) => string;
+}
+
+export default function ProjectActions({ project, t }: ProjectActionsProps) {
   const { user, profile } = useAuth();
   const router = useRouter();
   const isOwner = user?.uid === project.clientId;

@@ -16,7 +16,6 @@ import {
 import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { TIMELINE_OPTIONS, getTimelineData } from "@/service/timelineUtils";
 
 import ProjectStepper from "../components/ProjectStepper";
@@ -44,16 +43,16 @@ const CATEGORY_POSTING_FEES: Record<string, number> = {
   MaDKsBJWM3i6cyh5s1pt: 25,
 };
 
-function removeUndefined(obj: Record<string, any>): Record<string, any> {
+function removeUndefined(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.entries(obj).reduce((acc, [k, v]) => {
     if (v !== undefined) {
       acc[k] =
         typeof v === "object" && v !== null && !Array.isArray(v)
-          ? removeUndefined(v)
+          ? removeUndefined(v as Record<string, unknown>)
           : v;
     }
     return acc;
-  }, {} as Record<string, any>);
+  }, {} as Record<string, unknown>);
 }
 
 const safeFee = (value: unknown) => {
@@ -62,9 +61,11 @@ const safeFee = (value: unknown) => {
   return Math.floor(fee);
 };
 
-const categoryFeeFor = (categories: any[], categoryId?: string) => {
+import type { Category } from "@/types/category";
+
+const categoryFeeFor = (categories: Category[], categoryId?: string) => {
   if (!categoryId) return 0;
-  const cat = categories.find((c: any) => c.id === categoryId);
+  const cat = categories.find((c: Category) => c.id === categoryId);
   const feeFromDoc = safeFee(cat?.postingFee);
   const feeFromDefaults = safeFee(CATEGORY_POSTING_FEES[categoryId]);
   return feeFromDoc || feeFromDefaults || 0;
@@ -75,12 +76,12 @@ export default function CreateProjectPage() {
   const router = useRouter();
   const { user } = useAuth();
 
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<Record<string, unknown> | null>(null);
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState("");
 
@@ -92,8 +93,7 @@ export default function CreateProjectPage() {
         const db = requireDb();
         const snap = await getDoc(doc(db, "profiles", user.uid));
         if (snap.exists()) setUserProfile(snap.data());
-      } catch (err) {
-        console.error("Failed to load profile:", err);
+      } catch {
       }
     };
     loadProfile();
@@ -105,10 +105,9 @@ export default function CreateProjectPage() {
       try {
         const db = requireDb();
         const snap = await getDocs(collection(db, "categories"));
-        const cats = snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as any) }));
-        setCategories(cats as any[]);
-      } catch (err) {
-        console.error("Failed to load categories:", err);
+        const cats = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Category));
+        setCategories(cats);
+      } catch {
         setCategories([]);
       } finally {
         setCategoriesLoading(false);
@@ -136,7 +135,7 @@ export default function CreateProjectPage() {
 
   useEffect(() => {
     if (!formData.categoryId) return;
-    const cat = categories.find((c: any) => c.id === formData.categoryId);
+    const cat = categories.find((c: Category) => c.id === formData.categoryId);
     if (!cat) return;
     const fee = categoryFeeFor(categories, formData.categoryId);
     setFormData((prev) => {
@@ -156,7 +155,7 @@ export default function CreateProjectPage() {
         const db = requireDb();
         const draftRef = doc(db, "project_drafts", user.uid);
         const snap = await getDoc(draftRef);
-        let data: any = null;
+        let data: Record<string, unknown> | null = null;
 
         if (snap.exists()) {
           data = snap.data();
@@ -253,22 +252,6 @@ export default function CreateProjectPage() {
     return fee || safeFee(formData.postingFee);
   };
 
-  const handleImageUpload = async (file: File) => {
-    try {
-      setSaving(true);
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const url = evt.target?.result as string;
-        setFormData((p) => ({ ...p, imageUrl: url }));
-        setPreviewUrl(url);
-      };
-      reader.readAsDataURL(file);
-    } catch (err) {
-      console.error("Image upload failed:", err);
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleSaveDraft = async () => {
     if (!user) throw new Error("Please login first");
@@ -276,11 +259,11 @@ export default function CreateProjectPage() {
     
     try {
       const draftRef = doc(firestore, "project_drafts", user.uid);
-      await updateDoc(draftRef, removeUndefined(formData));
+      await updateDoc(draftRef, removeUndefined(formData as unknown as Record<string, unknown>));
       localStorage.setItem(LOCAL_KEY, JSON.stringify(formData));
     } catch {
       const draftRef = doc(firestore, "project_drafts", user.uid);
-      await updateDoc(draftRef, removeUndefined(formData));
+      await updateDoc(draftRef, removeUndefined(formData as unknown as Record<string, unknown>));
       localStorage.setItem(LOCAL_KEY, JSON.stringify(formData));
     }
   };
@@ -315,7 +298,7 @@ export default function CreateProjectPage() {
         throw new Error("Not enough credit to post project");
 
       const projectRef = await addDoc(collection(firestore, "projects"), {
-        ...removeUndefined(formData),
+        ...removeUndefined(formData as unknown as Record<string, unknown>),
         // Convert timeline ID to full timeline object with both languages
         timeline: formData.timeline ? getTimelineData(formData.timeline) : null,
         postingFee,
@@ -356,8 +339,8 @@ export default function CreateProjectPage() {
       if (user) await deleteDoc(doc(firestore, "project_drafts", user.uid));
 
       router.push("/projects/manage");
-    } catch (err: any) {
-      setError(err.message || "Submit failed");
+    } catch {
+      setError("Submit failed");
       setSaving(false);
     }
   };
@@ -411,7 +394,6 @@ export default function CreateProjectPage() {
               t={t}
               previewUrl={previewUrl}
               setPreviewUrl={setPreviewUrl}
-              onImageUpload={handleImageUpload}
               uploading={saving}
             />
           )}
@@ -421,7 +403,7 @@ export default function CreateProjectPage() {
               t={t}
               previewUrl={previewUrl}
               postingFee={categoryPostingFee}
-              credits={userProfile?.credit || 0}
+              credits={typeof userProfile?.credit === 'number' ? userProfile.credit : 0}
             />
           )}
         </div>
@@ -449,15 +431,15 @@ export default function CreateProjectPage() {
             <button
               disabled={!canNext() || saving}
               onClick={handleNext}
-              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
             >
               {t("createProject.next") || "Next"}
             </button>
           ) : (
             <button
-              disabled={!canNext() || saving || categoryPostingFee > (userProfile?.credit || 0)}
+              disabled={!canNext() || saving || categoryPostingFee > (typeof userProfile?.credit === 'number' ? userProfile.credit : 0)}
               onClick={handleSubmit}
-              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
             >
               {saving ? (t("createProject.creating") || "Creating…") : (t("createProject.createProject") || "Create Project")}
             </button>

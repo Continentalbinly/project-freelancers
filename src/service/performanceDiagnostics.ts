@@ -3,6 +3,27 @@
  * Run this in browser console to identify bottlenecks
  */
 
+// Extended Performance interface for Chrome-specific memory API
+interface PerformanceMemory {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+interface ExtendedPerformance extends Performance {
+  memory?: PerformanceMemory;
+}
+
+interface ExtendedWindow extends Window {
+  perfDiagnostics?: {
+    report: () => PerformanceDiagnostics;
+    issues: () => string[];
+    print: () => void;
+    monitor: (intervalMs?: number) => () => void;
+    optimize: () => string[];
+  };
+}
+
 interface PerformanceDiagnostics {
   timestamp: string;
   memoryUsage: {
@@ -34,7 +55,8 @@ interface PerformanceDiagnostics {
  */
 export function generatePerformanceReport(): PerformanceDiagnostics {
   // Memory usage
-  const memory = (performance as any).memory || {
+  const perf = performance as ExtendedPerformance;
+  const memory = perf.memory || {
     usedJSHeapSize: 0,
     totalJSHeapSize: 0,
     jsHeapSizeLimit: 0,
@@ -274,7 +296,7 @@ export function optimizePerformance() {
 
   // Check localStorage usage
   let storageSize = 0;
-  for (let key in localStorage) {
+  for (const key in localStorage) {
     if (localStorage.hasOwnProperty(key)) {
       storageSize += localStorage[key].length + key.length;
     }
@@ -298,7 +320,8 @@ export function optimizePerformance() {
 
 // Export for browser console access
 if (typeof window !== 'undefined') {
-  (window as any).perfDiagnostics = {
+  const win = window as unknown as ExtendedWindow;
+  win.perfDiagnostics = {
     report: generatePerformanceReport,
     issues: identifyPerformanceIssues,
     print: printPerformanceReport,

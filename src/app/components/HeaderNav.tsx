@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useEffect, useRef, useState, useMemo, memo } from "react";
+import { useProposalCount } from "./hooks/useProposalCount";
 import { useOrderCount } from "./hooks/useOrderCount";
 
 function HeaderNav({ pathname }: { pathname: string }) {
@@ -16,6 +17,12 @@ function HeaderNav({ pathname }: { pathname: string }) {
 
   // Get order count for active orders needing attention
   const { count: orderCount } = useOrderCount({
+    userId: user?.uid || null,
+    userRole: isFreelancer ? "freelancer" : isClient ? "client" : null,
+  });
+
+  // Get proposal count for pending proposals
+  const { count: proposalCount } = useProposalCount({
     userId: user?.uid || null,
     userRole: isFreelancer ? "freelancer" : isClient ? "client" : null,
   });
@@ -106,9 +113,16 @@ function HeaderNav({ pathname }: { pathname: string }) {
               e.preventDefault();
               handleNavigation("/proposals");
             }}
-            className={linkClasses("/proposals") + " cursor-pointer"}
+            className={`${linkClasses("/proposals")} relative inline-flex flex-col items-center justify-center cursor-pointer`}
           >
-            {t("header.proposals")}
+            <span className="relative">
+              {t("header.proposals")}
+              {proposalCount > 0 && (
+                <span className="absolute -top-2 -right-5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-error rounded-full">
+                  {proposalCount > 99 ? "99+" : proposalCount}
+                </span>
+              )}
+            </span>
           </button>
 
           <button

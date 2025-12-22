@@ -1,8 +1,16 @@
 "use client";
 import FavoriteButton from "@/app/components/FavoriteButton";
 import { formatLAK } from "@/service/currencyUtils";
+import type { Project } from "@/types/project";
+import { User as FirebaseUser } from "firebase/auth";
 
-export default function ProjectHeader({ project, user, t }: any) {
+interface ProjectHeaderProps {
+  project: Project;
+  user: FirebaseUser | null;
+  t: (key: string) => string;
+}
+
+export default function ProjectHeader({ project, user, t }: ProjectHeaderProps) {
   // 🎨 Status color mapping
   const getStatusColor = (status: string) => {
     const colors = {
@@ -47,7 +55,7 @@ export default function ProjectHeader({ project, user, t }: any) {
         <FavoriteButton
           projectId={project.id}
           size="lg"
-          className="flex-shrink-0"
+          className="shrink-0"
           isProjectOwner={user?.uid === project.clientId}
         />
       </div>

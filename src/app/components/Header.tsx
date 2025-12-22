@@ -42,10 +42,8 @@ export default function Header() {
           {/* Right: User Menu / Language / Auth */}
           <div className="flex items-center ml-auto">
             <HeaderUserMenu
-              user={user}
               setIsDrawerOpen={setIsDrawerOpen}
               t={t}
-              pathname={pathname}
             />
           </div>
         </div>

@@ -16,14 +16,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { UserRole } from "./utils";
 import { toast } from "react-toastify";
+import type { Project } from "@/types/project";
+
+interface StepInProgressProps {
+  project: Project;
+  role: UserRole;
+}
 
 export default function StepInProgress({
   project,
   role,
-}: {
-  project: any;
-  role: UserRole;
-}) {
+}: StepInProgressProps) {
   const { user } = useAuth();
   const { t } = useTranslationContext();
 
@@ -106,7 +109,7 @@ export default function StepInProgress({
         )
       );
       setPreviewFiles((prev) => [...prev, ...uploads]);
-    } catch (err) {
+    } catch  {
       toast.error(t("myProjects.stepper.step2.uploadError"), {
         position: "top-right",
         autoClose: 3000,
@@ -136,7 +139,7 @@ export default function StepInProgress({
         )
       );
       setOriginalFiles((prev) => [...prev, ...uploads]);
-    } catch (err) {
+    } catch  {
       toast.error(t("myProjects.stepper.step2.uploadError"), {
         position: "top-right",
         autoClose: 3000,
@@ -208,7 +211,7 @@ export default function StepInProgress({
         theme: "colored",
       });
       window.location.reload();
-    } catch (err) {
+    } catch  {
       toast.error(t("myProjects.stepper.step2.uploadError"), {
         position: "top-right",
         autoClose: 3000,
@@ -302,7 +305,7 @@ export default function StepInProgress({
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-gray-600">
                     <File className="w-8 h-8" />
-                    <p className="text-xs mt-1 text-center px-1 break-words">
+                    <p className="text-xs mt-1 text-center px-1 wrap-break-word">
                       {file.name}
                     </p>
                   </div>

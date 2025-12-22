@@ -17,11 +17,12 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { formatEarnings } from "@/service/currencyUtils";
 import { timeAgo } from "@/service/timeUtils";
 import Avatar from "@/app/utils/avatarHandler";
+import { Project } from "@/types";
 
 export default function PortfolioSection() {
   const { t, currentLanguage } = useTranslationContext();
   const router = useRouter();
-  const [completedProjects, setCompletedProjects] = useState<any[]>([]);
+  const [completedProjects, setCompletedProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,9 +62,8 @@ export default function PortfolioSection() {
           };
         })
       );
-      setCompletedProjects(projects);
-    } catch (err) {
-      //console.error("❌ Error loading projects:", err);
+      setCompletedProjects(projects as unknown as Project[]);
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -118,12 +118,21 @@ export default function PortfolioSection() {
                   </p>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded-full">
-                      {project.category?.name_en ||
-                        project.category?.name_lo ||
-                        "-"}
+                      {project.category &&
+                      typeof project.category === "object" &&
+                      "name_en" in project.category
+                        ? project.category.name_en
+                        : project.category &&
+                          typeof project.category === "object" &&
+                          "name_lo" in project.category
+                        ? (project.category as { name_lo: string }).name_lo
+                        : "-"}
                     </span>
                     <span className="text-xs text-gray-600 dark:text-gray-300">
-                      {timeAgo(project.completedAt, currentLanguage)}
+                      {timeAgo(
+                        project.completedAt || new Date(),
+                        currentLanguage as "en" | "lo"
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -152,7 +161,10 @@ export default function PortfolioSection() {
         </div>
 
         <div className="text-center mt-10">
-          <button onClick={() => router.push("/projects")} className="btn btn-primary px-8 py-3 text-lg cursor-pointer">
+          <button
+            onClick={() => router.push("/projects")}
+            className="btn btn-primary px-8 py-3 text-lg cursor-pointer"
+          >
             {t("freelancersPage.portfolio.viewMore")}
           </button>
         </div>

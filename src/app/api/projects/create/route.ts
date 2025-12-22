@@ -1,20 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 /**
  * POST /api/projects/create
  * Creates a new project
  */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Implementation pending
     return NextResponse.json(
-      { error: "Not implemented" },
+      { success: false, error: "Not implemented" },
       { status: 501 }
     );
-  } catch (error) {
-    console.error("Error creating project:", error);
+  } catch {
     return NextResponse.json(
-      { error: "Internal server error" },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }

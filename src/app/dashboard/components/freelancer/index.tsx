@@ -54,7 +54,7 @@ export default function FreelancerDashboard() {
       };
     }
 
-    const pending = proposals.filter((p: any) => p.status === "pending").length;
+    const pending = proposals.filter((p: Proposal) => p.status === "pending").length;
     const completedFromProfile = profile?.projectsCompleted || 0;
 
     return {
@@ -70,11 +70,11 @@ export default function FreelancerDashboard() {
       return [];
     }
     
-    return proposals.map((p: any) => ({
+    return proposals.map((p: Proposal) => ({
       ...p,
       project: {
         id: p.projectId,
-        title: p.projectTitle || p.projectId,
+        title: p.projectId, // Will be populated from project cache if available
         description: "",
         budget: 0,
         clientId: "",
@@ -88,7 +88,7 @@ export default function FreelancerDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary via-primary to-primary-hover text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
+      <div className="bg-linear-to-r from-primary via-primary to-primary-hover text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold mb-2">
             {t("welcome")}, {profile?.fullName?.split(" ")[0]}! 👋
@@ -109,7 +109,7 @@ export default function FreelancerDashboard() {
         {profile && (!profile.bio || !profile.skills || profile.skills.length === 0) && (
           <div className="mt-12 bg-warning/10 border border-warning/30 rounded-lg p-6 shadow-sm">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-warning/20 rounded-full flex items-center justify-center">
+              <div className="shrink-0 w-10 h-10 bg-warning/20 rounded-full flex items-center justify-center">
                 <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>

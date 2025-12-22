@@ -108,7 +108,7 @@ export async function POST(req: Request) {
         if (amountPaid > 0 && creditsToNotify > 0 && userId) {
           await createTopupNotification(userId, creditsToNotify, amountPaid);
         }
-      } catch (notifError) {
+      } catch {
         // Don't fail the webhook if notification creation fails
       }
 
@@ -384,7 +384,7 @@ export async function POST(req: Request) {
           read: false,
           createdAt: serverTimestamp(),
         });
-      } catch (notifError) {
+      } catch {
         // Don't fail the webhook if notification creation fails
       }
 
@@ -424,8 +424,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("Webhook error:", err);
+  } catch {
     return NextResponse.json({ error: true });
   }
 }

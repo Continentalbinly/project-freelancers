@@ -86,8 +86,8 @@ export default function CheckoutModal({
         const defaultFee = CATEGORY_POSTING_FEES[categoryId] || 0;
         setOrderFee(dbFee || defaultFee);
       }
-    } catch (err) {
-      console.error("Error loading checkout data:", err);
+    } catch  {
+      // Silent fail
       setError("Failed to load checkout information");
     } finally {
       setLoading(false);
@@ -176,8 +176,8 @@ export default function CheckoutModal({
         onClose();
         setSuccess(false);
       }, 2000);
-    } catch (err) {
-      console.error("Error processing checkout:", err);
+    } catch  {
+      // Silent fail
       setError("Failed to process order. Please try again.");
     } finally {
       setProcessing(false);
@@ -190,7 +190,7 @@ export default function CheckoutModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
       <div className="bg-background dark:bg-background-dark rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] border border-border/50 dark:border-border-dark/50 animate-slideUp flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary dark:from-primary-dark to-secondary dark:to-secondary-dark p-6 flex-shrink-0">
+        <div className="bg-linear-to-r from-primary dark:from-primary-dark to-secondary dark:to-secondary-dark p-6 shrink-0">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white">
               {t("checkout.title") || "Checkout Order"}
@@ -227,7 +227,7 @@ export default function CheckoutModal({
             ) : (
               <>
                 {/* Package Summary */}
-                <div className="bg-gradient-to-br from-primary/5 dark:from-primary-dark/10 to-secondary/5 dark:to-secondary-dark/10 rounded-xl p-4 border border-primary/20 dark:border-primary-dark/30">
+                <div className="bg-linear-to-br from-primary/5 dark:from-primary-dark/10 to-secondary/5 dark:to-secondary-dark/10 rounded-xl p-4 border border-primary/20 dark:border-primary-dark/30">
                   <p className="text-xs font-semibold text-text-secondary dark:text-text-secondary-dark uppercase tracking-wide mb-2">
                     {t("checkout.selectedPackage") || "Selected Package"}
                   </p>
@@ -293,7 +293,7 @@ export default function CheckoutModal({
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-success/10 dark:from-success/20 to-success/5 dark:to-success/10 rounded-xl border border-success/30">
+                  <div className="flex items-center justify-between p-4 bg-linear-to-r from-success/10 dark:from-success/20 to-success/5 dark:to-success/10 rounded-xl border border-success/30">
                     <span className="text-sm font-semibold text-text-primary dark:text-text-primary-dark">
                       {t("checkout.remainingCredits") || "Remaining Credits"}
                     </span>
@@ -306,21 +306,21 @@ export default function CheckoutModal({
                 {/* Error Message */}
                 {error && (
                   <div className="flex items-start gap-3 p-4 bg-error/10 dark:bg-error/20 border border-error/30 rounded-xl">
-                    <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-error shrink-0 mt-0.5" />
                     <p className="text-sm text-error">{error}</p>
                   </div>
                 )}
 
                 {/* Info Note */}
                 <div className="flex items-start gap-3 p-4 bg-primary/5 dark:bg-primary-dark/10 border border-primary/20 dark:border-primary-dark/30 rounded-xl">
-                  <AlertCircle className="w-5 h-5 text-primary dark:text-primary-dark flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-primary dark:text-primary-dark shrink-0 mt-0.5" />
                   <p className="text-xs text-text-secondary dark:text-text-secondary-dark">
                     {t("checkout.feeNote") || "The order fee is based on the service category, not the package price. This ensures fair pricing for all orders in this category."}
                   </p>
                 </div>
 
                 {/* Action Buttons - Sticky Footer */}
-                <div className="flex gap-3 pt-4 sticky bottom-0 bg-gradient-to-t from-background dark:from-background-dark via-background/95 dark:via-background-dark/95 to-transparent">
+                <div className="flex gap-3 pt-4 sticky bottom-0 bg-linear-to-t from-background dark:from-background-dark via-background/95 dark:via-background-dark/95 to-transparent">
                   <button
                     onClick={onClose}
                     disabled={processing}
@@ -331,7 +331,7 @@ export default function CheckoutModal({
                   <button
                     onClick={handleCheckout}
                     disabled={processing || userCredits < orderFee}
-                    className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-95"
+                    className="flex-1 px-6 py-3 rounded-xl bg-linear-to-r from-primary to-secondary text-white font-bold hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-95"
                   >
                     {processing
                       ? t("checkout.processing") || "Processing..."

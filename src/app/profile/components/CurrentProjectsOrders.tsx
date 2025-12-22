@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { requireDb } from "@/service/firebase";
-import { collection, query, where, orderBy, getDocs, onSnapshot, Timestamp } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot, Timestamp } from "firebase/firestore";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { ArrowRight, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { ArrowRight, Clock, CheckCircle, AlertCircle, type LucideIcon } from "lucide-react";
 import type { Order } from "@/types/order";
 import type { Project } from "@/types/project";
 
@@ -87,7 +87,7 @@ export default function CurrentProjectsOrders({ userId, userRole }: CurrentProje
   }, [userId, userRole]);
 
   const getStatusConfig = (status: string) => {
-    const configs: Record<string, { color: string; icon: any; label: string }> = {
+    const configs: Record<string, { color: string; icon: LucideIcon; label: string }> = {
       pending: {
         color: "text-amber-600 bg-amber-50",
         icon: Clock,

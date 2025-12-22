@@ -96,8 +96,7 @@ export default function CreateCatalogPage() {
         }
 
         setDraftLoaded(true);
-      } catch (err) {
-        console.error("Failed to load draft:", err);
+      } catch  {
         setDraftLoaded(true);
       }
     };
@@ -128,16 +127,17 @@ export default function CreateCatalogPage() {
         description: form.description.trim(),
         images: form.images,
         categoryId: form.categoryId || "general",
+        category: form.categoryId || "general",
         tags: form.tags,
         packages: form.packages,
         status: "draft",
         updatedAt: serverTimestamp(),
-      } as any);
+      });
       
       // Also save to localStorage as backup
       localStorage.setItem(LOCAL_KEY, JSON.stringify(form));
-    } catch (err) {
-      throw err;
+    } catch  {
+      // Silent fail
     }
   };
 
@@ -160,15 +160,15 @@ export default function CreateCatalogPage() {
         status: "draft",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      } as any);
+      });
 
       // Clear draft after successful creation
       localStorage.removeItem(LOCAL_KEY);
       await deleteDoc(doc(requireDb(), "catalog_drafts", user!.uid));
 
       router.push("/catalog/manage");
-    } catch (e) {
-      console.error(e);
+    } catch  {
+      // Silent fail
       alert(t("createCatalogPage.failedToSave") || "Failed to save. Please try again.");
     } finally {
       setSaving(false);
@@ -210,11 +210,11 @@ export default function CreateCatalogPage() {
             {t("createCatalogPage.back") || "Back"}
           </button>
           {step < steps.length - 1 ? (
-            <button disabled={!canNext || saving} onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))} className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base">
+            <button disabled={!canNext || saving} onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))} className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base">
               {t("createCatalogPage.next") || "Next"}
             </button>
           ) : (
-            <button disabled={!canNext || saving} onClick={onSubmit} className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base">
+            <button disabled={!canNext || saving} onClick={onSubmit} className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base">
               {saving ? (t("createCatalogPage.saving") || "Saving…") : (t("createCatalogPage.saveDraft") || "Save Draft")}
             </button>
           )}

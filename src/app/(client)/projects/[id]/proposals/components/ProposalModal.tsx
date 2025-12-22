@@ -2,13 +2,21 @@
 import { XMarkIcon, CheckIcon } from "@heroicons/react/24/outline";
 import Avatar from "@/app/utils/avatarHandler";
 import { formatEarnings } from "@/service/currencyUtils";
+import type { ProposalWithDetails } from "@/types/proposal";
+
+interface ProposalModalProps {
+  proposal: ProposalWithDetails;
+  onClose: () => void;
+  onAccept: (proposal: ProposalWithDetails) => void;
+  onReject: (proposal: ProposalWithDetails) => void;
+}
 
 export default function ProposalModal({
   proposal,
   onClose,
   onAccept,
   onReject,
-}: any) {
+}: ProposalModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto shadow-xl">
@@ -27,7 +35,7 @@ export default function ProposalModal({
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Avatar
-              src={proposal.freelancer?.avatarUrl}
+              src={proposal.freelancer?.avatar}
               alt={proposal.freelancer?.fullName}
               name={proposal.freelancer?.fullName}
               size="lg"

@@ -57,8 +57,8 @@ export default function OrderReviewSection({
         );
         const snap = await getDocs(q);
         setHasRated(!snap.empty);
-      } catch (error) {
-        console.error("Error checking rating:", error);
+      } catch {
+        // Silent fail
       } finally {
         setLoading(false);
       }
@@ -170,9 +170,10 @@ export default function OrderReviewSection({
       toast.success(t("orderReview.ratingSubmitted") || "⭐ Rating submitted successfully!");
       setHasRated(true);
       onReviewSubmitted();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting rating:", error);
-      toast.error(error.message || t("common.error") || "Failed to submit rating");
+      const errorMessage = error instanceof Error ? error.message : "Failed to submit rating";
+      toast.error(errorMessage || t("common.error") || "Failed to submit rating");
     } finally {
       setSubmitting(false);
     }
@@ -215,7 +216,7 @@ export default function OrderReviewSection({
       <button
         onClick={handleSubmit}
         disabled={submitting}
-        className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full px-6 py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitting
           ? t("common.submitting") || "Submitting..."

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     let decodedToken;
     try {
       decodedToken = await adminAuth.verifyIdToken(token);
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { success: false, error: 'Invalid authorization token' },
         { status: 401 }
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     const profileData = profileSnap.data();
 
     // Calculate stats efficiently
-    const pending = proposals.filter((p: any) => p.status === 'pending').length;
+    const pending = proposals.filter((p: Record<string, unknown>) => p.status === 'pending').length;
     const completedProjects =
       typeof profileData?.projectsCompleted === 'number'
         ? profileData.projectsCompleted
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     );
 
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Dashboard error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch dashboard data' },

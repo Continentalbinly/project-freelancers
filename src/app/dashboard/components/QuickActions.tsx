@@ -18,7 +18,7 @@ export default function QuickActions({ variant }: QuickActionsProps) {
         {/* Manage Projects */}
         <button
           onClick={() => router.push("/projects/manage")}
-          className="bg-gradient-to-br from-primary to-primary-hover hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
+          className="bg-linear-to-br from-primary to-primary-hover hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -36,7 +36,7 @@ export default function QuickActions({ variant }: QuickActionsProps) {
         {/* My Projects */}
         <button
           onClick={() => router.push("/my-projects")}
-          className="bg-gradient-to-br from-emerald-600 to-emerald-700 hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
+          className="bg-linear-to-br from-emerald-600 to-emerald-700 hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -61,7 +61,7 @@ export default function QuickActions({ variant }: QuickActionsProps) {
       {/* My Projects (Project-based work) */}
       <button
         onClick={() => router.push("/my-projects")}
-        className="bg-gradient-to-br from-emerald-600 to-emerald-700 hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
+        className="bg-linear-to-br from-emerald-600 to-emerald-700 hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -80,7 +80,7 @@ export default function QuickActions({ variant }: QuickActionsProps) {
       {/* My Services (Catalog) */}
       <button
         onClick={() => router.push("/catalog/manage")}
-        className="bg-gradient-to-br from-blue-600 to-blue-700 hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
+        className="bg-linear-to-br from-blue-600 to-blue-700 hover:shadow-lg transition-all rounded-lg p-8 text-white cursor-pointer group text-left w-full"
       >
         <div className="flex items-center justify-between">
           <div>

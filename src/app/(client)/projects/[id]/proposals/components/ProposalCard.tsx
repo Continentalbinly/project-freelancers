@@ -75,7 +75,7 @@ export default function ProposalCard({
   };
 
   /** Chat Button Handler */
-  const handleStartChat = async (e: any) => {
+  const handleStartChat = async (e: React.MouseEvent) => {
     e.stopPropagation(); // prevent triggering card click
     try {
       setLoadingAction(true);

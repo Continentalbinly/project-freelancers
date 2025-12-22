@@ -43,7 +43,8 @@ export default function EditCatalogPage() {
     const load = async () => {
       const snap = await getDoc(doc(requireDb(), "catalogs", id));
       if (!snap.exists()) return router.push("/catalog");
-      const data = { id: snap.id, ...(snap.data() as any) } as Catalog;
+      const catalogData = snap.data() as Catalog;
+      const data = { ...catalogData, id: snap.id } as Catalog;
       setOriginal(data);
       setFormState({
         title: data.title || "",
@@ -110,11 +111,11 @@ export default function EditCatalogPage() {
           <button className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg border-2 border-border bg-background text-text-primary font-medium hover:border-primary/30 transition-all text-sm sm:text-base" onClick={() => router.push("/catalog/manage")}>{t("editCatalogPage.cancel") || "Cancel"}</button>
           <div className="flex gap-2 sm:gap-3">
             {step < steps.length - 1 ? (
-              <button disabled={!canNext || saving} onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))} className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base">
+              <button disabled={!canNext || saving} onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))} className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base">
                 {t("editCatalogPage.next") || "Next"}
               </button>
             ) : (
-              <button className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base" disabled={!canNext || saving} onClick={save}>{saving ? (t("editCatalogPage.saving") || "Saving…") : (t("editCatalogPage.save") || "Save")}</button>
+              <button className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base" disabled={!canNext || saving} onClick={save}>{saving ? (t("editCatalogPage.saving") || "Saving…") : (t("editCatalogPage.save") || "Save")}</button>
             )}
           </div>
         </div>

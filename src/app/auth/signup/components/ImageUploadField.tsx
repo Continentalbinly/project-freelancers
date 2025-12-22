@@ -74,7 +74,7 @@ export default function ImageUploadField({
         throw new Error(data.error || "Upload failed");
       }
       onChange(data.data.url);
-    } catch (err) {
+    } catch  {
       setLocalError(
         t("auth.signup.errors.uploadFailed") ||
           "Failed to upload image. Please try again."

@@ -9,9 +9,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
+import type { TopupSession, UpdateSessionFunction } from "@/types/topup";
 
 export function useTopupSession(userId?: string) {
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<TopupSession | null>(null);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export function useTopupSession(userId?: string) {
           );
         }
 
-        setSession(data);
+        setSession(data as TopupSession);
       });
 
       setInitialized(true);
@@ -62,7 +63,7 @@ export function useTopupSession(userId?: string) {
     return () => unsub();
   }, [userId]);
 
-  const updateSession = async (data: any) => {
+  const updateSession: UpdateSessionFunction = async (data) => {
     if (!userId) return;
     const firestore = requireDb();
     const ref = doc(firestore, "topupSessions", userId);

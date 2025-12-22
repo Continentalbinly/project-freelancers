@@ -32,9 +32,10 @@ export default function EmailVerificationButton() {
         text: "Verification email sent! Please check your inbox.",
         type: "info",
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Failed to send verification email.";
       setStatus({
-        text: e.message || "Failed to send verification email.",
+        text: errorMessage,
         type: "error",
       });
     } finally {

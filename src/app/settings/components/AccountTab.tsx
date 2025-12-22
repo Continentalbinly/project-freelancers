@@ -61,10 +61,10 @@ export default function AccountTab() {
         </div>
       </div>
 
-      {showEmail && (
+      {showEmail && user && (
         <ChangeEmailModal onClose={() => setShowEmail(false)} user={user} />
       )}
-      {showPass && (
+      {showPass && user && (
         <ChangePasswordModal onClose={() => setShowPass(false)} user={user} />
       )}
     </div>

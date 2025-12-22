@@ -92,9 +92,9 @@ export default function ClientDashboard() {
     }
 
     const active = projects.filter(
-      (p: any) => p.status === "open" || p.status === "in_progress"
+      (p: Project) => p.status === "open" || p.status === "in_progress"
     ).length;
-    const completed = projects.filter((p: any) => p.status === "completed").length;
+    const completed = projects.filter((p: Project) => p.status === "completed").length;
 
     return {
       activeProjects: active,
@@ -106,7 +106,7 @@ export default function ClientDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-to-r from-secondary via-secondary to-secondary-hover text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
+      <div className="bg-linear-to-r from-secondary via-secondary to-secondary-hover text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold mb-2">
             {t("welcome")}, {profile?.fullName?.split(" ")[0]}! 👋

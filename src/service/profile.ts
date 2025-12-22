@@ -14,8 +14,7 @@ export async function getUserProfile(userId: string) {
     } else {
       return null;
     }
-  } catch (_err) {
-    //console.error("❌ getUserProfile failed:", _err);
+  } catch {
     return null;
   }
 }

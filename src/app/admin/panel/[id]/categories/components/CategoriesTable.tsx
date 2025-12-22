@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Pencil, Trash2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Category } from "../page";
 import CategoryRow from "./CategoryRow";
 

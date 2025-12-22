@@ -185,7 +185,7 @@ export default function NotificationsDropdown({ userId }: NotificationsDropdownP
                     }}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 mt-0.5">
+                      <div className="shrink-0 mt-0.5">
                         {getNotificationIcon(notif.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -196,11 +196,17 @@ export default function NotificationsDropdown({ userId }: NotificationsDropdownP
                           {translateNotificationMessage(notif.type, notif.message, notif.orderStatus, userRole, t)}
                         </p>
                         <p className="text-text-secondary/70 text-[10px] mt-1">
-                          {formatTime(convertTimestampToDate(notif.createdAt as any))}
+                          {formatTime(convertTimestampToDate(
+                            typeof notif.createdAt === 'object' && 'toDate' in notif.createdAt
+                              ? (notif.createdAt as any).toDate()
+                              : notif.createdAt instanceof Date
+                              ? notif.createdAt
+                              : notif.createdAt
+                          ))}
                         </p>
                       </div>
                       {!notif.read && (
-                        <div className="flex-shrink-0 w-2 h-2 bg-primary rounded-full mt-2"></div>
+                        <div className="shrink-0 w-2 h-2 bg-primary rounded-full mt-2"></div>
                       )}
                     </div>
                   </div>

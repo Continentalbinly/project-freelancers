@@ -21,7 +21,7 @@ export default function QuickLinkCard({
         className="group relative border border-border rounded-md shadow-sm p-6 flex flex-col justify-between supports-[backdrop-filter]:backdrop-blur-sm hover:shadow-lg hover:bg-background transition-all duration-500 bg-background-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 cursor-pointer text-left w-full"
       >
         {/* Decorative gradient line */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/40 to-primary/10 rounded-t-2xl opacity-40 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-primary/40 to-primary/10 rounded-t-2xl opacity-40 group-hover:opacity-100 transition-opacity duration-300" />
 
         <div>
           <h3 className="text-lg font-semibold text-text-primary mb-2 group-hover:text-primary transition-colors">

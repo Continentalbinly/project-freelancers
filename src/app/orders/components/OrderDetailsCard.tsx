@@ -20,7 +20,7 @@ export default function OrderDetailsCard({ order }: OrderDetailsCardProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
             <DollarSign className="w-5 h-5 text-emerald-600" />
           </div>
           <div>
@@ -34,7 +34,7 @@ export default function OrderDetailsCard({ order }: OrderDetailsCardProps) {
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
             <Calendar className="w-5 h-5 text-primary" />
           </div>
           <div>
@@ -52,7 +52,7 @@ export default function OrderDetailsCard({ order }: OrderDetailsCardProps) {
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
             <Package className="w-5 h-5 text-blue-600" />
           </div>
           <div>
@@ -65,7 +65,7 @@ export default function OrderDetailsCard({ order }: OrderDetailsCardProps) {
 
         {order.deliveryDays && (
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
               <Clock className="w-5 h-5 text-indigo-600" />
             </div>
             <div>
@@ -81,7 +81,7 @@ export default function OrderDetailsCard({ order }: OrderDetailsCardProps) {
 
         {order.orderFee !== undefined && (
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
               <DollarSign className="w-5 h-5 text-amber-600" />
             </div>
             <div>
@@ -97,7 +97,7 @@ export default function OrderDetailsCard({ order }: OrderDetailsCardProps) {
 
         {order.revisionLimit !== undefined && (
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center shrink-0">
               <RotateCcw className="w-5 h-5 text-rose-600" />
             </div>
             <div>

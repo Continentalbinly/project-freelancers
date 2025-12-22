@@ -54,7 +54,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
               onClick={() => setActiveTab(idx)}
               className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                 activeTab === idx
-                  ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
+                  ? "bg-linear-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
                   : "bg-background-secondary border border-border text-text-primary hover:border-primary/30"
               }`}
             >
@@ -87,7 +87,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="group">
               <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center group-focus-within:from-indigo-500/20 group-focus-within:to-purple-500/20 transition-all">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center group-focus-within:from-indigo-500/20 group-focus-within:to-purple-500/20 transition-all">
                   <Package className="w-4 h-4 text-indigo-600" />
                 </div>
                 {t("stepPackage.name") || "Package Name"}
@@ -102,7 +102,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
 
             <div className="group">
               <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/10 to-teal-500/10 flex items-center justify-center group-focus-within:from-emerald-500/20 group-focus-within:to-teal-500/20 transition-all">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-emerald-500/10 to-teal-500/10 flex items-center justify-center group-focus-within:from-emerald-500/20 group-focus-within:to-teal-500/20 transition-all">
                   <DollarSign className="w-4 h-4 text-emerald-600" />
                 </div>
                 {t("stepPackage.price") || "Price (LAK)"}
@@ -122,7 +122,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
 
             <div className="group">
               <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/10 to-orange-500/10 flex items-center justify-center group-focus-within:from-amber-500/20 group-focus-within:to-orange-500/20 transition-all">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-amber-500/10 to-orange-500/10 flex items-center justify-center group-focus-within:from-amber-500/20 group-focus-within:to-orange-500/20 transition-all">
                   <Clock className="w-4 h-4 text-amber-600" />
                 </div>
                 {t("stepPackage.deliveryDays") || "Delivery Days"}
@@ -142,7 +142,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
 
             <div className="group">
               <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500/10 to-pink-500/10 flex items-center justify-center group-focus-within:from-rose-500/20 group-focus-within:to-pink-500/20 transition-all">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-rose-500/10 to-pink-500/10 flex items-center justify-center group-focus-within:from-rose-500/20 group-focus-within:to-pink-500/20 transition-all">
                   <RotateCcw className="w-4 h-4 text-rose-600" />
                 </div>
                 {t("stepPackage.revisionLimit") || "Revision Limit"}
@@ -166,7 +166,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
           {/* Features Section */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
                 <CheckCircle className="w-4 h-4 text-primary" />
               </div>
                 {t("stepPackage.features") || "Package Features"}
@@ -188,7 +188,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
               />
               <button
                 type="button"
-                className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2 font-medium"
+                className="px-6 py-3 bg-linear-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2 font-medium"
                 onClick={() => {
                   const el = document.getElementById(`featInput-${activeTab}`) as HTMLInputElement | null;
                   if (el) {
@@ -211,7 +211,7 @@ export default function StepPackage({ form, setForm }: { form: CatalogForm; setF
                       className="flex items-center justify-between p-3 bg-background rounded-lg border border-border hover:border-primary/30 transition-all group"
                     >
                       <div className="flex items-center gap-3">
-                        <CheckCircle className="w-4 h-4 text-success flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-success shrink-0" />
                         <span className="text-sm text-text-primary">{f}</span>
                       </div>
                       <button

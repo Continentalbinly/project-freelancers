@@ -27,17 +27,36 @@ import { requireDb } from "@/service/firebase";
 import { createOrOpenChatRoom } from "@/app/utils/chatUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { toast } from "react-toastify";
-import { 
-  createProposalAcceptedNotification, 
-  createProposalRejectedNotification 
+import {
+  createProposalAcceptedNotification,
+  createProposalRejectedNotification,
 } from "@/app/orders/utils/notificationService";
+import type { ProposalWithDetails } from "@/types/proposal";
 
-export default function ProposalSidebar({ proposal, t, isClient }: any) {
+interface ProfileData {
+  fullName?: string;
+  avatarUrl?: string;
+  rating?: number;
+  totalProjects?: number;
+  [key: string]: unknown;
+}
+
+interface ProposalSidebarProps {
+  proposal: ProposalWithDetails;
+  t: (key: string) => string;
+  isClient: boolean;
+}
+
+export default function ProposalSidebar({
+  proposal,
+  t,
+  isClient,
+}: ProposalSidebarProps) {
   const router = useRouter();
   const { currentLanguage } = useTranslationContext();
 
   const [loadingAction, setLoadingAction] = useState(false);
-  const [profileData, setProfileData] = useState<any>(null);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [confirmAction, setConfirmAction] = useState<
     "accept" | "reject" | null
@@ -85,12 +104,16 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
     try {
       const firestore = requireDb();
       // Get project title for notification
-      const projectSnap = await getDoc(doc(firestore, "projects", proposal.projectId));
-      const projectTitle = projectSnap.exists() 
-        ? (projectSnap.data().title ?? "Unknown Project")
+      const projectSnap = await getDoc(
+        doc(firestore, "projects", proposal.projectId)
+      );
+      const projectTitle = projectSnap.exists()
+        ? projectSnap.data().title ?? "Unknown Project"
         : "Unknown Project";
-      
-      const clientId = proposal.project?.clientId || (projectSnap.exists() ? projectSnap.data().clientId : null);
+
+      const clientId =
+        proposal.project?.clientId ||
+        (projectSnap.exists() ? projectSnap.data().clientId : null);
 
       await updateDoc(doc(firestore, "proposals", proposal.id), {
         status: "accepted",
@@ -115,13 +138,16 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             proposal.id
           );
         } catch (notifError) {
-          console.error("Error creating proposal accepted notification:", notifError);
+          console.error(
+            "Error creating proposal accepted notification:",
+            notifError
+          );
         }
       }
 
       toast.success(t("common.acceptSuccess"));
       router.push(`/messages?project=${proposal.projectId}`);
-    } catch (err) {
+    } catch {
       toast.error(t("common.acceptFailed"));
     } finally {
       setLoadingAction(false);
@@ -146,11 +172,18 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
       const userId = isClient
         ? proposal.project?.clientId
         : proposal.freelancerId;
+
+      if (!userId) {
+        toast.error(t("common.userNotFound") || "User not found");
+        setLoadingChat(false);
+        return;
+      }
+
       const room = await createOrOpenChatRoom(proposal.projectId, userId);
       if (room?.id) {
         router.push(`/messages/${room.id}`);
       }
-    } catch (err) {
+    } catch {
       //console.error("❌ Error opening chat:", err);
     } finally {
       setLoadingChat(false);
@@ -166,7 +199,9 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
     try {
       const firestore = requireDb();
       /** Load project fee */
-      const projectSnap = await getDoc(doc(firestore, "projects", proposal.projectId));
+      const projectSnap = await getDoc(
+        doc(firestore, "projects", proposal.projectId)
+      );
       if (!projectSnap.exists()) throw new Error("Project missing.");
 
       const project = projectSnap.data();
@@ -225,14 +260,16 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             refundAmount
           );
         } catch (notifError) {
-          console.error("Error creating proposal rejected notification:", notifError);
+          console.error(
+            "Error creating proposal rejected notification:",
+            notifError
+          );
         }
       }
 
       toast.success(t("common.rejectSuccess"));
       window.location.reload();
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error(t("common.rejectFailed"));
     } finally {
       setLoadingAction(false);
@@ -268,7 +305,11 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
         ) : (
           <div className="flex items-start gap-3">
             <Avatar
-              src={person?.avatarUrl || "/default-avatar.png"}
+              src={
+                (person as ProfileData)?.avatarUrl ||
+                (person as { avatar?: string })?.avatar ||
+                "/default-avatar.png"
+              }
               alt={person?.fullName}
               name={person?.fullName}
               size="lg"
@@ -313,7 +354,13 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             <span>{t("proposals.detail.submitted")}</span>
             <span>
               {timeAgo(
-                proposal.createdAt?.toDate?.() || new Date(),
+                proposal.createdAt as
+                  | Record<string, unknown>
+                  | Date
+                  | string
+                  | number
+                  | null
+                  | undefined,
                 currentLanguage
               )}
             </span>
@@ -354,7 +401,11 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
             }`}
           >
             <ChatBubbleLeftRightIcon className="w-5 h-5" />
-            <span>{loadingChat ? (t("proposals.proposalCard.openingChat") || "Opening...") : t("proposals.detail.startChat")}</span>
+            <span>
+              {loadingChat
+                ? t("proposals.proposalCard.openingChat") || "Opening..."
+                : t("proposals.detail.startChat")}
+            </span>
           </button>
         )}
 
@@ -368,7 +419,7 @@ export default function ProposalSidebar({ proposal, t, isClient }: any) {
 
       {/* === Confirmation Modal === */}
       {confirmAction && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999]">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-999">
           <div className=" rounded-lg shadow-xl border border-border w-[90%] max-w-sm p-6 text-center">
             <ExclamationTriangleIcon className="w-10 h-10 text-warning mx-auto mb-3" />
 

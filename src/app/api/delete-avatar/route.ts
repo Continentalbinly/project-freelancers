@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
       try {
         await unlink(filePath)
         return NextResponse.json({ success: true, deleted: 'local', url })
-      } catch (err) {
-        return NextResponse.json({ success: false, error: 'Failed to delete local file', details: err?.toString() }, { status: 500 })
+      } catch  {
+        return NextResponse.json({ success: false, error: 'Failed to delete local file' }, { status: 500 })
       }
     }
 
@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
       try {
         await cloudinary.uploader.destroy(publicId, { invalidate: true })
         return NextResponse.json({ success: true, deleted: 'cloudinary', publicId })
-      } catch (err) {
-        return NextResponse.json({ success: false, error: 'Failed to delete Cloudinary image', details: err?.toString() }, { status: 500 })
+      } catch  {
+        return NextResponse.json({ success: false, error: 'Failed to delete Cloudinary image' }, { status: 500 })
       }
     }
 
     return NextResponse.json({ success: false, error: 'URL is not a recognized avatar location' }, { status: 400 })
-  } catch (error) {
-    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 })
+  } catch {
+    return NextResponse.json({ success: false, error: 'Unknown error' }, { status: 500 })
   }
 } 

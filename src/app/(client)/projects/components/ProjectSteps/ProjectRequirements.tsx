@@ -74,7 +74,7 @@ export default function ProjectRequirements({ formData, setFormData, t }: Props)
           <button
             type="button"
             onClick={addSkill}
-            className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg transition-all flex items-center gap-2"
+            className="px-4 py-2.5 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             {t("createProject.add")}

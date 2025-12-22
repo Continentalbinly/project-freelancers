@@ -78,8 +78,8 @@ export async function POST(req: Request) {
       transactionId: data.transactionId,
       orderNo,
     });
-  } catch (err) {
-    console.error("QR Payment Create Error:", err);
+  } catch  {
+    // Silent fail
     return NextResponse.json(
       { success: false, error: "Server error" },
       { status: 500 }

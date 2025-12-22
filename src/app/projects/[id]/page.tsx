@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { requireDb } from "@/service/firebase";
 import {
   doc,
@@ -91,19 +91,16 @@ export default function ProjectDetailPage() {
           });
         }
       }
-    } catch (error) {
-      //console.error("❌ Error fetching project or profiles:", error);
+    } catch {
     } finally {
       setLoading(false);
     }
   }
 
-  // 🕒 Loading - Show skeleton instead of spinner
   if (loading || authLoading) {
     return <ProjectDetailSkeleton />;
   }
 
-  // 🚫 Project not found
   if (!project) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background  ">
@@ -119,7 +116,6 @@ export default function ProjectDetailPage() {
     );
   }
 
-  // ✅ Page layout
   return (
     <div className="bg-background   min-h-screen">
       <div className="py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -155,7 +151,7 @@ export default function ProjectDetailPage() {
         <div className="lg:col-span-1">
           <div className="flex flex-col space-y-6 lg:sticky lg:top-[100px] self-start">
             <ProjectSidebar project={project} t={t} />
-            <ProjectActions project={project} user={user} t={t} />
+            <ProjectActions project={project} t={t} />
           </div>
         </div>
       </div>

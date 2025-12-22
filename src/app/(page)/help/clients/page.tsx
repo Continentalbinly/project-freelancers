@@ -40,24 +40,24 @@ export default function ClientsGuidePage() {
             </h2>
 
             <p className="text-text-secondary mb-6">
-              We're creating a comprehensive guide for clients. This guide will cover:
+              We&apos;re creating a comprehensive guide for clients. This guide will cover:
             </p>
 
             <ul className="text-left max-w-md mx-auto space-y-3 mb-8">
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Creating compelling project descriptions</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Reviewing and selecting proposals</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Managing project timelines and communication</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-success rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Payment processing and project completion</span>
               </li>
             </ul>

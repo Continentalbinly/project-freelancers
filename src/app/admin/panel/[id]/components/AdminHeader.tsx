@@ -33,7 +33,7 @@ export default function AdminHeader() {
         {/* 🏷️ Title */}
         <div className="flex items-center gap-2">
           <Shield className="w-6 h-6 text-primary" />
-          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent select-none">
+          <h1 className="text-xl sm:text-2xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent select-none">
             Admin Panel
           </h1>
         </div>

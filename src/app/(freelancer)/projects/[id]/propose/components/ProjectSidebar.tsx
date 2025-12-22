@@ -3,8 +3,14 @@
 import Avatar from "@/app/utils/avatarHandler";
 import { formatEarnings } from "@/service/currencyUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import type { Project } from "@/types/project";
 
-export default function ProjectSidebar({ project, t }: any) {
+interface ProjectSidebarProps {
+  project: Project;
+  t: (key: string) => string;
+}
+
+export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
   const { currentLanguage } = useTranslationContext();
 
   const categoryName =
@@ -49,7 +55,7 @@ export default function ProjectSidebar({ project, t }: any) {
         {/* Client Info */}
         <div className="flex items-center gap-3">
           <Avatar
-            src={project.client?.avatarUrl}
+            src={project.client?.avatarUrl || undefined}
             name={project.client?.fullName}
             size="md"
           />
@@ -86,13 +92,13 @@ export default function ProjectSidebar({ project, t }: any) {
         </div>
 
         {/* Skills */}
-        {project.skills?.length > 0 && (
+        {project.skillsRequired && project.skillsRequired.length > 0 && (
           <div>
             <h4 className="font-medium text-text-primary mb-1">
               {t("proposePage.requiredSkills")}
             </h4>
             <div className="flex flex-wrap gap-2">
-              {project.skills.map((skill: string, i: number) => (
+              {project.skillsRequired.map((skill: string, i: number) => (
                 <span
                   key={i}
                   className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"

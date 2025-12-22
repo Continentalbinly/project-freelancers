@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, requireDb } from '@/service/firebase'
+import { requireDb } from '@/service/firebase'
 import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore'
-import { getAuth } from 'firebase-admin/auth'
+import { DecodedIdToken, getAuth } from 'firebase-admin/auth'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 
 // Initialize Firebase Admin if not already initialized
@@ -27,19 +27,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-
-    const token = authHeader.split('Bearer ')[1]
-    let decodedToken
-    try {
-      decodedToken = await adminAuth.verifyIdToken(token)
-    } catch (error) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid authorization token' },
-        { status: 401 }
-      )
-    }
-
-    //console.log('Starting proposals count update...')
     
     const db = requireDb();
     // Get all projects
@@ -47,7 +34,7 @@ export async function POST(request: NextRequest) {
     //console.log(`Found ${projectsSnapshot.size} projects`)
     
     let updatedCount = 0
-    const results = []
+    const results: { projectId: string; oldCount: number; newCount: number }[] = []
     
     for (const projectDoc of projectsSnapshot.docs) {
       const projectId = projectDoc.id
@@ -85,7 +72,7 @@ export async function POST(request: NextRequest) {
       updatedCount,
       results
     })
-  } catch (error) {
+  } catch {
     //console.error('Error updating proposals count:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update proposals count' },

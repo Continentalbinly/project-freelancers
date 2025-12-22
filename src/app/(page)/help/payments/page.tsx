@@ -40,24 +40,24 @@ export default function PaymentsGuidePage() {
             </h2>
 
             <p className="text-text-secondary mb-6">
-              We're creating a comprehensive payments and billing guide. This guide will cover:
+              We&apos;re creating a comprehensive payments and billing guide. This guide will cover:
             </p>
 
             <ul className="text-left max-w-md mx-auto space-y-3 mb-8">
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Setting up payment methods</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Understanding fees and charges</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Payment processing and timelines</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-warning rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Managing billing information and invoices</span>
               </li>
             </ul>

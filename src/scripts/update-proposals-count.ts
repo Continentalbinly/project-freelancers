@@ -1,11 +1,10 @@
 import { requireDb } from '../service/firebase'
 import { collection, getDocs, doc, updateDoc, query, where } from 'firebase/firestore'
 
-async function updateProposalsCount() {
+export default async function updateProposalsCount() {
   try {
     const db = requireDb();
-    //console.log('Starting proposals count update...')
-    
+
     // Get all projects
     const projectsSnapshot = await getDocs(collection(db, 'projects'))
     //console.log(`Found ${projectsSnapshot.size} projects`)
@@ -31,15 +30,11 @@ async function updateProposalsCount() {
           updatedAt: new Date()
         })
         //console.log(`Updated project ${projectId}: ${projectData.proposalsCount} → ${actualProposalsCount}`)
-        updatedCount++
+        updatedCount = actualProposalsCount
       }
     }
-    
-    //console.log(`Update complete! Updated ${updatedCount} projects.`)
-  } catch (error) {
-    //console.error('Error updating proposals count:', error)
+    return updatedCount
+  } catch {
+    return 0
   }
 }
-
-// Run the update
-updateProposalsCount() 

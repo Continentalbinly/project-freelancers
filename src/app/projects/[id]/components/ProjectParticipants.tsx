@@ -4,10 +4,11 @@ import { useRouter } from "next/navigation";
 import { User } from "lucide-react";
 import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
 import { Project } from "@/types/project";
+import type { Profile } from "@/types/profile";
 
 interface ProjectParticipantsProps {
-  clientProfile: any;
-  freelancerProfile: any;
+  clientProfile: Profile | null;
+  freelancerProfile: Profile | null;
   project: Project;
   currentUserId?: string;
   t: (key: string) => string;

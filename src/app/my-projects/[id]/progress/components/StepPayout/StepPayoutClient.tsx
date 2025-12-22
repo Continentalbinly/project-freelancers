@@ -5,10 +5,15 @@ import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { doc, getDoc } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import { toast } from "react-toastify";
+import type { Project } from "@/types/project";
 
 const QR_EXPIRE_TIME = 180;
 
-export default function StepPayoutClient({ project }: { project: any }) {
+interface StepPayoutClientProps {
+  project: Project;
+}
+
+export default function StepPayoutClient({ project }: StepPayoutClientProps) {
   const { t } = useTranslationContext();
 
   const [transactionId, setTransactionId] = useState<string | null>(null);
@@ -118,7 +123,7 @@ export default function StepPayoutClient({ project }: { project: any }) {
 
       startTimer();
       startPolling(newTxId);
-    } catch (err) {
+    } catch  {
       toast.error(t("payout.regenerateError") ?? "Failed to regenerate QR");
     }
 

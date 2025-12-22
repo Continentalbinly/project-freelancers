@@ -79,7 +79,7 @@ export default function PortfolioMultipleUpload({
               } else {
                 reject(new Error(response.error || "Upload failed"));
               }
-            } catch (err) {
+            } catch  {
               reject(new Error("Failed to parse response"));
             }
           } else {
@@ -115,7 +115,7 @@ export default function PortfolioMultipleUpload({
       });
 
       return uploadedFile;
-    } catch (err: any) {
+    } catch (err: unknown) {
       setUploadingFiles(prev => {
         const next = new Set(prev);
         next.delete(fileId);
@@ -167,8 +167,9 @@ export default function PortfolioMultipleUpload({
         try {
           const result = await uploadFile(file);
           uploaded.push(result);
-        } catch (err: any) {
-          errors.push(`${file.name}: ${err.message}`);
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : "Upload failed";
+          errors.push(`${file.name}: ${errorMessage}`);
         }
       }
 
@@ -180,8 +181,9 @@ export default function PortfolioMultipleUpload({
       if (errors.length > 0) {
         setError(errors.join("\n"));
       }
-    } catch (err: any) {
-      setError(err.message || t("profile.portfolio.upload.failed") || "Upload failed. Please try again.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : t("profile.portfolio.upload.failed") || "Upload failed. Please try again.";
+      setError(errorMessage);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -287,7 +289,7 @@ export default function PortfolioMultipleUpload({
               </p>
               <div className="w-full max-w-xs mx-auto h-2 bg-background-secondary rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-300"
+                  className="h-full bg-linear-to-r from-primary to-secondary rounded-full transition-all duration-300"
                   style={{ width: `${totalProgress}%` }}
                 />
               </div>
@@ -301,7 +303,7 @@ export default function PortfolioMultipleUpload({
                 w-20 h-20 rounded-2xl flex items-center justify-center transition-all
                 ${isDragging 
                   ? "bg-primary/20 scale-110" 
-                  : "bg-gradient-to-br from-primary/10 to-secondary/10"
+                  : "bg-linear-to-br from-primary/10 to-secondary/10"
                 }
               `}>
                 <Upload className="w-10 h-10 text-primary" />
@@ -387,7 +389,7 @@ export default function PortfolioMultipleUpload({
       {/* Error message */}
       {error && (
         <div className="flex items-start gap-2 p-3 bg-error/10 border border-error/20 rounded-lg">
-          <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-error shrink-0 mt-0.5" />
           <p className="text-sm text-error whitespace-pre-line">{error}</p>
         </div>
       )}

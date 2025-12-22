@@ -9,16 +9,36 @@ import {
 } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import { toast } from "react-toastify";
+import type { Project } from "@/types/project";
+
+interface RatingForm {
+  communication: number;
+  quality: number;
+  timeliness: number;
+  value: number;
+  review?: string;
+}
+
+interface SubmitRatingParams {
+  form: RatingForm;
+  project: Project;
+  isClient: boolean;
+}
 
 export async function submitRating({
   form,
   project,
   isClient,
-}: any): Promise<boolean> {
+}: SubmitRatingParams): Promise<boolean> {
   try {
     const ratedUser = isClient
       ? project.acceptedFreelancerId
       : project.clientId;
+
+    if (!ratedUser) {
+      toast.error("❌ Cannot rate: user not found.");
+      return false;
+    }
 
     const avg =
       (form.communication + form.quality + form.timeliness + form.value) / 4;
@@ -69,9 +89,9 @@ export async function submitRating({
 
     toast.success("⭐ Rating submitted!");
     return true; // ✔ IMPORTANT
-  } catch (err) {
+  } catch  {
     toast.error("❌ Failed to submit rating.");
-    console.error(err);
+    
     return false; // ✔ IMPORTANT
   }
 }

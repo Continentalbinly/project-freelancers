@@ -30,7 +30,13 @@ const REQUEST_REASONS = [
   { key: "other", en: "Other", lo: "ອື່ນໆ" },
 ];
 
-export default function StepInReviewClient({ project }: { project: any }) {
+import type { Project } from "@/types/project";
+
+interface StepInReviewClientProps {
+  project: Project;
+}
+
+export default function StepInReviewClient({ project }: StepInReviewClientProps) {
   const { user } = useAuth();
   const { t, currentLanguage } = useTranslationContext();
   const isClient = user?.uid === project.clientId;
@@ -101,7 +107,7 @@ export default function StepInReviewClient({ project }: { project: any }) {
         theme: "colored",
       });
       window.location.reload();
-    } catch (err) {
+    } catch  {
       toast.error(t("common.failed"), {
         position: "top-right",
         autoClose: 3000,
@@ -137,6 +143,10 @@ export default function StepInReviewClient({ project }: { project: any }) {
 
     setLoading(true);
     try {
+      if (!project.acceptedFreelancerId) {
+        toast.error(t("myProjects.stepper.step3.noFreelancer") || "No freelancer assigned");
+        return;
+      }
       await createChangeRequest(
         project.id,
         project.clientId,

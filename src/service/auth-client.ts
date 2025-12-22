@@ -41,7 +41,7 @@ export async function loginUser(
     const user = userCredential.user;
 
     // 🔄 Parallel operations for better performance
-    const [idToken, _] = await Promise.all([
+    const [idToken] = await Promise.all([
       user.getIdToken(true), // Force refresh token
       user.reload(), // Reload user to ensure latest emailVerified info
     ]);
@@ -92,9 +92,10 @@ export async function loginUser(
       success: true,
       user: { id: user.uid, email: user.email!, ...data.data },
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorObj = err as { code?: string; message?: string };
     const code =
-      err?.code || extractFirebaseCode(err?.message) || "auth/unknown";
+      errorObj?.code || extractFirebaseCode(errorObj?.message) || "auth/unknown";
     const friendly = getFirebaseErrorMessage(code);
     return { success: false, error: friendly, errorCode: code };
   }
@@ -131,19 +132,18 @@ async function retryWithBackoff<T>(
   maxRetries: number = 3,
   baseDelay: number = 100
 ): Promise<T> {
-  let lastError: any;
+  let lastError: unknown;
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await fn();
-    } catch (error) {
-      lastError = error;
+    } catch {
       if (attempt < maxRetries - 1) {
         const delay = baseDelay * Math.pow(2, attempt);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
-  throw lastError;
+  throw lastError || new Error("Retry exhausted");
 }
 
 /**
@@ -173,9 +173,8 @@ export async function ensureDisplayName(user: FirebaseUser): Promise<void> {
         await updateProfile(user, { displayName: fullName });
       }
     }
-  } catch (error) {
+  } catch {
     // Silent fail - displayName is not critical for functionality
-    console.warn("Failed to set displayName:", error);
   }
 }
 
@@ -219,7 +218,7 @@ async function createFirestoreProfile(
   fullName: string,
   role: string,
   avatarUrl?: string,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, unknown>
 ): Promise<void> {
   if (!db) {
     throw new Error("Firestore not configured");
@@ -270,7 +269,7 @@ export async function signupUser(
   fullName: string,
   role: string,
   avatarUrl?: string,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, unknown>
 ): Promise<AuthResponse> {
   if (!isFirebaseConfigured || !auth || !db) {
     return { 
@@ -280,7 +279,7 @@ export async function signupUser(
     };
   }
 
-  let user: any = null;
+  let user: FirebaseUser | null = null;
 
   try {
     // ✅ 1. Create account in Firebase Auth
@@ -294,12 +293,16 @@ export async function signupUser(
     // ✅ 2. Get ID token with retry (for immediate use in API call)
     let token: string;
     try {
+      if (!user) {
+        throw new Error("User is null");
+      }
+      const currentUser = user; // Capture for closure
       token = await retryWithBackoff(
-        () => user.getIdToken(true),
+        () => currentUser.getIdToken(true),
         3,
         200
       );
-    } catch (tokenError) {
+    } catch {
       // If token fetch fails, delete user and throw
       await user.delete();
       throw new Error("Failed to obtain authentication token");
@@ -339,9 +342,8 @@ export async function signupUser(
         }
 
         return true; // API creation successful
-      } catch (apiErr) {
+      } catch {
         // Fallback to client-side Firestore creation
-        console.warn("API profile creation failed, using Firestore fallback:", apiErr);
         await createFirestoreProfile(
           user.uid,
           user.email,
@@ -366,7 +368,7 @@ export async function signupUser(
       verificationPromise,
     ]);
 
-    const [profileResult, verificationResult] = results;
+    const [profileResult] = results;
 
     // If profile creation failed, rollback
     if (profileResult.status === "rejected") {
@@ -376,29 +378,24 @@ export async function signupUser(
       );
     }
 
-    // Log verification email errors but don't fail signup
-    if (verificationResult.status === "rejected") {
-      console.warn("Verification email failed to send:", verificationResult.reason);
-    }
-
     return {
       success: true,
       user: { id: user.uid, email: user.email || "" } as unknown as User,
       requiresVerification: true,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Ensure cleanup on any error
     if (user) {
       try {
         await user.delete();
-      } catch (deleteError) {
+      } catch {
         // Log but don't throw - original error is more important
-        console.error("Failed to cleanup user account:", deleteError);
       }
     }
 
+    const errorObj = error as { code?: string; message?: string };
     const code =
-      error?.code || extractFirebaseCode(error?.message) || "auth/unknown";
+      errorObj?.code || extractFirebaseCode(errorObj?.message) || "auth/unknown";
     return {
       success: false,
       error: getFirebaseErrorMessage(code),
@@ -415,9 +412,10 @@ export async function logoutUser(): Promise<AuthResponse> {
   try {
     await signOut(auth);
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorObj = error as { code?: string; message?: string };
     const code =
-      error?.code || extractFirebaseCode(error?.message) || "auth/unknown";
+      errorObj?.code || extractFirebaseCode(errorObj?.message) || "auth/unknown";
     return {
       success: false,
       error: getFirebaseErrorMessage(code),

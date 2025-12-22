@@ -24,13 +24,26 @@ import {
   getProjectStatusLabel,
   projectStatusLabels,
 } from "../utils/statusUtils";
+import type { ChatRoom as ChatRoomType, ChatMessage } from "@/types/chat";
 
-export default function ChatRoom({ chatRoom, onBack }: any) {
+interface ChatRoomProps {
+  chatRoom: ChatRoomType | null;
+  onBack: () => void;
+}
+
+interface ReceiverProfile {
+  id: string;
+  fullName?: string;
+  avatarUrl?: string;
+  [key: string]: unknown;
+}
+
+export default function ChatRoom({ chatRoom, onBack }: ChatRoomProps) {
   const { user } = useAuth();
   const { currentLanguage, t } = useTranslationContext();
 
-  const [messages, setMessages] = useState<any[]>([]);
-  const [receiver, setReceiver] = useState<any>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [receiver, setReceiver] = useState<ReceiverProfile | null>(null);
   const [loadingReceiver, setLoadingReceiver] = useState(true);
   const [projectStatus, setProjectStatus] = useState<string | null>(null);
   const [orderStatus, setOrderStatus] = useState<string | null>(null);
@@ -46,7 +59,7 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
       orderBy("timestamp", "asc")
     );
     const unsub = onSnapshot(q, (snap) =>
-      setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() } as ChatMessage)))
     );
     return () => unsub();
   }, [chatRoom?.id]);
@@ -66,7 +79,14 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
     
     const firestore = requireDb();
     getDoc(doc(firestore, "profiles", receiverId)).then((snap) => {
-      if (snap.exists()) setReceiver(snap.data());
+      if (snap.exists()) {
+        const data = snap.data();
+        setReceiver({
+          id: snap.id,
+          fullName: data.fullName || "Unknown",
+          avatarUrl: data.avatarUrl || "",
+        });
+      }
       setLoadingReceiver(false);
     });
   }, [chatRoom, user]);
@@ -118,7 +138,7 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
         lastMessage: text,
         lastMessageTime: serverTimestamp(),
       });
-    } catch (err) {
+    } catch  {
       //console.error("❌ Error sending message:", err);
     }
   };
@@ -169,7 +189,7 @@ export default function ChatRoom({ chatRoom, onBack }: any) {
           <ArrowLeftIcon className="w-5 h-5" />
         </button>
         {loadingReceiver ? (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
+          <div className="w-12 h-12 rounded-full bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
         ) : (
           <Avatar
             src={receiver?.avatarUrl || ""}

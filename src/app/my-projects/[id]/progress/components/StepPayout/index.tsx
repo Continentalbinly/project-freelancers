@@ -3,14 +3,17 @@
 import StepPayoutClient from "./StepPayoutClient";
 import StepPayoutFreelancer from "./StepPayoutFreelancer";
 import type { UserRole } from "../utils";
+import type { Project } from "@/types/project";
+
+interface StepPayoutProps {
+  project: Project;
+  role: UserRole;
+}
 
 export default function StepPayout({
   project,
   role,
-}: {
-  project: any;
-  role: UserRole;
-}) {
+}: StepPayoutProps) {
   if (role === "client") return <StepPayoutClient project={project} />;
   if (role === "freelancer") return <StepPayoutFreelancer project={project} />;
 

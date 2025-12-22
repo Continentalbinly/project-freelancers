@@ -30,7 +30,7 @@ import { toast } from "react-toastify";
 
 interface Props {
   project: Project;
-  t: any;
+  t: (key: string) => string;
   onProjectDeleted?: (id: string) => void;
 }
 
@@ -41,7 +41,7 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
   const { currentLanguage } = useTranslationContext();
 
   const getStatusColor = (status: string) => {
-    const map: any = {
+    const map: Record<string, string> = {
       open: "bg-success/10 text-success",
       in_progress: "bg-warning/10 text-warning",
       completed: "bg-primary/10 text-primary",
@@ -116,8 +116,8 @@ export default function ProjectCard({ project, t, onProjectDeleted }: Props) {
       setIsModalOpen(false);
 
       if (onProjectDeleted) onProjectDeleted(project.id);
-    } catch (err) {
-      console.error(err);
+    } catch  {
+      
       toast.error("Failed to delete project.");
     } finally {
       setLoading(false);

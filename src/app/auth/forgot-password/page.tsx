@@ -25,8 +25,9 @@ export default function ForgotPasswordPage() {
     try {
       await sendPasswordResetEmail(auth, email)
       setSuccess('If an account with that email exists, a password reset link has been sent.')
-    } catch (err: any) {
-      setError(err.message || 'Failed to send reset email. Please try again later.')
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send reset email. Please try again later.';
+      setError(errorMessage);
     } finally {
       setLoading(false)
     }
@@ -37,7 +38,7 @@ export default function ForgotPasswordPage() {
       <div className="text-center mb-4 sm:mb-6">
         <h2 className="text-lg sm:text-xl lg:text-2xl font-bold  ">Forgot Password</h2>
         <p className="text-text-secondary mt-2 text-sm sm:text-base">
-          Enter your email address and we'll send you a password reset link.
+          Enter your email address and we&apos;ll send you a password reset link.
         </p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">

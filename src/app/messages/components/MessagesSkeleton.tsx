@@ -15,7 +15,7 @@ export default function MessagesSkeleton() {
               key={idx}
               className="flex items-center gap-3 px-4 py-3 bg-background rounded-lg shadow-sm border border-border"
             >
-              <div className="h-12 w-12 rounded-full bg-background-tertiary flex-shrink-0" />
+              <div className="h-12 w-12 rounded-full bg-background-tertiary shrink-0" />
               <div className="flex-1 space-y-2 min-w-0">
                 <div className="h-4 w-32 bg-background-tertiary rounded" />
                 <div className="h-3 w-40 bg-background-tertiary rounded" />
@@ -30,7 +30,7 @@ export default function MessagesSkeleton() {
       <main className="flex-1 flex flex-col">
         {/* Header with fixed height matching ChatRoom */}
         <div className="h-16 flex items-center gap-3 border-b border-border bg-background px-4 shadow-sm">
-          <div className="h-12 w-12 rounded-full bg-background-tertiary flex-shrink-0" />
+          <div className="h-12 w-12 rounded-full bg-background-tertiary shrink-0" />
           <div className="flex-1 space-y-2 min-w-0">
             <div className="h-4 w-32 bg-background-tertiary rounded" />
             <div className="h-3 w-48 bg-background-tertiary rounded" />
