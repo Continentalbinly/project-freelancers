@@ -35,7 +35,7 @@ export default function LandingPage() {
         const res = await fetch("/api/stats");
         const data = await res.json();
         if (data.success) setStats(data.data);
-      } catch (err) {
+      } catch  {
         //console.error("Error fetching stats:", err);
       } finally {
         setLoadingStats(false);

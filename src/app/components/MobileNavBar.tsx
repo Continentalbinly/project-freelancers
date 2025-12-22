@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { useProposalCount } from "./hooks/useProposalCount";
 import { useOrderCount } from "./hooks/useOrderCount";
 
 function MobileNavBar() {
@@ -28,6 +29,12 @@ function MobileNavBar() {
 
   // Get order count for active orders needing attention
   const { count: orderCount } = useOrderCount({
+    userId: user?.uid || null,
+    userRole: isFreelancer ? "freelancer" : isClient ? "client" : null,
+  });
+
+  // Get proposal count for pending proposals
+  const { count: proposalCount } = useProposalCount({
     userId: user?.uid || null,
     userRole: isFreelancer ? "freelancer" : isClient ? "client" : null,
   });
@@ -58,7 +65,7 @@ function MobileNavBar() {
     { href: "/proposals", label: t("header.proposals"), icon: PlusSquare },
     { href: "/orders", label: t("header.orders"), icon: ShoppingCart },
     { href: "/dashboard", label: t("header.dashboard") || "Dashboard", icon: LayoutDashboard },
-  ].filter(Boolean) as Array<{ href: string; label: string; icon: any }>;
+  ].filter(Boolean) as Array<{ href: string; label: string; icon: React.ComponentType<{ className?: string }> }>;
 
   const navLinks = user ? userLinks : guestLinks;
 
@@ -96,6 +103,11 @@ function MobileNavBar() {
                 {href === "/orders" && orderCount > 0 && (
                   <span className="absolute -top-1 -right-4 flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[9px] font-bold text-white bg-error rounded-full">
                     {orderCount > 99 ? "99+" : orderCount}
+                  </span>
+                )}
+                {href === "/proposals" && proposalCount > 0 && (
+                  <span className="absolute -top-1 -right-4 flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[9px] font-bold text-white bg-error rounded-full">
+                    {proposalCount > 99 ? "99+" : proposalCount}
                   </span>
                 )}
               </div>

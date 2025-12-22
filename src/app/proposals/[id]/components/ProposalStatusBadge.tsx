@@ -4,8 +4,14 @@ import {
   XMarkIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import type { Proposal } from "@/types/proposal";
 
-export default function ProposalStatusBadge({ status, t }: any) {
+interface ProposalStatusBadgeProps {
+  status: Proposal["status"];
+  t: (key: string) => string;
+}
+
+export default function ProposalStatusBadge({ status, t }: ProposalStatusBadgeProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "accepted":

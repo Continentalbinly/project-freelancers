@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import Avatar from "@/app/utils/avatarHandler";
 import { timeAgo } from "@/service/timeUtils";
@@ -12,7 +12,6 @@ import {
   ClockIcon,
   PhotoIcon,
   ChatBubbleLeftRightIcon,
-  ArrowRightIcon,
   CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -132,8 +131,7 @@ export default function ProposalCardNew({
       if (room?.id) {
         router.push(`/messages/${room.id}`);
       }
-    } catch (err) {
-      console.error("Error opening chat:", err);
+    } catch {
     } finally {
       setLoadingChat(false);
     }
@@ -157,14 +155,14 @@ export default function ProposalCardNew({
       className="group bg-background rounded-2xl border border-border hover:border-primary/50 hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden"
     >
       {/* Card Header with Gradient */}
-      <div className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5 p-6 border-b border-border">
+      <div className="relative bg-linear-to-br from-primary/5 via-secondary/5 to-primary/5 p-6 border-b border-border">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Left: Avatar and User Info */}
           <div className="flex items-center gap-4 flex-1 min-w-0">
             {loadingProfile ? (
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-pulse flex-shrink-0" />
+              <div className="w-16 h-16 rounded-full bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-pulse shrink-0" />
             ) : (
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <Avatar
                   src={person?.avatarUrl || ""}
                   alt={person?.fullName}
@@ -195,7 +193,7 @@ export default function ProposalCardNew({
           </div>
 
           {/* Right: Status Badge */}
-          <div className="flex flex-col items-end gap-3 flex-shrink-0">
+          <div className="flex flex-col items-end gap-3 shrink-0">
             <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${statusConfig.color}`}>
               <StatusIcon className="w-4 h-4" />
               <span>{statusConfig.text}</span>
@@ -248,19 +246,23 @@ export default function ProposalCardNew({
             </p>
           </div>
 
-          {/* Submitted Date */}
+          {/* Submitted/Received Date */}
           <div className="bg-background-secondary rounded-xl p-3 border border-border/50">
             <div className="flex items-center gap-2 mb-1">
               <ClockIcon className="w-4 h-4 text-secondary" />
               <h4 className="font-semibold text-text-primary text-xs">
-                {t("proposals.proposalCard.submitted")}
+                {activeTab === "received" 
+                  ? t("proposals.proposalCard.received") || t("proposals.proposalCard.submitted")
+                  : t("proposals.proposalCard.submitted")}
               </h4>
             </div>
             <p className="text-sm text-text-secondary">
               {timeAgo(
-                proposal.createdAt && typeof proposal.createdAt === 'object' && 'toDate' in proposal.createdAt 
-                  ? (proposal.createdAt as any).toDate() 
-                  : proposal.createdAt as Date,
+                typeof proposal.createdAt === 'object' && 'toDate' in proposal.createdAt
+                  ? (proposal.createdAt as Timestamp).toDate()
+                  : proposal.createdAt instanceof Date
+                  ? proposal.createdAt
+                  : proposal.createdAt,
                 currentLanguage
               )}
             </p>

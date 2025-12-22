@@ -3,15 +3,29 @@
 import ProjectCard from "./ProjectCard";
 import { useRouter } from "next/navigation";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import type { Project } from "@/types/project";
+
+interface ProjectFilters {
+  status: string;
+  category: string;
+  search: string;
+}
+
+interface ManageProjectsListProps {
+  projects: Project[];
+  filters: ProjectFilters;
+  t: (key: string) => string;
+  onProjectDeleted?: (id: string) => void;
+}
 
 export default function ManageProjectsList({
   projects,
   filters,
   t,
   onProjectDeleted,
-}: any) {
+}: ManageProjectsListProps) {
   const router = useRouter();
-  const filtered = projects.filter((p: any) => {
+  const filtered = projects.filter((p: Project) => {
     const matchStatus = filters.status === "all" || p.status === filters.status;
     const matchCat =
       filters.category === "all" || p.category === filters.category;
@@ -45,7 +59,7 @@ export default function ManageProjectsList({
 
   return (
     <div className="space-y-6">
-      {filtered.map((project: any) => (
+      {filtered.map((project: Project) => (
         <ProjectCard
           key={project.id}
           project={project}

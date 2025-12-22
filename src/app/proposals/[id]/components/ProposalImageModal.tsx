@@ -2,10 +2,15 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface ProposalImageModalProps {
+  selectedImage: string | null;
+  setSelectedImage: (url: string | null) => void;
+}
+
 export default function ProposalImageModal({
   selectedImage,
   setSelectedImage,
-}: any) {
+}: ProposalImageModalProps) {
   if (!selectedImage) return null;
 
   return (

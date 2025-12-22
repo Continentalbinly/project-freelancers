@@ -29,7 +29,7 @@ export default function PackageSelector({
           onClick={() => onSelect(idx)}
           className={`w-full p-4 rounded-xl transition-all duration-300 ease-out text-left ${
             selectedPkg === idx
-              ? "bg-gradient-to-r from-primary dark:from-primary-dark to-secondary dark:to-secondary-dark text-white shadow-lg shadow-primary/30 dark:shadow-primary-dark/30 transform scale-[1.02]"
+              ? "bg-linear-to-r from-primary dark:from-primary-dark to-secondary dark:to-secondary-dark text-white shadow-lg shadow-primary/30 dark:shadow-primary-dark/30 transform scale-[1.02]"
               : "bg-background-secondary dark:bg-background-secondary-dark hover:bg-background dark:hover:bg-background border border-border/50 dark:border-border-dark/50 text-text-primary dark:text-text-primary-dark hover:border-primary/50 dark:hover:border-primary-dark/50"
           }`}
         >

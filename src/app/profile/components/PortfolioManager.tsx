@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { requireDb } from "@/service/firebase";
 import { collection, query, where, orderBy, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, writeBatch } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { PortfolioItem } from "@/types/portfolio";
-import { Plus, Edit2, Trash2, X, Save, Star, Maximize2, ChevronLeft, ChevronRight, Briefcase } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Save, Star, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 import PortfolioMultipleUpload from "./PortfolioMultipleUpload";
 import type { PortfolioMediaItem } from "@/types/portfolio";
 
@@ -67,8 +67,9 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
           orderBy("order", "asc"),
           orderBy("createdAt", "desc")
         );
-      } catch (error: any) {
-        if (error?.code === "failed-precondition") {
+      } catch (error: unknown) {
+        const firestoreError = error as { code?: string };
+        if (firestoreError?.code === "failed-precondition") {
           q = query(
             collection(requireDb(), "portfolio"),
             where("userId", "==", userId),
@@ -84,8 +85,8 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
         ...d.data(),
       })) as PortfolioItem[];
       setItems(portfolioItems);
-    } catch (error) {
-      console.error("Error loading portfolio:", error);
+    } catch {
+      // Silent fail
     } finally {
       setLoading(false);
     }
@@ -144,8 +145,8 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
         uploadedFiles: [],
       });
       loadPortfolio();
-    } catch (error) {
-      console.error("Error saving portfolio:", error);
+    } catch {
+      // Silent fail
       toast.error(t("common.error") || "Failed to save portfolio item");
     }
   };
@@ -170,8 +171,8 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
       await batch.commit();
       toast.success(t("profile.portfolio.coverSet") || "Cover image set successfully");
       loadPortfolio();
-    } catch (error) {
-      console.error("Error setting cover:", error);
+    } catch {
+      // Silent fail
       toast.error(t("common.error") || "Failed to set cover");
     }
   };
@@ -183,8 +184,8 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
       await deleteDoc(doc(requireDb(), "portfolio", id));
       toast.success(t("profile.portfolio.deleted") || "Portfolio item deleted");
       loadPortfolio();
-    } catch (error) {
-      console.error("Error deleting portfolio:", error);
+    } catch {
+      // Silent fail
       toast.error(t("common.error") || "Failed to delete portfolio item");
     }
   };
@@ -201,22 +202,6 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
       if (!a.isCover && b.isCover) return 1;
       return (a.order || 0) - (b.order || 0);
     });
-
-  // Helper to get preview media URL
-  const getPreviewMediaUrl = (item: PortfolioItem, index: number = 0): string => {
-    if (item.mediaItems && item.mediaItems.length > 0) {
-      return item.mediaItems[index]?.url || item.mediaItems[0].url;
-    }
-    return item.mediaUrl || "";
-  };
-
-  // Helper to get preview media type
-  const getPreviewMediaType = (item: PortfolioItem, index: number = 0): "image" | "video" => {
-    if (item.mediaItems && item.mediaItems.length > 0) {
-      return item.mediaItems[index]?.type || item.mediaItems[0].type;
-    }
-    return item.type as "image" | "video";
-  };
 
   // Auto-carousel for portfolio cards
   useEffect(() => {
@@ -362,8 +347,8 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
         uploadedFiles: [],
       });
       loadPortfolio();
-    } catch (error) {
-      console.error("Error updating portfolio:", error);
+    } catch {
+      // Silent fail
       toast.error(t("common.error") || "Failed to update portfolio item");
     }
   };
@@ -433,24 +418,21 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
                         const isPrev = index === (currentIndex - 1 + mediaItems.length) % mediaItems.length;
                         
                         let translateX = "100%"; // Start from right
-                        let opacity = 0;
                         let zIndex = 0;
                         
                         if (isActive) {
                           translateX = "0%";
-                          opacity = 1;
                           zIndex = 10;
                         } else if (isNext) {
                           translateX = "100%";
-                          opacity = 0;
+                          
                           zIndex = 5;
                         } else if (isPrev) {
                           translateX = "-100%";
-                          opacity = 0;
+                          
                           zIndex = 5;
                         } else {
                           translateX = "100%";
-                          opacity = 0;
                           zIndex = 1;
                         }
                         
@@ -462,7 +444,6 @@ export default function PortfolioManager({ userId, isOwner }: PortfolioManagerPr
                             }`}
                             style={{
                               transform: `translateX(${translateX})`,
-                              opacity: isActive ? 1 : 0,
                             }}
                           >
                             {media.type === "video" ? (

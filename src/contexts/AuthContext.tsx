@@ -1,202 +1,203 @@
-'use client'
+"use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react'
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
-import { doc, getDoc, getDocFromCache, onSnapshot } from 'firebase/firestore'
-import { auth, db } from '@/service/firebase'
-import { Profile } from '@/types/profile'
-import { clearAllCache, abortAllPendingRequests } from '@/service/dataFetch'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useCallback,
+  useRef,
+} from "react";
+import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { doc, getDoc, getDocFromCache, onSnapshot } from "firebase/firestore";
+import { auth, db } from "@/service/firebase";
+import { Profile } from "@/types/profile";
+import { clearAllCache, abortAllPendingRequests } from "@/service/dataFetch";
 
 interface AuthContextType {
-  user: FirebaseUser | null
-  profile: Profile | null
-  loading: boolean
-  error: string | null
-  refreshProfile: () => Promise<void>
+  user: FirebaseUser | null;
+  profile: Profile | null;
+  loading: boolean;
+  refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<FirebaseUser | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const fetchAbortController = useRef<AbortController | null>(null)
-  const fetchTimeoutId = useRef<NodeJS.Timeout | null>(null)
-  const lastFetchTime = useRef<number>(0)
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const fetchAbortController = useRef<AbortController | null>(null);
+  const fetchTimeoutId = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchTime = useRef<number>(0);
 
   const fetchProfile = useCallback(async (firebaseUser: FirebaseUser) => {
-    if (!db) return
-    
+    if (!db) return;
+
     try {
       // Prevent duplicate fetches within 500ms
-      const now = Date.now()
+      const now = Date.now();
       if (now - lastFetchTime.current < 500) {
-        return
+        return;
       }
-      lastFetchTime.current = now
+      lastFetchTime.current = now;
 
       // Cancel previous request if still pending
       if (fetchAbortController.current) {
-        fetchAbortController.current.abort()
+        fetchAbortController.current.abort();
       }
 
-      fetchAbortController.current = new AbortController()
+      fetchAbortController.current = new AbortController();
 
-      const profileRef = doc(db, 'profiles', firebaseUser.uid)
-      
+      const profileRef = doc(db, "profiles", firebaseUser.uid);
+
       // ✅ Cache-first strategy: Try cache first, then server
-      let profileSnap
+      let profileSnap;
       try {
         // Try to get from cache first (instant)
-        profileSnap = await getDocFromCache(profileRef)
-      } catch (cacheError) {
+        profileSnap = await getDocFromCache(profileRef);
+      } catch {
         // Cache miss, fetch from server
-        profileSnap = await getDoc(profileRef)
+        profileSnap = await getDoc(profileRef);
       }
 
       if (profileSnap.exists()) {
-        const profileData = profileSnap.data() as Profile
-        setProfile({ ...profileData, id: profileSnap.id } as Profile)
+        const profileData = profileSnap.data() as Profile;
+        setProfile({ ...profileData, id: profileSnap.id } as Profile);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Ignore abort errors
-      if (err?.name !== 'AbortError') {
+      if ((err as { name?: string })?.name !== "AbortError") {
         // Fallback to API route if Firestore fails
         try {
-          const token = await firebaseUser.getIdToken()
-          if (!token) return
+          const token = await firebaseUser.getIdToken();
+          if (!token) return;
 
-          const response = await fetch('/api/auth', {
-            method: 'POST',
+          const response = await fetch("/api/auth", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              action: 'get-profile',
-              userId: firebaseUser.uid
+              action: "get-profile",
+              userId: firebaseUser.uid,
             }),
-            signal: fetchAbortController.current?.signal
-          })
+            signal: fetchAbortController.current?.signal,
+          });
 
-          const data = await response.json()
+          const data = await response.json();
           if (data.success) {
-            setProfile(data.data)
+            setProfile(data.data);
           }
-        } catch (apiErr) {
+        } catch {
           // Silent fail
         }
       }
     }
-  }, [])
+  }, []);
 
   const refreshProfile = useCallback(async () => {
     if (user) {
-      await fetchProfile(user)
+      await fetchProfile(user);
     }
-  }, [user, fetchProfile])
+  }, [user, fetchProfile]);
 
   useEffect(() => {
-    let profileUnsubscribe: (() => void) | null = null
+    let profileUnsubscribe: (() => void) | null = null;
 
     if (!auth) {
-      setLoading(false)
-      return
+      setLoading(false);
+      return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser)
-      
+      setUser(firebaseUser);
+
       if (firebaseUser) {
         // ✅ Fetch profile with cache-first strategy
-        await fetchProfile(firebaseUser)
-        
+        await fetchProfile(firebaseUser);
+
         // ✅ Set up real-time listener for profile updates (keeps data fresh)
         if (db) {
-          const profileRef = doc(db, 'profiles', firebaseUser.uid)
+          const profileRef = doc(db, "profiles", firebaseUser.uid);
           profileUnsubscribe = onSnapshot(
             profileRef,
             (snapshot) => {
               if (snapshot.exists()) {
-                const profileData = snapshot.data() as Profile
-                setProfile({ ...profileData, id: snapshot.id } as Profile)
+                const profileData = snapshot.data() as Profile;
+                setProfile({ ...profileData, id: snapshot.id } as Profile);
               }
             },
-            (error) => {
+            () => {
               // Silent fail for real-time updates
             }
-          )
+          );
         }
       } else {
         // Unsubscribe from profile listener
         if (profileUnsubscribe) {
-          profileUnsubscribe()
-          profileUnsubscribe = null
+          profileUnsubscribe();
+          profileUnsubscribe = null;
         }
-        
+
         // Clear all caches on logout
-        clearAllCache()
-        abortAllPendingRequests()
-        
+        clearAllCache();
+        abortAllPendingRequests();
+
         // Clear any profile data from localStorage (security cleanup)
         try {
-          const keys = Object.keys(localStorage)
-          keys.forEach(key => {
-            if (key.startsWith('profile_')) {
-              localStorage.removeItem(key)
+          const keys = Object.keys(localStorage);
+          keys.forEach((key) => {
+            if (key.startsWith("profile_")) {
+              localStorage.removeItem(key);
             }
-          })
-        } catch (e) {
-          // Ignore localStorage errors
+          });
+        } catch {
+          // Silent fail
         }
-        
-        setProfile(null)
+
+        setProfile(null);
         if (fetchTimeoutId.current) {
-          clearTimeout(fetchTimeoutId.current)
+          clearTimeout(fetchTimeoutId.current);
         }
         if (fetchAbortController.current) {
-          fetchAbortController.current.abort()
+          fetchAbortController.current.abort();
         }
       }
-      
-      setLoading(false)
-    })
+
+      setLoading(false);
+    });
 
     return () => {
-      unsubscribe()
+      unsubscribe();
       if (profileUnsubscribe) {
-        profileUnsubscribe()
+        profileUnsubscribe();
       }
       if (fetchAbortController.current) {
-        fetchAbortController.current.abort()
+        fetchAbortController.current.abort();
       }
       if (fetchTimeoutId.current) {
-        clearTimeout(fetchTimeoutId.current)
+        clearTimeout(fetchTimeoutId.current);
       }
-    }
-  }, [fetchProfile])
+    };
+  }, [fetchProfile]);
 
   const value = {
     user,
     profile,
     loading,
-    error,
-    refreshProfile
-  }
+    refreshProfile,
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
-} 
+  return context;
+}

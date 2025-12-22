@@ -81,7 +81,7 @@ export default function CookieConsent() {
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                         <div className="flex-1">
                             <div className="flex items-center gap-4">
-                                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
+                                <div className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
                                     <Image src={cookiesImage} alt="Cookies" width={40} height={40} className="w-8 h-8 sm:w-10 sm:h-10" />
                                 </div>
                                 <div className="flex-1 min-w-0">

@@ -22,10 +22,16 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
+import type { Project } from "@/types/project";
 
-export default function CompletionStatus({ project, t, formatDate }: any) {
+interface CompletionStatusProps {
+  project: Project;
+  t: (key: string) => string;
+  formatDate: (date: Date) => string;
+}
+
+export default function CompletionStatus({ project, t, formatDate }: CompletionStatusProps) {
   const { user } = useAuth();
-  if (!user) return null;
 
   // 🔹 Local states
   const [updating, setUpdating] = useState(false);
@@ -101,7 +107,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
 
   // ✅ Freelancer confirm
   const handleFreelancerConfirm = async () => {
-    if (!isFreelancer) return;
+    if (!isFreelancer || !user) return;
     try {
       setUpdating(true);
       const firestore = requireDb();
@@ -116,7 +122,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
         updatedAt: serverTimestamp(),
       };
       await updateDoc(ref, data);
-      setLocalProject((prev: any) => ({
+      setLocalProject((prev: Project) => ({
         ...prev,
         status: "in_review",
         freelancerCompleted: {
@@ -124,7 +130,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
           completedAt: new Date(),
         },
       }));
-    } catch (e) {
+    } catch {
       //console.error("❌ Freelancer confirm error:", e);
     } finally {
       setUpdating(false);
@@ -134,7 +140,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
 
   // ✅ Client confirm (and pay freelancer)
   const handleClientConfirm = async () => {
-    if (!isClient || !freelancerDone) return;
+    if (!isClient || !freelancerDone || !user) return;
     try {
       setUpdating(true);
       const firestore = requireDb();
@@ -184,12 +190,12 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
         }
       }
 
-      setLocalProject((prev: any) => ({
+      setLocalProject((prev: Project) => ({
         ...prev,
         status: "completed",
         clientCompleted: { ...data.clientCompleted, completedAt: new Date() },
       }));
-    } catch (e) {
+    } catch {
       //console.error("❌ Client confirm error:", e);
     } finally {
       setUpdating(false);
@@ -215,6 +221,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       return;
     }
 
+    if (!user) return;
+
     const overallRating = (
       (communication + quality + timeliness + value) /
       4
@@ -225,6 +233,13 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       const ratedUserId = isClient
         ? localProject.acceptedFreelancerId
         : localProject.clientId;
+      
+      if (!ratedUserId) {
+        toast.error(t("rating.userNotFound") || "User not found");
+        setRatingLoading(false);
+        return;
+      }
+      
       const raterType = isClient ? "client" : "freelancer";
 
       // ✅ Add rating record
@@ -273,7 +288,7 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
         draggable: true,
         theme: "colored",
       });
-    } catch (err) {
+    } catch  {
       toast.error("Failed to submit rating.", {
         position: "top-right",
         autoClose: 2500,
@@ -315,6 +330,8 @@ export default function CompletionStatus({ project, t, formatDate }: any) {
       </div>
     </div>
   );
+
+  if (!user) return null;
 
   return (
     <div className="rounded-lg shadow-sm border border-border dark:border-gray-800 p-6">

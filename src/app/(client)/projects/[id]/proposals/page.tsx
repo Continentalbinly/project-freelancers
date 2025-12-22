@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { requireDb } from "@/service/firebase";
@@ -27,6 +27,8 @@ import {
 import ProposalsFilter from "./components/ProposalsFilter";
 import ProposalsList from "./components/ProposalsList";
 import ProposalModal from "./components/ProposalModal";
+import type { Timestamp } from "firebase/firestore";
+import type { ProposalWithDetails } from "@/types/proposal";
 
 // ------------------------------------
 // Types
@@ -40,8 +42,9 @@ export interface Proposal {
   proposedRate: number;
   estimatedDuration: string;
   status: "pending" | "accepted" | "rejected" | "withdrawn";
-  createdAt: any;
-  updatedAt: any;
+
+  createdAt: Timestamp | Date;
+  updatedAt: Timestamp | Date;
   freelancer?: {
     id: string;
     fullName: string;
@@ -81,11 +84,11 @@ export default function ProjectProposalsPage() {
   const projectId = params.id as string;
   const { t } = useTranslationContext();
 
-  const [project, setProject] = useState<Project | null>(null);
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [filtered, setFiltered] = useState<Proposal[]>([]);
+  const [, setProject] = useState<Project | null>(null);
+  const [proposals, setProposals] = useState<ProposalWithDetails[]>([]);
+  const [filtered, setFiltered] = useState<ProposalWithDetails[]>([]);
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
+  const [selectedProposal, setSelectedProposal] = useState<ProposalWithDetails | null>(
     null
   );
   const [loadingProposals, setLoadingProposals] = useState(true);
@@ -103,16 +106,9 @@ export default function ProjectProposalsPage() {
   }, [user, loading, router]);
 
   // ------------------------------------
-  // Fetch data
-  // ------------------------------------
-  useEffect(() => {
-    if (user && projectId && !isFreelancer) fetchData();
-  }, [user, projectId, isFreelancer]);
-
-  // ------------------------------------
   // Firestore Fetch
   // ------------------------------------
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const firestore = requireDb();
       setLoadingProposals(true);
@@ -142,7 +138,7 @@ export default function ProjectProposalsPage() {
       );
 
       const snap = await getDocs(q);
-      const list: Proposal[] = await Promise.all(
+      const list: ProposalWithDetails[] = await Promise.all(
         snap.docs.map(async (docSnap) => {
           const data = docSnap.data();
 
@@ -165,8 +161,16 @@ export default function ProjectProposalsPage() {
                   hourlyRate: freelancerData.hourlyRate,
                 }
               : undefined,
-            createdAt: data.createdAt?.toDate() || new Date(),
-            updatedAt: data.updatedAt?.toDate() || new Date(),
+            createdAt: (data.createdAt && typeof data.createdAt === 'object' && 'toDate' in data.createdAt) 
+              ? (data.createdAt as Timestamp).toDate() 
+              : data.createdAt instanceof Date 
+              ? data.createdAt 
+              : (data.createdAt as Timestamp) || new Date(),
+            updatedAt: (data.updatedAt && typeof data.updatedAt === 'object' && 'toDate' in data.updatedAt) 
+              ? (data.updatedAt as Timestamp).toDate() 
+              : data.updatedAt instanceof Date 
+              ? data.updatedAt 
+              : (data.updatedAt as Timestamp) || new Date(),
             project: {
               id: projectWithId.id,
               title: projectWithId.title,
@@ -175,7 +179,7 @@ export default function ProjectProposalsPage() {
               clientId: projectWithId.clientId,
               skillsRequired: projectWithId.skillsRequired || [],
             },
-          } as Proposal;
+          } as ProposalWithDetails;
         })
       );
 
@@ -184,7 +188,14 @@ export default function ProjectProposalsPage() {
     } finally {
       setLoadingProposals(false);
     }
-  };
+  }, [user, projectId, router]);
+
+  // ------------------------------------
+  // Fetch data
+  // ------------------------------------
+  useEffect(() => {
+    if (user && projectId && !isFreelancer) fetchData();
+  }, [user, projectId, isFreelancer, fetchData]);
 
   // ------------------------------------
   // Handlers
@@ -198,7 +209,7 @@ export default function ProjectProposalsPage() {
     );
   };
 
-  const handleAccept = async (proposal: Proposal) => {
+  const handleAccept = async (proposal: ProposalWithDetails) => {
     try {
       const firestore = requireDb();
       // Get project info for notifications
@@ -294,13 +305,12 @@ export default function ProjectProposalsPage() {
       }
 
       fetchData();
-    } catch (error) {
-      console.error("Error accepting proposal:", error);
+    } catch {
       fetchData();
     }
   };
 
-  const handleReject = async (proposal: Proposal) => {
+  const handleReject = async (proposal: ProposalWithDetails) => {
     try {
       const firestore = requireDb();
       // Get project info for refund and notifications
@@ -362,8 +372,7 @@ export default function ProjectProposalsPage() {
       }
 
       fetchData();
-    } catch (error) {
-      console.error("Error rejecting proposal:", error);
+    } catch {
       fetchData();
     }
   };
@@ -390,7 +399,7 @@ export default function ProjectProposalsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background-secondary">
+    <div className="min-h-screen bg-linear-to-br from-background to-background-secondary">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <ProposalsFilter
           status={statusFilter}
@@ -404,9 +413,6 @@ export default function ProjectProposalsPage() {
           loading={loadingProposals}
           activeTab="received"
           t={t}
-          onAccept={handleAccept}
-          onReject={handleReject}
-          onSelect={setSelectedProposal}
         />
 
         {selectedProposal && (

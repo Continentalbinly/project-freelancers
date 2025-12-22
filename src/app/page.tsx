@@ -59,7 +59,7 @@ export default function Home(): React.ReactElement {
     return (
       <div className="min-h-screen bg-background">
         {/* Hero Section Skeleton */}
-        <section className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950/20 py-20 sm:py-24 lg:py-28 overflow-hidden animate-pulse">
+        <section className="relative bg-linear-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950/20 py-20 sm:py-24 lg:py-28 overflow-hidden animate-pulse">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             {/* Title Skeleton */}
             <div className="mb-6">

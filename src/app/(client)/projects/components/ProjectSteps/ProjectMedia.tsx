@@ -1,7 +1,8 @@
 "use client";
 
 import { Dispatch, SetStateAction, useRef, useState } from "react";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Upload, X } from "lucide-react";
+import Image from "next/image";
 
 export interface ProjectFormData {
   title: string;
@@ -26,7 +27,6 @@ interface Props {
   t: (key: string) => string;
   previewUrl: string;
   setPreviewUrl: Dispatch<SetStateAction<string>>;
-  onImageUpload: (file: File) => Promise<void>;
   uploading: boolean;
 }
 
@@ -36,7 +36,6 @@ export default function ProjectMedia({
   t,
   previewUrl,
   setPreviewUrl,
-  onImageUpload,
   uploading,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -67,8 +66,8 @@ export default function ProjectMedia({
           } else {
             reject(new Error(json?.error || xhr.statusText || "Upload failed"));
           }
-        } catch (err) {
-          reject(err as any);
+        } catch  {
+          reject(new Error("Upload failed"));
         }
       };
 
@@ -85,8 +84,9 @@ export default function ProjectMedia({
       const url = await uploadToApi(file, "projectImage");
       setPreviewUrl(url);
       setFormData((p) => ({ ...p, imageUrl: url }));
-    } catch (err: any) {
-      setUploadError(err?.message || "Upload failed");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      setUploadError(errorMessage);
     } finally {
       setBannerUploading(false);
     }
@@ -110,8 +110,9 @@ export default function ProjectMedia({
         urls.push(url);
       }
       setFormData((p) => ({ ...p, sampleImages: [...(p.sampleImages || []), ...urls] }));
-    } catch (err: any) {
-      setUploadError(err?.message || "Upload failed");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      setUploadError(errorMessage);
     } finally {
       setSamplesUploading(false);
       if (sampleInputRef.current) sampleInputRef.current.value = "";
@@ -140,9 +141,11 @@ export default function ProjectMedia({
 
         {previewUrl || formData.imageUrl ? (
           <div className="relative rounded-lg overflow-hidden border-2 border-border mb-3">
-            <img
+            <Image
               src={previewUrl || formData.imageUrl}
               alt="Preview"
+              width={800}
+              height={256}
               className="w-full h-64 object-cover"
             />
             <button
@@ -220,7 +223,7 @@ export default function ProjectMedia({
                 key={url}
                 className="relative group aspect-square rounded-lg overflow-hidden border-2 border-border hover:border-primary transition-all"
               >
-                <img src={url} alt={`Sample ${idx + 1}`} className="w-full h-full object-cover" />
+                <Image src={url} alt={`Sample ${idx + 1}`} width={400} height={400} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
                   <button
                     type="button"

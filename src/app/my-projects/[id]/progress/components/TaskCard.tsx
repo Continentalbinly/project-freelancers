@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { toast } from "react-toastify";
+import type { Project } from "@/types/project";
 
 interface TaskCardProps {
-  step: any;
+  step: NonNullable<Project["progress"]>[number];
   index: number;
   role: "freelancer" | "client" | null;
   projectStatus: string;
@@ -39,7 +40,7 @@ export default function TaskCard({
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-gray-800">{step.title}</h3>
+        <h3 className="font-medium text-gray-800">{step.step}</h3>
         {step.approved ? (
           <span className="text-green-600 text-sm font-semibold">
             ✓ Approved
@@ -53,14 +54,14 @@ export default function TaskCard({
         )}
       </div>
 
-      {step.description && (
-        <p className="text-sm text-gray-600 mb-3">{step.description}</p>
+      {step.notes && (
+        <p className="text-sm text-gray-600 mb-3">{step.notes}</p>
       )}
 
-      {step.deliverableUrl && (
+      {step.imageUrl && (
         <div className="mb-3">
           <Image
-            src={step.deliverableUrl}
+            src={step.imageUrl}
             alt="Deliverable"
             width={400}
             height={250}

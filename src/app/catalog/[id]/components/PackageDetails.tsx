@@ -24,12 +24,12 @@ export default function PackageDetails({
   onOrderClick,
 }: PackageDetailsProps) {
   return (
-    <div className="bg-gradient-to-br from-primary/10 dark:from-primary-dark/20 via-secondary/5 dark:via-secondary-dark/10 to-primary/5 dark:to-primary-dark/20 border border-primary/30 dark:border-primary-dark/40 rounded-2xl p-6 shadow-lg">
+    <div className="bg-linear-to-br from-primary/10 dark:from-primary-dark/20 via-secondary/5 dark:via-secondary-dark/10 to-primary/5 dark:to-primary-dark/20 border border-primary/30 dark:border-primary-dark/40 rounded-2xl p-6 shadow-lg">
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-text-primary dark:text-text-primary-dark mb-2">
           {pkg.name}
         </h3>
-        <div className="text-4xl font-bold bg-gradient-to-r from-primary dark:from-primary-dark to-secondary dark:to-secondary-dark bg-clip-text text-transparent">
+        <div className="text-4xl font-bold bg-linear-to-r from-primary dark:from-primary-dark to-secondary dark:to-secondary-dark bg-clip-text text-transparent">
           {pkg.price?.toLocaleString()}
         </div>
         <p className="text-sm text-text-secondary dark:text-text-secondary-dark mt-2">
@@ -50,7 +50,7 @@ export default function PackageDetails({
         <ul className="space-y-3">
           {(pkg.features || []).map((feature, idx) => (
             <li key={idx} className="flex items-start gap-3">
-              <div className="w-5 h-5 rounded-full bg-success/20 dark:bg-success/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-5 h-5 rounded-full bg-success/20 dark:bg-success/30 flex items-center justify-center shrink-0 mt-0.5">
                 <Check className="w-3 h-3 text-success dark:text-success" />
               </div>
               <span className="text-sm text-text-secondary dark:text-text-secondary-dark font-medium">
@@ -64,7 +64,7 @@ export default function PackageDetails({
       {!isOwner && (
         <button 
           onClick={onOrderClick}
-          className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-3 px-4 rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all transform hover:scale-[1.02] active:scale-95"
+          className="w-full bg-linear-to-r from-primary to-secondary text-white font-bold py-3 px-4 rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all transform hover:scale-[1.02] active:scale-95"
         >
           {t("catalogDetail.orderNow")}
         </button>

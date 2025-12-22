@@ -1,7 +1,13 @@
 "use client";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-export default function ProposalHeader({ router, t }: any) {
+interface ProposalHeaderProps {
+  router: AppRouterInstance;
+  t: (key: string) => string;
+}
+
+export default function ProposalHeader({ router, t }: ProposalHeaderProps) {
   return (
     <div className="mb-8">
       <div className="flex items-center gap-4 mb-6">

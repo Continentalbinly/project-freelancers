@@ -3,14 +3,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { auth, requireDb, requireAuth } from "@/service/firebase";
+import { auth, requireDb } from "@/service/firebase";
 import {
   sendEmailVerification,
   onAuthStateChanged,
+  User as FirebaseUser,
 } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { ensureDisplayName, getVerificationContinueUrl } from "@/service/auth-client";
+import {
+  ensureDisplayName,
+  getVerificationContinueUrl,
+} from "@/service/auth-client";
 
 export default function VerifyEmailPage() {
   const { t } = useTranslationContext();
@@ -24,20 +28,23 @@ export default function VerifyEmailPage() {
   const [isVerified, setIsVerified] = useState(false);
 
   // ✅ Check verification status
-  const checkVerificationStatus = async (user: any, silent = false) => {
+  const checkVerificationStatus = async (
+    user: FirebaseUser,
+    silent = false
+  ) => {
     if (!user) return false;
 
     try {
       // Reload user to get latest verification status
       await user.reload();
-      
+
       if (user.emailVerified) {
         // Update Firestore if verified
         try {
           const db = requireDb();
           const profileRef = doc(db, "profiles", user.uid);
           const profileSnap = await getDoc(profileRef);
-          
+
           if (profileSnap.exists()) {
             const profileData = profileSnap.data();
             if (profileData.emailVerified === false) {
@@ -53,28 +60,25 @@ export default function VerifyEmailPage() {
         } catch {
           // Silent fail if db not available
         }
-        
+
         setIsVerified(true);
         if (!silent) {
           setMessage(
             t("auth.verifyEmail.success.verified") ||
-            "Email verified successfully! Redirecting..."
+              "Email verified successfully! Redirecting..."
           );
         }
-        
+
         // Redirect after a short delay to show success message
         setTimeout(() => {
           router.push("/");
         }, 1500);
-        
+
         return true;
       }
-      
+
       return false;
-    } catch (err) {
-      if (!silent) {
-        console.error("Error checking verification:", err);
-      }
+    } catch {
       return false;
     }
   };
@@ -99,10 +103,10 @@ export default function VerifyEmailPage() {
       if (!isMounted) return;
 
       setEmail(user.email || "");
-      
+
       // Initial check
       const verified = await checkVerificationStatus(user, true);
-      
+
       if (!isMounted) return;
 
       if (verified) {
@@ -120,7 +124,10 @@ export default function VerifyEmailPage() {
         if (!isMounted || !auth) return;
         const currentUser = auth.currentUser;
         if (currentUser) {
-          const isNowVerified = await checkVerificationStatus(currentUser, true);
+          const isNowVerified = await checkVerificationStatus(
+            currentUser,
+            true
+          );
           if (isNowVerified && isMounted) {
             if (pollInterval) {
               clearInterval(pollInterval);
@@ -173,8 +180,9 @@ export default function VerifyEmailPage() {
         t("auth.verifyEmail.success.sent") ||
           "Verification email sent successfully."
       );
-    } catch (err: any) {
-      const errorMessage = err?.message || 
+    } catch (err: unknown) {
+      const errorMessage =
+        (err instanceof Error && err.message) ||
         t("auth.verifyEmail.errors.failedToSend") ||
         "Failed to send verification email.";
       setError(errorMessage);
@@ -282,14 +290,16 @@ export default function VerifyEmailPage() {
             onClick={async () => {
               if (!auth) {
                 setError(
-                  t("auth.verifyEmail.errors.noAuth") || "Authentication not available."
+                  t("auth.verifyEmail.errors.noAuth") ||
+                    "Authentication not available."
                 );
                 return;
               }
               const user = auth.currentUser;
               if (!user) {
                 setError(
-                  t("auth.verifyEmail.errors.noUser") || "No signed-in user found."
+                  t("auth.verifyEmail.errors.noUser") ||
+                    "No signed-in user found."
                 );
                 return;
               }

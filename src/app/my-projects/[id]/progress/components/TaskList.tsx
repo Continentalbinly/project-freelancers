@@ -1,9 +1,10 @@
 "use client";
 
 import TaskCard from "./TaskCard";
+import type { Project } from "@/types/project";
 
 interface TaskListProps {
-  project: any;
+  project: Project;
   role: "freelancer" | "client" | null;
   onToggle: (i: number) => void;
   onApprove: (i: number) => void;
@@ -25,7 +26,7 @@ export default function TaskList({
 
   return (
     <div className="space-y-4">
-      {project.progress.map((step: any, i: number) => (
+      {project.progress.map((step: NonNullable<Project["progress"]>[number], i: number) => (
         <TaskCard
           key={i}
           step={step}

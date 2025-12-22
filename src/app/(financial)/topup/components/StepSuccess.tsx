@@ -1,6 +1,12 @@
 "use client";
+import type { UpdateSessionFunction } from "@/types/topup";
 
-export default function StepSuccess({ t, updateSession }: any) {
+interface StepSuccessProps {
+  t: (key: string) => string;
+  updateSession: UpdateSessionFunction;
+}
+
+export default function StepSuccess({ t, updateSession }: StepSuccessProps) {
   const handleBack = () => {
     updateSession({
       step: "select",

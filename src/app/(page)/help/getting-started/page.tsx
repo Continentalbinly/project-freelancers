@@ -40,24 +40,24 @@ export default function GettingStartedPage() {
             </h2>
 
             <p className="text-text-secondary mb-6">
-              We're working hard to create a comprehensive getting started guide. This guide will help you:
+              We&apos;re working hard to create a comprehensive getting started guide. This guide will help you:
             </p>
 
             <ul className="text-left max-w-md mx-auto space-y-3 mb-8">
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Create your account and profile</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Set up your preferences and skills</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Navigate the platform effectively</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Start your first project or proposal</span>
               </li>
             </ul>

@@ -1,4 +1,8 @@
-export default function FeaturesSection({ t }: any) {
+interface FeaturesSectionProps {
+  t: (key: string) => string;
+}
+
+export default function FeaturesSection({ t }: FeaturesSectionProps) {
   const features = [
     {
       iconColor: "primary",

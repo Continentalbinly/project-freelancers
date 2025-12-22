@@ -1,6 +1,6 @@
 "use client";
 
-export default function ProposalSkeleton({ t }: any) {
+export default function ProposalSkeleton() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -82,7 +82,7 @@ export default function ProposalSkeleton({ t }: any) {
             {/* Freelancer/Client Card */}
             <div className="border border-border bg-background rounded-lg p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="h-16 w-16 rounded-full bg-background-tertiary flex-shrink-0" />
+                <div className="h-16 w-16 rounded-full bg-background-tertiary shrink-0" />
                 <div className="flex-1 space-y-2">
                   <div className="h-5 w-32 bg-background-tertiary rounded" />
                   <div className="h-3 w-24 bg-background-tertiary rounded" />

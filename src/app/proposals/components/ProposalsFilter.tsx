@@ -1,11 +1,17 @@
 "use client";
 import React from "react";
 
+interface ProposalsFilterProps {
+  statusFilter: string;
+  setStatusFilter: (status: string) => void;
+  t: (key: string) => string;
+}
+
 export default function ProposalsFilter({
   statusFilter,
   setStatusFilter,
   t,
-}: any) {
+}: ProposalsFilterProps) {
   return (
     <div className="bg-background border border-border rounded-xl shadow-sm p-4 mb-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">

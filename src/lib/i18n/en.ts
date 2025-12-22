@@ -2278,6 +2278,7 @@ const en = {
       proposedBudget: "Proposed Budget",
       duration: "Duration:",
       submitted: "Submitted",
+      received: "Received",
       coverLetter: "Cover Letter",
       workSamples: "Work Samples",
       viewDetails: "View Details",

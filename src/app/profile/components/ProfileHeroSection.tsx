@@ -21,7 +21,7 @@ export default function ProfileHeroSection({ profile, isOwner = false, showEditB
     <div className="bg-background-secondary dark:bg-gray-800/50 rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 border border-border dark:border-gray-700/50 shadow-sm dark:shadow-xl backdrop-blur-sm">
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
         {/* Avatar */}
-        <div className="flex-shrink-0 mx-auto lg:mx-0">
+        <div className="shrink-0 mx-auto lg:mx-0">
           <Avatar
             {...getAvatarProps(profile, user)}
             size="xl"

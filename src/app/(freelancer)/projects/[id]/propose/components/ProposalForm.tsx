@@ -15,7 +15,15 @@ import {
 import { db } from "@/service/firebase";
 import { Project } from "@/types/project";
 import { Profile } from "@/types/profile";
-import { Milestone } from "@/types/proposal";
+import type { Milestone as ProposalMilestone } from "@/types/proposal";
+
+// Form-specific Milestone type (simpler for UI)
+interface MilestoneForm {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+}
 
 // Form-specific types (simpler than full types for UI state)
 interface WorkSampleForm {
@@ -56,7 +64,7 @@ export default function ProposalForm({
   const [estimatedDuration, setEstimatedDuration] = useState("");
   const [workPlan, setWorkPlan] = useState("");
   const [workSamples, setWorkSamples] = useState<WorkSampleForm[]>([]);
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [milestones, setMilestones] = useState<MilestoneForm[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -117,7 +125,12 @@ export default function ProposalForm({
           project.budgetType === "hourly" ? Number(proposedRate) : null,
         estimatedDuration,
         workPlan,
-        milestones,
+        milestones: milestones.map((m) => ({
+          ...m,
+          dueDate: new Date(m.dueDate),
+          budget: 0,
+          status: "pending" as const,
+        })) as ProposalMilestone[],
         workSamples: workSamples.map((s) => ({
           title: s.title,
           url: s.url,
@@ -172,7 +185,7 @@ export default function ProposalForm({
         );
       } catch (notifError) {
         // Log error but don't fail the proposal submission
-        console.error("Error creating proposal notification:", notifError);
+        // Silent fail
       }
 
       toast.success(t("proposePage.submitSuccess") || "Proposal Sent!");
@@ -180,10 +193,8 @@ export default function ProposalForm({
       setTimeout(() => {
         router.push("/proposals");
       }, 1200);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      console.error(error);
-      setError(error.message);
+    } catch  {
+      setError("Proposal submission failed");
       toast.error(t("common.submitFailed") || "Submit failed");
     } finally {
       setSubmitting(false);
@@ -407,14 +418,14 @@ export default function ProposalForm({
           <Milestones
             t={t}
             milestones={milestones}
-            setMilestones={setMilestones}
+            setMilestones={setMilestones as (milestones: MilestoneForm[]) => void}
           />
 
           {/* Summary */}
           <ProposalSummary
             t={t}
-            proposedBudget={proposedBudget}
-            proposedRate={proposedRate}
+            proposedBudget={Number(proposedBudget)}
+            proposedRate={Number(proposedRate)}
             estimatedDuration={estimatedDuration}
             budgetType={project.budgetType}
           />

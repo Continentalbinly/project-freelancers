@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { requireDb } from "@/service/firebase";
-import { doc, getDoc, serverTimestamp, updateDoc, arrayUnion, Timestamp } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, serverTimestamp, updateDoc, arrayUnion, Timestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
 import type { Order, OrderStatus } from "@/types/order";
 import OrderProgressTimeline from "../components/OrderProgressTimeline";
@@ -60,25 +60,44 @@ export default function OrderDetailPage() {
     else setUserRole(null);
   }, [profile]);
 
+  // Real-time order listener - updates automatically when status changes
   useEffect(() => {
-    const load = async () => {
-      if (!user) return;
-      const db = requireDb();
-      const snap = await getDoc(doc(db, "orders", id));
-      if (snap.exists()) {
-        const data = snap.data();
-        // Check authorization: freelancer must own order, client must be buyer
-        const isAuthorized = 
-          (userRole === "freelancer" && data.sellerId === user.uid) ||
-          (userRole === "client" && data.buyerId === user.uid);
-        
-        if (isAuthorized) {
-          setOrder({ id: snap.id, ...data } as Order);
-        }
-      }
+    if (!id || !user || !userRole) {
       setLoading(false);
-    };
-    if (id && userRole) load();
+      return;
+    }
+
+    const db = requireDb();
+    const orderRef = doc(db, "orders", id);
+
+    // Set up real-time listener
+    const unsubscribe = onSnapshot(
+      orderRef,
+      (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          // Check authorization: freelancer must own order, client must be buyer
+          const isAuthorized = 
+            (userRole === "freelancer" && data.sellerId === user.uid) ||
+            (userRole === "client" && data.buyerId === user.uid);
+          
+          if (isAuthorized) {
+            setOrder({ id: snap.id, ...data } as Order);
+          } else {
+            setOrder(null);
+          }
+        } else {
+          setOrder(null);
+        }
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error listening to order updates:", error);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
   }, [id, user, userRole]);
 
   if (!user || !userRole || loading) return <OrderDetailSkeleton />;
@@ -96,7 +115,7 @@ export default function OrderDetailPage() {
     setUpdating(true);
     try {
       const now = new Date();
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         status, 
         updatedAt: serverTimestamp(),
         statusHistory: arrayUnion({
@@ -139,9 +158,10 @@ export default function OrderDetailPage() {
           }
 
           updateData.transactionId = data.transactionId;
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error("Failed to create transaction:", err);
-          toast.error(err.message || "Failed to create payment transaction");
+          const errorMessage = err instanceof Error ? err.message : "Failed to create payment transaction";
+          toast.error(errorMessage);
           setUpdating(false);
           return;
         }
@@ -149,7 +169,7 @@ export default function OrderDetailPage() {
 
       const db = requireDb();
       await updateDoc(doc(db, "orders", order!.id), updateData);
-      const updatedOrder = { ...(order as Order), status, transactionId: updateData.transactionId || order?.transactionId };
+      const updatedOrder = { ...(order as Order), status, transactionId: (updateData.transactionId && typeof updateData.transactionId === 'string' ? updateData.transactionId : order?.transactionId) || undefined };
       setOrder(updatedOrder);
 
       // Create notification for the other party
@@ -170,7 +190,7 @@ export default function OrderDetailPage() {
     setUpdating(true);
     try {
       const now = new Date();
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         status: "delivered",
         delivery: deliveryNote,
         deliveryType: type,
@@ -303,8 +323,9 @@ export default function OrderDetailPage() {
       }
       
       toast.success(t("orderDetail.revisionAcceptedSuccess") || "Revision accepted. You can now work on the changes.");
-    } catch (error: any) {
-      toast.error(error.message || t("common.error") || "Failed to accept revision");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t("common.error") || "Failed to accept revision";
+      toast.error(errorMessage);
     } finally {
       setUpdating(false);
     }
@@ -344,8 +365,9 @@ export default function OrderDetailPage() {
       }
       
       toast.success(t("orderDetail.revisionDeclinedSuccess") || "Revision declined. Order returned to delivered status.");
-    } catch (error: any) {
-      toast.error(error.message || t("common.error") || "Failed to decline revision");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t("common.error") || "Failed to decline revision";
+      toast.error(errorMessage);
     } finally {
       setUpdating(false);
     }
@@ -369,7 +391,7 @@ export default function OrderDetailPage() {
       if (room?.id) {
         router.push(`/messages/${room.id}`);
       }
-    } catch (err) {
+    } catch  {
       //console.error("❌ Error opening chat:", err);
     } finally {
       setLoadingChat(false);

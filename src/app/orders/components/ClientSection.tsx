@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { CheckCircle, AlertCircle, X } from "lucide-react";
+import { CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import type { Order } from "@/types/order";
 
@@ -167,7 +167,7 @@ export default function ClientSection({
           <button
             onClick={onAcceptDelivery}
             disabled={updating}
-            className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium hover:shadow-lg hover:shadow-emerald-500/30 transition-all disabled:opacity-50"
+            className="px-6 py-2.5 rounded-lg bg-linear-to-r from-emerald-500 to-emerald-600 text-white font-medium hover:shadow-lg hover:shadow-emerald-500/30 transition-all disabled:opacity-50"
           >
             {updating
               ? t("orderDetail.processingPayment") || "Processing Payment..."
@@ -178,7 +178,7 @@ export default function ClientSection({
 
       {!canRequestRevision && (
         <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <p className="text-sm text-red-700">
             {t("orderDetail.noMoreRevisions") || "No more revisions available. Please accept or reject the delivery."}
           </p>

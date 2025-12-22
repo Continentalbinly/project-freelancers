@@ -2,11 +2,18 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { auth } from '@/service/firebase'
 
 export default function UpdateProposalsCountPage() {
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<any>(null)
+  interface UpdateResult {
+    success: boolean;
+    results?: Array<{ projectId: string; oldCount: number; newCount: number }>;
+    error?: string;
+    message?: string;
+    updatedCount?: number;
+  }
+  
+  const [result, setResult] = useState<UpdateResult | null>(null)
   const [error, setError] = useState('')
   const { user } = useAuth()
 
@@ -37,7 +44,7 @@ export default function UpdateProposalsCountPage() {
       } else {
         setError(data.error || 'Failed to update proposals count')
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
@@ -80,7 +87,7 @@ export default function UpdateProposalsCountPage() {
                 <div className="mt-4">
                   <h4 className="font-medium mb-2">Updated Projects:</h4>
                   <div className="space-y-1 text-sm">
-                    {result.results.map((item: any, index: number) => (
+                    {result.results.map((item: { projectId: string; oldCount: number; newCount: number }, index: number) => (
                       <div key={index} className="flex justify-between">
                         <span>Project {item.projectId}:</span>
                         <span>{item.oldCount} → {item.newCount}</span>

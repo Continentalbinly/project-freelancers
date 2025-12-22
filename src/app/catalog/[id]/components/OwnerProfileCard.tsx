@@ -28,7 +28,7 @@ export default function OwnerProfileCard({ owner, currentUserId, t }: OwnerProfi
   };
 
   return (
-    <div className="bg-gradient-to-br from-primary/5 dark:from-primary-dark/10 to-secondary/5 dark:to-secondary-dark/10 border-2 border-primary/20 dark:border-primary-dark/30 rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
+    <div className="bg-linear-to-br from-primary/5 dark:from-primary-dark/10 to-secondary/5 dark:to-secondary-dark/10 border-2 border-primary/20 dark:border-primary-dark/30 rounded-2xl p-8 shadow-md hover:shadow-lg transition-shadow">
       {/* Header */}
       <div className="text-center mb-4 border-b border-primary/20 dark:border-primary-dark/30">
         <p className="text-md font-semibold text-text-secondary dark:text-text-secondary-dark uppercase tracking-wide mb-4">

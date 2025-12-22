@@ -45,10 +45,10 @@ export async function POST(req: NextRequest) {
       { success: false, error: "Unrecognized file path" },
       { status: 400 }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
     //console.error("❌ Delete failed:", err);
     return NextResponse.json(
-      { success: false, error: err.message },
+      { success: false, error: err instanceof Error ? err.message : String(err) },
       { status: 500 }
     );
   }

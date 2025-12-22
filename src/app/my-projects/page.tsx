@@ -102,7 +102,7 @@ export default function MyProjectsPage() {
 
         setProfiles(profileMap);
         setProjects(uniqueProjects);
-      } catch (err) {
+      } catch  {
         //console.error("❌ Error loading projects:", err);
       } finally {
         setLoading(false);

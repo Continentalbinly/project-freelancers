@@ -7,9 +7,6 @@ interface ProposalsListProps {
   loading: boolean;
   activeTab: "submitted" | "received";
   t: (key: string) => string;
-  onAccept?: (p: ProposalWithDetails) => void;
-  onReject?: (p: ProposalWithDetails) => void;
-  onSelect?: (p: ProposalWithDetails) => void;
 }
 
 export default function ProposalsList({
@@ -17,9 +14,6 @@ export default function ProposalsList({
   loading,
   activeTab,
   t,
-  onAccept,
-  onReject,
-  onSelect,
 }: ProposalsListProps) {
   if (loading)
     return (

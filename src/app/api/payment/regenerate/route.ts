@@ -105,8 +105,8 @@ export async function POST(req: Request) {
       transactionId: newTxId,
       qrCode: data.qrCode,
     });
-  } catch (err) {
-    console.error("Regenerate error:", err);
+  } catch  {
+    // Silent fail
     return NextResponse.json({ success: false, error: "Server error" });
   }
 }

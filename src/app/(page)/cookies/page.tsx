@@ -43,7 +43,7 @@ export default function CookiePolicyPage() {
                 {t('cookiePolicy.sections.howWeUseCookies.content')}
               </p>
               <div className="space-y-4 text-gray-600 dark:text-gray-300">
-                {translations.cookiePolicy.sections.howWeUseCookies.items.map((item: any, index: number) => (
+                {translations.cookiePolicy.sections.howWeUseCookies.items.map((item: { type: string; description: string }, index: number) => (
                   <p key={index}>
                     <strong>{item.type}</strong> {item.description}
                   </p>
@@ -58,7 +58,7 @@ export default function CookiePolicyPage() {
                 {t('cookiePolicy.sections.typesOfCookies.content')}
               </p>
               <div className="space-y-6">
-                {translations.cookiePolicy.sections.typesOfCookies.items.map((item: any, index: number) => (
+                {translations.cookiePolicy.sections.typesOfCookies.items.map((item: { title: string; description: string }, index: number) => (
                   <div key={index}>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h3>
                     <p className="text-gray-600 dark:text-gray-300">
@@ -76,7 +76,7 @@ export default function CookiePolicyPage() {
                 {t('cookiePolicy.sections.specificCookies.content')}
               </p>
               <div className="space-y-4 text-gray-600 dark:text-gray-300">
-                {translations.cookiePolicy.sections.specificCookies.items.map((item: any, index: number) => (
+                {translations.cookiePolicy.sections.specificCookies.items.map((item: { title: string; description: string }, index: number) => (
                   <div key={index} className="p-4 rounded-lg">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h4>
                     <p>{item.description}</p>
@@ -93,7 +93,7 @@ export default function CookiePolicyPage() {
               </p>
               <div className="space-y-4 text-gray-600 dark:text-gray-300">
                 <ul className="list-disc list-inside space-y-2 ml-4">
-                  {translations.cookiePolicy.sections.managingCookies.items.map((item: any, index: number) => (
+                  {translations.cookiePolicy.sections.managingCookies.items.map((item: { method: string; description: string }, index: number) => (
                     <li key={index}>
                       <strong>{item.method}</strong> {item.description}
                     </li>

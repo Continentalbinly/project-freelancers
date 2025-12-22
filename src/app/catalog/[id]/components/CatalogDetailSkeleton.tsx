@@ -1,6 +1,6 @@
 export default function CatalogDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-background-secondary dark:from-background-dark dark:via-background-dark dark:to-background-secondary-dark animate-pulse">
+    <div className="min-h-screen bg-linear-to-b from-background via-background to-background-secondary dark:from-background-dark dark:via-background-dark dark:to-background-secondary-dark animate-pulse">
       <div className="max-w-7xl mx-auto px-4">
         {/* Hero Section Skeleton */}
         <div className="relative h-64 sm:h-80 rounded-2xl overflow-hidden shadow-2xl mb-12 mt-6 bg-background-secondary dark:bg-gray-800" />
@@ -39,7 +39,7 @@ export default function CatalogDetailSkeleton() {
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div
                     key={i}
-                    className="bg-gradient-to-br from-primary/10 dark:from-primary-dark/20 to-secondary/5 dark:to-secondary-dark/10 border border-primary/20 dark:border-primary-dark/30 rounded-2xl p-6 space-y-4"
+                    className="bg-linear-to-br from-primary/10 dark:from-primary-dark/20 to-secondary/5 dark:to-secondary-dark/10 border border-primary/20 dark:border-primary-dark/30 rounded-2xl p-6 space-y-4"
                   >
                     <div className="h-6 bg-background-secondary dark:bg-gray-800 rounded w-3/4" />
                     <div className="h-8 bg-background-secondary dark:bg-gray-800 rounded w-1/2" />
@@ -61,7 +61,7 @@ export default function CatalogDetailSkeleton() {
           {/* Sidebar Skeleton */}
           <div className="lg:col-span-2 space-y-4">
             {/* Owner Card Skeleton */}
-            <div className="bg-gradient-to-br from-primary/5 dark:from-primary-dark/10 to-secondary/5 dark:to-secondary-dark/10 border-2 border-primary/20 dark:border-primary-dark/30 rounded-2xl p-8 space-y-6">
+            <div className="bg-linear-to-br from-primary/5 dark:from-primary-dark/10 to-secondary/5 dark:to-secondary-dark/10 border-2 border-primary/20 dark:border-primary-dark/30 rounded-2xl p-8 space-y-6">
               <div className="h-4 bg-background-secondary dark:bg-gray-800 rounded-lg w-2/3 mx-auto" />
               <div className="flex flex-col items-center space-y-4">
                 <div className="w-24 h-24 rounded-full bg-background-secondary dark:bg-gray-800 border-4 border-primary" />

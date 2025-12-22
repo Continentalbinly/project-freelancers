@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { collection, onSnapshot, query, where, orderBy, updateDoc, doc, getDocs } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import type { Catalog } from "@/types/catalog";
+import type { Category } from "@/types/category";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 import { Plus, Edit, Eye, Zap, Package as PackageIcon, DollarSign } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -58,7 +59,7 @@ export default function MyCatalogPage() {
   const { isAuthorized, isLoading } = useRoleGuard({ requiredRole: "freelancer", redirectTo: "/" });
   const { t, currentLanguage } = useTranslationContext();
   const [items, setItems] = useState<Catalog[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState<string | null>(null);
 
@@ -67,10 +68,13 @@ export default function MyCatalogPage() {
     const loadCategories = async () => {
       try {
         const snap = await getDocs(collection(requireDb(), "categories"));
-        const cats = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+        const cats = snap.docs.map((d) => {
+          const catData = d.data() as Category;
+          return { ...catData, id: d.id } as Category;
+        });
         setCategories(cats);
-      } catch (err) {
-        console.error("Failed to load categories:", err);
+      } catch  {
+        // Silent fail
       }
     };
     loadCategories();
@@ -95,7 +99,10 @@ export default function MyCatalogPage() {
       orderBy("createdAt", "desc")
     );
     const unsub = onSnapshot(q, (snap) => {
-      const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+      const rows = snap.docs.map((d) => {
+        const catalogData = d.data() as Catalog;
+        return { ...catalogData, id: d.id } as Catalog;
+      });
       setItems(rows as Catalog[]);
       setLoading(false);
     });
@@ -126,7 +133,7 @@ export default function MyCatalogPage() {
             </h1>
             <Link
               href="/catalog/create"
-              className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2"
+              className="px-6 py-3 bg-linear-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               {t("manageCatalogPage.createService") || "Create Service"}
@@ -155,7 +162,7 @@ export default function MyCatalogPage() {
             </p>
             <Link
               href="/catalog/create"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-primary to-secondary text-white rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all"
             >
               <Plus className="w-4 h-4" />
               {t("manageCatalogPage.createFirstService") || "Create Your First Service"}
@@ -169,7 +176,7 @@ export default function MyCatalogPage() {
                 className="group relative border border-border rounded-xl overflow-hidden bg-background-secondary hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/10"
               >
                 {/* Cover Image or Gradient Background */}
-                <div className="h-32 bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
+                <div className="h-32 bg-linear-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
                   {catalog.images?.[0] ? (
                     <img
                       src={catalog.images[0]}
@@ -257,14 +264,14 @@ export default function MyCatalogPage() {
                       href={`/catalog/${catalog.id}`}
                       className="flex-1 px-2 sm:px-3 py-2 rounded-lg bg-background hover:bg-background hover:border-primary/30 border border-border text-text-primary text-xs font-medium transition-all flex items-center justify-center gap-1 sm:gap-1.5 min-h-[32px]"
                     >
-                      <Eye className="w-3 sm:w-3.5 h-3 sm:h-3.5 flex-shrink-0" />
+                      <Eye className="w-3 sm:w-3.5 h-3 sm:h-3.5 shrink-0" />
                       <span className="hidden sm:inline">{t("manageCatalogPage.view") || "View"}</span>
                     </Link>
                     <Link
                       href={`/catalog/${catalog.id}/edit`}
                       className="flex-1 px-2 sm:px-3 py-2 rounded-lg bg-background hover:bg-background hover:border-primary/30 border border-border text-text-primary text-xs font-medium transition-all flex items-center justify-center gap-1 sm:gap-1.5 min-h-[32px]"
                     >
-                      <Edit className="w-3 sm:w-3.5 h-3 sm:h-3.5 flex-shrink-0" />
+                      <Edit className="w-3 sm:w-3.5 h-3 sm:h-3.5 shrink-0" />
                       <span className="hidden sm:inline">{t("manageCatalogPage.edit") || "Edit"}</span>
                     </Link>
                     <button
@@ -276,7 +283,7 @@ export default function MyCatalogPage() {
                           : "bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20"
                       }`}
                     >
-                      <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 flex-shrink-0" />
+                      <Zap className="w-3 sm:w-3.5 h-3 sm:h-3.5 shrink-0" />
                       <span className="hidden sm:inline">
                         {publishing === catalog.id
                           ? "..."

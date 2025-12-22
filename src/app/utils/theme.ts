@@ -88,10 +88,14 @@ export type ThemeTypography = typeof theme.typography
 // Utility functions for theme usage
 export const getColor = (colorPath: string) => {
   const path = colorPath.split('.')
-  let value: any = theme.colors
+  let value: Record<string, unknown> = theme.colors as Record<string, unknown>
   
   for (const key of path) {
-    value = value[key]
+    if (value && typeof value === 'object' && key in value) {
+      value = value[key] as Record<string, unknown>
+    } else {
+      return undefined
+    }
   }
   
   return value

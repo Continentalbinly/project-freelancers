@@ -8,11 +8,11 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     const db = requireDb();
     const { userId, accountName, accountNumber, amount, source } =
-      await req.json();
+      await request.json();
 
     if (!userId || !amount || amount <= 0) {
       return Response.json(
@@ -31,8 +31,8 @@ export async function POST(req: Request) {
 
     const userData = userSnap.data();
 
-    let previousCredit = userData.credit || 0;
-    let previousTotal = userData.totalEarned || 0;
+    const previousCredit = userData.credit || 0;
+    const previousTotal = userData.totalEarned || 0;
     let newCredit = previousCredit;
     let newTotal = previousTotal;
 
@@ -102,8 +102,7 @@ export async function POST(req: Request) {
     });
 
     return Response.json({ success: true });
-  } catch (err) {
-    //console.error("❌ Withdraw request failed:", err);
+  } catch {
     return Response.json(
       { success: false, error: "Internal server error" },
       { status: 500 }

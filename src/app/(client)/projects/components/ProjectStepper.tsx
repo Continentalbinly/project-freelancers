@@ -52,7 +52,7 @@ export default function ProjectStepper({
                   isCompleted
                     ? "bg-primary text-white shadow-lg shadow-primary/30 scale-100"
                     : isCurrent
-                    ? "bg-gradient-to-br from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-110 ring-4 ring-primary/20"
+                    ? "bg-linear-to-br from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-110 ring-4 ring-primary/20"
                     : "bg-background-secondary border-2 border-border text-text-secondary scale-90"
                 }`}
               >
@@ -87,10 +87,10 @@ export default function ProjectStepper({
       {/* Progress bar */}
       <div className="relative h-2 bg-background-secondary rounded-full overflow-hidden">
         <div
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
+          className="absolute top-0 left-0 h-full bg-linear-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
         </div>
       </div>
     </div>

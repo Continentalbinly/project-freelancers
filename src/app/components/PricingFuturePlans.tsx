@@ -61,7 +61,7 @@ export default function PricingFuturePlans() {
             setUserPlan(plan);
           }
         }
-      } catch (err) {
+      } catch  {
         toast.error(
           currentLanguage === "lo"
             ? "ມີບັນຫາໃນການກວດສອບບັນຊີ."

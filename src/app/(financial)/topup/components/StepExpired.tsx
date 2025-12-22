@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
+import type { TopupSession } from "@/types/topup";
 
-export default function StepExpired({ t, onRetry, session }: any) {
-  const expireTransaction = async () => {
+interface StepExpiredProps {
+  t: (key: string) => string;
+  onRetry: () => void;
+  session: TopupSession | null;
+}
+
+export default function StepExpired({ t, onRetry, session }: StepExpiredProps) {
+  const expireTransaction = useCallback(async () => {
     if (!session?.transactionId) return;
 
     await fetch("/api/payment/expire", {
@@ -13,11 +20,11 @@ export default function StepExpired({ t, onRetry, session }: any) {
         transactionId: session.transactionId,
       }),
     });
-  };
+  }, [session?.transactionId]);
 
   useEffect(() => {
     expireTransaction();
-  }, []);
+  }, [expireTransaction]);
 
   return (
     <div className="text-center py-10">

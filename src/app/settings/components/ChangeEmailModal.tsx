@@ -7,12 +7,14 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   verifyBeforeUpdateEmail,
+  User as FirebaseUser,
 } from "firebase/auth";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import { toast } from "react-toastify";
 
 interface Props {
   onClose: () => void;
-  user: any;
+  user: FirebaseUser;
 }
 
 export default function ChangeEmailModal({ onClose, user }: Props) {
@@ -38,6 +40,11 @@ export default function ChangeEmailModal({ onClose, user }: Props) {
     setMessage({ text: "", type: "" });
     try {
       setLoading(true);
+      if (!user.email) {
+        toast.error("Email not found");
+        setLoading(false);
+        return;
+      }
       const credential = EmailAuthProvider.credential(
         user.email,
         currentPassword
@@ -46,9 +53,10 @@ export default function ChangeEmailModal({ onClose, user }: Props) {
       await verifyBeforeUpdateEmail(user, newEmail);
       setMessage({ text: t("modal.changeEmail.success"), type: "success" });
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : t("modal.changeEmail.failed");
       setMessage({
-        text: err.message || t("modal.changeEmail.failed"),
+        text: errorMessage,
         type: "error",
       });
     } finally {

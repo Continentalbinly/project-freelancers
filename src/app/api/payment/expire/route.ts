@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import { requireDb } from "@/service/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     const db = requireDb();
-    const { transactionId } = await req.json();
+    const { transactionId } = await request.json();
 
     if (!transactionId) {
       return NextResponse.json(
-        { error: "Missing transactionId" },
+        { success: false, error: "Missing transactionId" },
         { status: 400 }
       );
     }
@@ -23,8 +23,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error("Expire transaction error:", err);
-    return NextResponse.json({ error: true }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTranslationContext } from "@/app/components/LanguageProvider";
 import type { Profile } from "@/types/profile";
 import PublicProfileView from "./components/PublicProfileView";
 import ComprehensiveProfileEditor from "./components/ComprehensiveProfileEditor";
@@ -12,7 +11,6 @@ import { PublicProfileSkeleton } from "./components/ProfileSkeleton";
 export default function ProfilePage() {
   const { user, profile, loading, refreshProfile } = useAuth();
   const router = useRouter();
-  const { t } = useTranslationContext();
 
   const [showComprehensiveEditor, setShowComprehensiveEditor] = useState(false);
   const [localProfile, setLocalProfile] = useState<Profile | null>(null);

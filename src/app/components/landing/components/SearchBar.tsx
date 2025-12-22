@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
-export default function SearchBar({ t }: any) {
+interface SearchBarProps {
+  t: (key: string) => string;
+}
+
+export default function SearchBar({ t }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
 
@@ -30,7 +34,7 @@ export default function SearchBar({ t }: any) {
         focus-within:ring-2 focus-within:ring-primary
       "
     >
-      <Search className="text-gray-500 dark:text-gray-400 w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+      <Search className="text-gray-500 dark:text-gray-400 w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
 
       <input
         type="text"

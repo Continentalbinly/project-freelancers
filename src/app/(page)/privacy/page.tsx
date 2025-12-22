@@ -89,7 +89,7 @@ export default function PrivacyPage() {
                 {t('privacyPage.sections.informationSharing.description')}
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 space-y-2">
-                {translations.privacyPage.sections.informationSharing.items.map((item: any, index: number) => (
+                {translations.privacyPage.sections.informationSharing.items.map((item: { label: string; text: string }, index: number) => (
                   <li key={index}>
                     <strong>{item.label}</strong> {item.text}
                   </li>
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
                 {t('privacyPage.sections.yourRights.description')}
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 space-y-2">
-                {translations.privacyPage.sections.yourRights.items.map((item: any, index: number) => (
+                {translations.privacyPage.sections.yourRights.items.map((item: { label: string; text: string }, index: number) => (
                   <li key={index}>
                     <strong>{item.label}</strong> {item.text}
                   </li>
@@ -135,7 +135,7 @@ export default function PrivacyPage() {
                 {t('privacyPage.sections.cookies.description')}
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 space-y-2">
-                {translations.privacyPage.sections.cookies.items.map((item: any, index: number) => (
+                {translations.privacyPage.sections.cookies.items.map((item: { label: string; text: string }, index: number) => (
                   <li key={index}>
                     <strong>{item.label}</strong> {item.text}
                   </li>

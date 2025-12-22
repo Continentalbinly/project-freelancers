@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, redirect } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
@@ -15,7 +15,6 @@ import ProposalSkeleton from "./components/ProposalSkeleton";
 
 export default function ProposalDetailPage() {
   const { user, loading } = useAuth();
-  const router = useRouter();
   const params = useParams();
   const { t } = useTranslationContext();
 
@@ -24,8 +23,8 @@ export default function ProposalDetailPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && !user) router.push("/auth/login");
-  }, [loading, user, router]);
+    if (!loading && !user) redirect("/auth/login");
+  }, [loading, user]);
 
   useEffect(() => {
     if (user && params.id) fetchProposalDetails();
@@ -39,7 +38,7 @@ export default function ProposalDetailPage() {
 
       const proposalDocRef = doc(firestore, "proposals", params.id as string);
       const proposalDoc = await getDoc(proposalDocRef);
-      if (!proposalDoc.exists()) return router.push("/proposals");
+      if (!proposalDoc.exists()) return redirect("/proposals");
 
       const proposalData = proposalDoc.data();
       const projectDoc = await getDoc(
@@ -61,62 +60,60 @@ export default function ProposalDetailPage() {
       setProposal({
         id: proposalDoc.id,
         ...proposalData,
-        project: projectData ? {
-          id: projectDoc.id,
-          title: projectData.title || "",
-          description: projectData.description,
-          budget: projectData.budget,
-          clientId: projectData.clientId,
-          skillsRequired: projectData.skillsRequired,
-          status: projectData.status,
-          acceptedFreelancerId: projectData.acceptedFreelancerId,
-        } : undefined,
-        freelancer: freelancerDoc.exists() ? {
-          id: freelancerDoc.id,
-          fullName: freelancerDoc.data().fullName || "",
-          avatar: freelancerDoc.data().avatarUrl,
-          rating: freelancerDoc.data().rating,
-          totalProjects: freelancerDoc.data().totalProjects,
-          hourlyRate: freelancerDoc.data().hourlyRate,
-          skills: freelancerDoc.data().skills,
-        } : undefined,
-        client: clientData ? {
-          id: clientData.id || "",
-          fullName: clientData.fullName || "",
-          avatar: clientData.avatarUrl,
-          rating: clientData.rating,
-          totalProjects: clientData.totalProjects,
-        } : undefined,
+        project: projectData
+          ? {
+              id: projectDoc.id,
+              title: projectData.title || "",
+              description: projectData.description,
+              budget: projectData.budget,
+              clientId: projectData.clientId,
+              skillsRequired: projectData.skillsRequired,
+              status: projectData.status,
+              acceptedFreelancerId: projectData.acceptedFreelancerId,
+            }
+          : undefined,
+        freelancer: freelancerDoc.exists()
+          ? {
+              id: freelancerDoc.id,
+              fullName: freelancerDoc.data().fullName || "",
+              avatar: freelancerDoc.data().avatarUrl,
+              rating: freelancerDoc.data().rating,
+              totalProjects: freelancerDoc.data().totalProjects,
+              hourlyRate: freelancerDoc.data().hourlyRate,
+              skills: freelancerDoc.data().skills,
+            }
+          : undefined,
+        client: clientData
+          ? {
+              id: clientData.id || "",
+              fullName: clientData.fullName || "",
+              avatar: clientData.avatarUrl,
+              rating: clientData.rating,
+              totalProjects: clientData.totalProjects,
+            }
+          : undefined,
       } as ProposalWithDetails);
     } catch {
-      //console.error("Error fetching proposal");
     } finally {
       setLoadingProposal(false);
     }
   };
 
-  if (loadingProposal) return <ProposalSkeleton t={t} />;
+  if (loadingProposal) return <ProposalSkeleton />;
   if (!proposal) return <div>{t("proposals.notFound")}</div>;
 
   const isClient = user?.uid === proposal.project?.clientId;
-  const isFreelancer = user?.uid === proposal.freelancerId;
 
   return (
     <div className="rounded-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <ProposalMain
             proposal={proposal}
             t={t}
             setSelectedImage={setSelectedImage}
           />
-          <ProposalSidebar
-            proposal={proposal}
-            t={t}
-            isClient={isClient}
-            isFreelancer={isFreelancer}
-          />
+          <ProposalSidebar proposal={proposal} t={t} isClient={isClient} />
         </div>
 
         <ProposalImageModal

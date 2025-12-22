@@ -19,12 +19,13 @@ import GlobalStatus from "../../../../components/GlobalStatus";
 import CategoriesHeader from "./components/CategoriesHeader";
 import CategoriesForm from "./components/CategoriesForm";
 import CategoriesTable from "./components/CategoriesTable";
+import type { Timestamp } from "firebase/firestore";
 
 export interface Category {
   id: string;
   name_en: string;
   name_lo: string;
-  createdAt?: any;
+  createdAt?: Timestamp | Date | Record<string, unknown>;
 }
 
 export default function AdminCategoriesPage() {

@@ -4,7 +4,7 @@ export default function DashboardSkeleton() {
   return (
     <div className="min-h-screen bg-background animate-pulse">
       {/* Header Skeleton */}
-      <div className="bg-gradient-to-r from-secondary via-secondary to-secondary-hover text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
+      <div className="bg-linear-to-r from-secondary via-secondary to-secondary-hover text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
         <div className="max-w-7xl mx-auto">
           <div className="h-10 bg-white/20 rounded w-64 mb-3"></div>
           <div className="h-6 bg-white/20 rounded w-96"></div>

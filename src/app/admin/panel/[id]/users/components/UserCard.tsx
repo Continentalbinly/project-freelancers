@@ -39,7 +39,13 @@ export default function UserCard({ user }: { user: UserProfile }) {
       <div className="mt-3 border-t pt-2 text-xs text-text-muted flex items-center justify-between">
         <p>
           {user.createdAt
-            ? new Date(user.createdAt.toDate()).toLocaleDateString()
+            ? new Date(
+                typeof user.createdAt === 'object' && 'toDate' in user.createdAt
+                  ? (user.createdAt as Record<string, unknown> & { toDate: () => Date }).toDate()
+                  : user.createdAt instanceof Date
+                  ? user.createdAt
+                  : new Date()
+              ).toLocaleDateString()
             : "—"}
         </p>
         {roles === "admin" && (

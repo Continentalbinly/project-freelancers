@@ -3,6 +3,15 @@
 import { useRouter } from "next/navigation";
 import { Dialog } from "@headlessui/react";
 
+interface ConfirmCreditModalProps {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  fee: number;
+  hasEnoughCredit: boolean;
+  t: (key: string) => string;
+}
+
 export default function ConfirmCreditModal({
   open,
   onClose,
@@ -10,7 +19,7 @@ export default function ConfirmCreditModal({
   fee,
   hasEnoughCredit,
   t,
-}: any) {
+}: ConfirmCreditModalProps) {
   const router = useRouter();
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">

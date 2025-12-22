@@ -8,6 +8,8 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import { toast } from "react-toastify";
+import type { Timestamp } from "firebase/firestore";
+import type { Project } from "@/types/project";
 
 // ✅ Define shape of changeRequest documents
 interface ChangeRequest {
@@ -16,10 +18,14 @@ interface ChangeRequest {
   freelancerId: string;
   status: string;
   reason: { en: string; lo: string };
-  createdAt?: any;
+  createdAt?: Timestamp | Date;
 }
 
-export default function StepInReviewFreelancer({ project }: { project: any }) {
+interface StepInReviewFreelancerProps {
+  project: Project;
+}
+
+export default function StepInReviewFreelancer({ project }: StepInReviewFreelancerProps) {
   const { t, currentLanguage } = useTranslationContext();
 
   const [pendingRequests, setPendingRequests] = useState<ChangeRequest[]>([]);

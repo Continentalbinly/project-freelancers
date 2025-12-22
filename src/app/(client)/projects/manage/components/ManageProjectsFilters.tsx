@@ -3,7 +3,19 @@
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
-export default function ManageProjectsFilters({ t, filters, setFilters }: any) {
+interface ProjectFilters {
+  status: string;
+  category: string;
+  search: string;
+}
+
+interface ManageProjectsFiltersProps {
+  t: (key: string) => string;
+  filters: ProjectFilters;
+  setFilters: (filters: ProjectFilters) => void;
+}
+
+export default function ManageProjectsFilters({ t, filters, setFilters }: ManageProjectsFiltersProps) {
   const router = useRouter();
   const categories = [
     { value: "all", label: t("manageProjects.allCategories") },
@@ -31,7 +43,7 @@ export default function ManageProjectsFilters({ t, filters, setFilters }: any) {
         </h2>
         <button
           onClick={() => router.push("/projects/create")}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all cursor-pointer"
         >
           <Plus className="w-5 h-5" />
           {t("manageProjects.createProject") || "Create Project"}

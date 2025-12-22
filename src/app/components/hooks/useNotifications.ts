@@ -106,8 +106,7 @@ export function useNotifications({ userId, limitCount = 50 }: UseNotificationsOp
       await updateDoc(doc(requireDb(), "notifications", notificationId), {
         read: true,
       });
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
+    } catch {
     }
   };
 
@@ -123,8 +122,7 @@ export function useNotifications({ userId, limitCount = 50 }: UseNotificationsOp
       });
 
       await batch.commit();
-    } catch (error) {
-      console.error("Error marking all notifications as read:", error);
+    } catch {
     }
   };
 

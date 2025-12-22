@@ -73,10 +73,10 @@ export default function LoginPage() {
         setErrorKey(getErrorKey(code));
         setLoading(false);
       }
-    } catch (err: any) {
-      const code =
-        err?.code ||
-        (err?.message?.includes("auth/") ? err.message : "auth/unknown");
+    } catch (err: unknown) {
+      const errorObj = err as { code?: string; message?: string };
+      const code = errorObj?.code ||
+        (errorObj?.message?.includes("auth/") ? errorObj.message : "auth/unknown");
       setErrorKey(getErrorKey(code));
       setLoading(false);
     }

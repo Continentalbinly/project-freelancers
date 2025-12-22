@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { collection, query, orderBy, getDocs, where } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
@@ -33,12 +33,7 @@ export default function ManageProjectsPage() {
     if (!loading && !user) router.push("/auth/login");
   }, [user, loading, router]);
 
-  // Load projects for clients
-  useEffect(() => {
-    if (user && !isFreelancer) fetchProjects();
-  }, [user, isFreelancer]);
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       if (!user) return;
       setLoadingProjects(true);
@@ -75,7 +70,12 @@ export default function ManageProjectsPage() {
     } finally {
       setLoadingProjects(false);
     }
-  };
+  }, [user]);
+
+  // Load projects for clients
+  useEffect(() => {
+    if (user && !isFreelancer) fetchProjects();
+  }, [user, isFreelancer, fetchProjects]);
 
   if (isFreelancer) {
     return (
@@ -86,7 +86,7 @@ export default function ManageProjectsPage() {
   }
 
   return (
-    <div className="bg-gradient-to-br">
+    <div className="bg-linear-to-br">
       <div className="max-w-7xl mx-auto px-4 py-6">
         <ManageProjectsFilters
           t={t}
@@ -95,7 +95,7 @@ export default function ManageProjectsPage() {
         />
 
         {loading || loadingProjects ? (
-          <ManageProjectsSkeleton t={t} />
+          <ManageProjectsSkeleton />
         ) : (
           <ManageProjectsList
             projects={projects}

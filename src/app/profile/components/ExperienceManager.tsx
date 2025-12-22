@@ -100,11 +100,11 @@ export default function ExperienceManager({ userId, profile, onUpdate }: Experie
 
   const handleEdit = (index: number) => {
     setEditingIndex(index);
-    const exp = experience[index] as any; // Use any to handle dynamic fields
+    const exp = experience[index] as NonNullable<Profile["experience"]>[number];
     
     // If period exists but no dates, try to parse it
-    let startDate = (exp.startDate as string) || "";
-    let endDate = (exp.endDate as string) || "";
+    const startDate = (exp.startDate as string) || "";
+    const endDate = (exp.endDate as string) || "";
     
     // If we have period but no dates, keep period for display but allow new date selection
     if (!startDate && !endDate && exp.period) {
@@ -132,8 +132,8 @@ export default function ExperienceManager({ userId, profile, onUpdate }: Experie
       });
       toast.success(t("profile.experience.deleted") || "Experience deleted");
       onUpdate();
-    } catch (error) {
-      console.error("Error deleting experience:", error);
+    } catch {
+      // Silent fail
       toast.error(t("common.error") || "Failed to delete experience");
     }
   };
@@ -178,8 +178,8 @@ export default function ExperienceManager({ userId, profile, onUpdate }: Experie
       setEditingIndex(null);
       setFormData({ title: "", company: "", period: "", startDate: "", endDate: "", type: undefined, description: "" });
       onUpdate();
-    } catch (error) {
-      console.error("Error saving experience:", error);
+    } catch {
+      // Silent fail
       toast.error(t("common.error") || "Failed to save experience");
     }
   };
@@ -209,9 +209,9 @@ export default function ExperienceManager({ userId, profile, onUpdate }: Experie
                   <h3 className="font-semibold text-text-primary text-sm sm:text-base">{exp.title}</h3>
                   <p className="text-text-secondary text-sm">{exp.company}</p>
                   <div className="flex items-center gap-2 flex-wrap mt-1">
-                    {(exp as any).type && (
+                    {exp.type && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
-                        {currentLanguage === "lo" ? (exp as any).type.lo : (exp as any).type.en}
+                        {currentLanguage === "lo" ? exp.type.lo : exp.type.en}
                       </span>
                     )}
                     <p className="text-xs sm:text-sm text-text-secondary">{exp.period}</p>

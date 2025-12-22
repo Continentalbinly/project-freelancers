@@ -2,30 +2,46 @@
 import { Star } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 
+interface RatingFormData {
+  communication: number;
+  quality: number;
+  timeliness: number;
+  value: number;
+  review: string;
+}
+
+interface RatingFormProps {
+  form: RatingFormData;
+  setForm: (form: RatingFormData | ((prev: RatingFormData) => RatingFormData)) => void;
+  onSubmit: () => void;
+  submitting: boolean;
+  title: string;
+}
+
 export default function RatingForm({
   form,
   setForm,
   onSubmit,
   submitting,
   title,
-}: any) {
+}: RatingFormProps) {
   const { t } = useTranslationContext();
 
-  const fields = [
+  const fields: Array<{ key: keyof RatingFormData; label: string }> = [
     { key: "communication", label: t("rating.communication") },
     { key: "quality", label: t("rating.quality") },
     { key: "timeliness", label: t("rating.timeliness") },
     { key: "value", label: t("rating.value") },
   ];
 
-  const renderStars = (field: string) => (
+  const renderStars = (field: keyof RatingFormData) => (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          onClick={() => setForm((prev: any) => ({ ...prev, [field]: n }))}
+          onClick={() => setForm((prev: RatingFormData) => ({ ...prev, [field]: n }))}
           className={`w-6 h-6 cursor-pointer transition ${
-            n <= form[field]
+            n <= (form[field] as number)
               ? "fill-yellow-400 text-yellow-400"
               : "text-gray-300"
           }`}
@@ -54,7 +70,7 @@ export default function RatingForm({
         placeholder={t("rating.writeReview")}
         value={form.review}
         onChange={(e) =>
-          setForm((prev: any) => ({ ...prev, review: e.target.value }))
+          setForm((prev: RatingFormData) => ({ ...prev, review: e.target.value }))
         }
       />
 

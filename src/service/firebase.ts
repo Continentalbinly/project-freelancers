@@ -43,7 +43,7 @@ if (isFirebaseConfigured) {
           tabManager: persistentMultipleTabManager()
         })
       })
-    } catch (error) {
+    } catch {
       // If already initialized, get the existing instance
       db = getFirestore(app)
     }
@@ -78,19 +78,27 @@ export function requireAuth(): Auth {
   return auth
 }
 
-export function handleFirebaseError(error: Error | unknown) {
-  const message = error instanceof Error ? error.message : 'An unexpected error occurred'
-  return {
-    success: false,
-    error: message
-  }
-}
-
 export function successResponse<T>(data: T, message?: string) {
   return {
     success: true,
     data,
     message
+  }
+}
+
+/**
+ * Handle Firebase errors and return a standardized error response
+ */
+export function handleFirebaseError(error: unknown): { success: false; error: string } {
+  if (error instanceof Error) {
+    return {
+      success: false,
+      error: error.message
+    }
+  }
+  return {
+    success: false,
+    error: 'An unexpected error occurred'
   }
 }
 

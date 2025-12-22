@@ -47,8 +47,8 @@ export default function StepMedia({ form, setForm }: { form: CatalogForm; setFor
                 const json = JSON.parse(xhr.responseText);
                 if (json?.success) resolve(json.data.url);
                 else reject(new Error(json?.error || "Upload failed"));
-              } catch (err) {
-                reject(err as any);
+              } catch  {
+                reject(new Error("Upload failed"));
               }
             } else reject(new Error(xhr.statusText));
           };
@@ -63,8 +63,9 @@ export default function StepMedia({ form, setForm }: { form: CatalogForm; setFor
       if (files.length > selected.length) {
         setError(t("stepMedia.maxImages") || "Only the first 3 images were added (limit reached).");
       }
-    } catch (e: any) {
-      setError(e?.message || "Upload failed");
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Upload failed";
+      setError(errorMessage);
     } finally {
       setUploading(false);
       setTimeout(() => setProgress(0), 500);
@@ -77,7 +78,7 @@ export default function StepMedia({ form, setForm }: { form: CatalogForm; setFor
     <div className="space-y-6">
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
             <ImageIcon className="w-4 h-4 text-primary" />
           </div>
           {t("stepMedia.serviceImages") || "Service Images"}
@@ -94,7 +95,7 @@ export default function StepMedia({ form, setForm }: { form: CatalogForm; setFor
           />
           
           <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center group-hover:from-primary/20 group-hover:to-secondary/20 transition-all">
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center group-hover:from-primary/20 group-hover:to-secondary/20 transition-all">
               <Upload className="w-8 h-8 text-primary" />
             </div>
             <div>
@@ -117,7 +118,7 @@ export default function StepMedia({ form, setForm }: { form: CatalogForm; setFor
             </div>
             <div className="w-full h-2 bg-background-secondary rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-300"
+                className="h-full bg-linear-to-r from-primary to-secondary rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>

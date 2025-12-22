@@ -1,7 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-export default function UserTypesSection({ t }: any) {
+interface UserTypesSectionProps {
+  t: (key: string) => string;
+}
+
+export default function UserTypesSection({ t }: UserTypesSectionProps) {
   const router = useRouter();
   const userTypes = [
     {
@@ -71,7 +75,7 @@ export default function UserTypesSection({ t }: any) {
                   {[0, 1, 2, 3].map((i) => (
                     <li key={i} className="flex items-start text-text-secondary group/item">
                       <span className={`inline-flex items-center justify-center w-5 h-5 mr-3 mt-0.5 rounded-full ${iconBg} text-${color} font-bold text-sm
-                                       group-hover/item:scale-110 transition-transform duration-300 flex-shrink-0`}>
+                                       group-hover/item:scale-110 transition-transform duration-300 shrink-0`}>
                         ✓
                       </span>
                       <span className="group-hover/item:text-text-primary transition-colors duration-300">

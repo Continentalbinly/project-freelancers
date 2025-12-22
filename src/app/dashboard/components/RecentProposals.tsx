@@ -36,7 +36,7 @@ export default function RecentProposals({
             } else {
               titles[projectId] = projectId;
             }
-          } catch (error) {
+          } catch {
             titles[projectId] = projectId;
           }
         }

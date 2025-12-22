@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Tag, ChevronLeft } from "lucide-react";
+import { Tag, ChevronLeft } from "lucide-react";
 
 export default function CategoriesHeader() {
   const router = useRouter();
   return (
-    <header className="sticky top-0 z-40 supports-[backdrop-filter]:backdrop-blur-sm border-b border-border shadow-sm bg-background">
+    <header className="sticky top-0 z-40 supports-backdrop-filter:backdrop-blur-sm border-b border-border shadow-sm bg-background">
       <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <button

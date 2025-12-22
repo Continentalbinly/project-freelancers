@@ -32,13 +32,11 @@ export default function ProposalImage({
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
-  // Use the src directly (no proxy processing)
   const processedSrc = src || null;
   const fallbackText =
     fallback ||
     (proposalTitle ? proposalTitle.slice(0, 2).toUpperCase() : "PR");
 
-  // Get appropriate icon based on type
   const getTypeIcon = () => {
     switch (type) {
       case "work-sample":
@@ -108,21 +106,10 @@ export default function ProposalImage({
     }
   };
 
-  // Debug logging
-  // if (src) {
-  //console.log('ProposalImage Debug:', {
-  //   originalSrc: src,
-  //   processedSrc,
-  //   proposalTitle,
-  //   type,
-  //   fallback
-  // })
-  // }
-
   if (!processedSrc || imageError) {
     return (
       <div
-        className={`bg-gradient-to-br from-secondary-light to-primary-light rounded-lg flex items-center justify-center text-white font-medium ${sizeClasses[size]} ${className}`}
+        className={`bg-linear-to-br from-secondary-light to-primary-light rounded-lg flex items-center justify-center text-white font-medium ${sizeClasses[size]} ${className}`}
         title={alt || proposalTitle}
       >
         <div className="text-center">
@@ -145,11 +132,9 @@ export default function ProposalImage({
           imageLoading ? "opacity-0" : "opacity-100"
         } transition-opacity duration-200`}
         onLoad={() => {
-          //console.log('Proposal image loaded successfully:', processedSrc)
           setImageLoading(false);
         }}
         onError={() => {
-          //console.log('Proposal image failed to load:', processedSrc)
           setImageError(true);
           setImageLoading(false);
         }}
@@ -159,7 +144,6 @@ export default function ProposalImage({
   );
 }
 
-// Utility function to get proposal image props
 export function getProposalImageProps(
   proposal: { imageUrl?: string; workSampleUrl?: string; title?: string } | null | undefined,
   type: "work-sample" | "attachment" | "portfolio" = "work-sample"
@@ -178,15 +162,6 @@ export function getProposalImageProps(
           .slice(0, 2)
       : "PR",
   };
-
-  // Debug logging for getProposalImageProps
-  //console.log('getProposalImageProps Debug:', {
-  //   proposalImageUrl: proposal?.imageUrl,
-  //   proposalWorkSampleUrl: proposal?.workSampleUrl,
-  //   proposalTitle: proposal?.title,
-  //   type,
-  //   finalProps: props
-  // })
 
   return props;
 }

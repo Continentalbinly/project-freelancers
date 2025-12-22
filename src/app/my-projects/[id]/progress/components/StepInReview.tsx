@@ -2,14 +2,17 @@
 import StepInReviewClient from "./StepInReviewClient"; // rename your existing client file
 import StepInReviewFreelancer from "./StepInReviewFreelancer";
 import type { UserRole } from "./utils";
+import type { Project } from "@/types/project";
+
+interface StepInReviewProps {
+  project: Project;
+  role: UserRole;
+}
 
 export default function StepInReview({
   project,
   role,
-}: {
-  project: any;
-  role: UserRole;
-}) {
+}: StepInReviewProps) {
   if (role === "client") {
     return <StepInReviewClient project={project} />;
   }

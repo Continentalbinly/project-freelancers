@@ -4,8 +4,21 @@ import { Download, CheckCircle, Loader2 } from "lucide-react";
 import RatingForm from "./RatingForm";
 import { submitRating } from "./ratingLogic";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import type { Project } from "@/types/project";
 
-export default function ClientView({ project, hasRated, files }: any) {
+interface ProjectFile {
+  id: string;
+  fileUrl: string;
+  fileName: string;
+}
+
+interface ClientViewProps {
+  project: Project;
+  hasRated: boolean;
+  files: ProjectFile[];
+}
+
+export default function ClientView({ project, hasRated, files }: ClientViewProps) {
   const { t } = useTranslationContext();
 
   const [form, setForm] = useState({
@@ -40,7 +53,7 @@ export default function ClientView({ project, hasRated, files }: any) {
 
       {files.length > 0 && (
         <div className="mt-6 flex flex-col gap-3 max-w-lg mx-auto">
-          {files.map((file: any) => (
+          {files.map((file: ProjectFile) => (
             <a
               key={file.id}
               href={file.fileUrl}

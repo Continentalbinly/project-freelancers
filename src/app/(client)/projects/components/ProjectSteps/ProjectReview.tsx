@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { TIMELINE_OPTIONS } from "@/service/timelineUtils";
 
@@ -61,9 +62,11 @@ export default function ProjectReview({
         {/* Project Preview Card */}
         <div className="border border-border rounded-lg overflow-hidden">
           {(previewUrl || formData.imageUrl) && (
-            <img
+            <Image
               src={previewUrl || formData.imageUrl}
               alt="Project"
+              width={800}
+              height={192}
               className="w-full h-48 object-cover"
             />
           )}

@@ -117,15 +117,7 @@ export function validate<T>(schema: z.ZodSchema<T>, data: unknown): { success: t
   try {
     const parsed = schema.parse(data);
     return { success: true, data: parsed };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const firstError = error.errors[0];
-      return {
-        success: false,
-        error: firstError?.message || 'Validation failed',
-        errors: error,
-      };
-    }
+  } catch {
     return { success: false, error: 'Validation failed' };
   }
 }

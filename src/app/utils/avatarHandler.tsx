@@ -32,17 +32,10 @@ export default function Avatar({
   const [currentSrc, setCurrentSrc] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
-  const [verifying, setVerifying] = useState(true); // Check if image exists
+  const [verifying, setVerifying] = useState(true);
 
   const initials = fallback || getInitials(name || "U");
 
-  const sizeConfig = {
-    sm: { width: 64, height: 64 },
-    md: { width: 128, height: 128 },
-    lg: { width: 256, height: 256 },
-    xl: { width: 384, height: 384 },
-    "2xl": { width: 512, height: 512 },
-  }[size] || { width: 128, height: 128 };
 
   const getCloudPublicId = (path: string): string | null => {
     const match = path.match(/profileImage-[^/]+$/i);
@@ -55,26 +48,20 @@ export default function Avatar({
 
   const normalizeSrc = (input?: string): string | null => {
     if (!input) return null;
-    // Known external sources can be used directly
     if (input.includes("firebasestorage.googleapis.com")) return input;
     if (input.includes("res.cloudinary.com")) return input;
-    // Mask local upload path by mapping to Cloudinary if possible
     if (input.includes("/uploads/profileImage/")) {
       const publicId = getCloudPublicId(input);
       if (publicId && process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
-        // Use Cloudinary delivery to avoid exposing local file path
         return `${CLOUDINARY_BASE}${publicId}`;
       }
-      // If we cannot map to Cloudinary, use default avatar
       return DEFAULT_AVATAR;
     }
     return input;
   };
 
-  // ✅ Simplified image loading - direct approach
   useEffect(() => {
     const loadImage = async () => {
-      // If no src provided or empty string, show fallback
       if (!src || src.trim() === "") {
         setVerifying(false);
         setImageError(true);
@@ -89,14 +76,12 @@ export default function Avatar({
         return;
       }
 
-      // Direct URLs (Firebase, Cloudinary, external) - use directly
       if (normalized.startsWith("http")) {
         setCurrentSrc(normalized);
         setVerifying(false);
         return;
       }
 
-      // Local paths or default avatar
       setCurrentSrc(normalized || DEFAULT_AVATAR);
       setVerifying(false);
     };
@@ -104,13 +89,12 @@ export default function Avatar({
     loadImage();
   }, [src]);
 
-  // Show skeleton while verifying image
   if (verifying) {
     return (
       <div
         className={`relative rounded-full overflow-hidden ${sizeClasses[size]} ${className}`}
       >
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
+        <div className="absolute inset-0 rounded-full bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
       </div>
     );
   }
@@ -131,7 +115,7 @@ export default function Avatar({
       className={`relative rounded-full overflow-hidden ${sizeClasses[size]} ${className}`}
     >
       {imageLoading && (
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
+        <div className="absolute inset-0 rounded-full bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 animate-shimmer" />
       )}
       <img
         src={currentSrc}
@@ -199,7 +183,6 @@ export function getAvatarProps(
   const avatarUrl = profile?.avatarUrl;
   const fullName = profile?.fullName;
   
-  // Extract email from user, handling both FirebaseUser and simple objects, and converting null to undefined
   let userEmail: string | undefined = undefined;
   if (user) {
     if ('email' in user && user.email !== null && user.email !== undefined) {
@@ -208,8 +191,8 @@ export function getAvatarProps(
   }
   
   return {
-    src: avatarUrl === null ? undefined : avatarUrl, // Convert null to undefined
-    alt: fullName === null ? undefined : fullName, // Convert null to undefined
+    src: avatarUrl === null ? undefined : avatarUrl,
+    alt: fullName === null ? undefined : fullName,
     name: fullName || userEmail || "User",
     fallback: fullName
       ? fullName

@@ -7,7 +7,20 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function Milestones({ t, milestones, setMilestones }: any) {
+interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+}
+
+interface MilestonesProps {
+  t: (key: string) => string;
+  milestones: Milestone[];
+  setMilestones: (milestones: Milestone[]) => void;
+}
+
+export default function Milestones({ t, milestones, setMilestones }: MilestonesProps) {
   const [showForm, setShowForm] = useState(false);
   const [newItem, setNewItem] = useState({
     title: "",
@@ -30,7 +43,7 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
   };
 
   const removeMilestone = (id: string) =>
-    setMilestones(milestones.filter((m: any) => m.id !== id));
+    setMilestones(milestones.filter((m: Milestone) => m.id !== id));
 
   return (
     <div>
@@ -49,7 +62,7 @@ export default function Milestones({ t, milestones, setMilestones }: any) {
       </div>
 
       {/* Existing milestones list */}
-      {milestones.map((m: any) => (
+      {milestones.map((m: Milestone) => (
         <div
           key={m.id}
           className="flex items-center justify-between bg-background-secondary rounded-lg px-4 py-3 mb-2"

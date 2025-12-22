@@ -117,7 +117,7 @@ export default function OrderPaymentStep({ order, onPaymentConfirmed }: OrderPay
 
       startTimer();
       startPolling(newTxId);
-    } catch (err) {
+    } catch  {
       toast.error(t("payout.regenerateError") ?? "Failed to regenerate QR");
     }
 

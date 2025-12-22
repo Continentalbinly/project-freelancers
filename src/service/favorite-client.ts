@@ -33,8 +33,7 @@ export async function addToFavorites(projectId: string): Promise<FavoriteRespons
 
     const data = await response.json()
     return data
-  } catch (_error) {
-    //console.error('Add to favorites error:', _error)
+  } catch {
     return { success: false, error: 'Failed to add to favorites' }
   }
 }
@@ -64,8 +63,7 @@ export async function removeFromFavorites(projectId: string): Promise<FavoriteRe
 
     const data = await response.json()
     return data
-  } catch (_error) {
-    //console.error('Remove from favorites error:', _error)
+  } catch {
     return { success: false, error: 'Failed to remove from favorites' }
   }
 }
@@ -95,8 +93,7 @@ export async function checkFavoriteStatus(projectId: string): Promise<FavoriteRe
 
     const data = await response.json()
     return data
-  } catch (_error) {
-    //console.error('Check favorite status error:', _error)
+  } catch {
     return { success: false, error: 'Failed to check favorite status' }
   }
 }
@@ -125,8 +122,7 @@ export async function getUserFavorites(): Promise<FavoriteResponse> {
 
     const data = await response.json()
     return data
-  } catch (_error) {
-    //console.error('Get user favorites error:', _error)
+  } catch {
     return { success: false, error: 'Failed to get user favorites' }
   }
 } 

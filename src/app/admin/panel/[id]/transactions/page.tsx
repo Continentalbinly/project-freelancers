@@ -26,6 +26,7 @@ import GlobalStatus from "../../../../components/GlobalStatus";
 import TransactionHeader from "./components/TransactionHeader";
 
 import { toast } from "react-toastify";
+import type { Timestamp } from "firebase/firestore";
 
 export interface Transaction {
   id: string;
@@ -36,7 +37,7 @@ export interface Transaction {
   amount: number;
   status: string;
   paymentMethod?: string;
-  createdAt?: any;
+  createdAt?: Timestamp | Date | Record<string, unknown>;
   accountName?: string;
   accountNumber?: string;
   source?: "credit" | "totalEarned" | "all";
@@ -240,8 +241,7 @@ function AdminTransactionsPageContent() {
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
-        const data = userSnap.data();
-        const updateData: any = { updatedAt: serverTimestamp() };
+        const updateData: Record<string, unknown> = { updatedAt: serverTimestamp() };
 
         if (
           typeof tx.previousCredit === "number" &&

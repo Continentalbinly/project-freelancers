@@ -40,9 +40,9 @@ export default function SaveDraftButton({
     try {
       await onSave();
       setStatus("success");
-    } catch (err) {
+    } catch  {
       setStatus("error");
-      console.error("Draft save error:", err);
+      // Silent fail
     } finally {
       setSaving(false);
     }
@@ -70,7 +70,7 @@ export default function SaveDraftButton({
                 ? "bg-success/90 hover:bg-success text-white"
                 : status === "error"
                 ? "bg-error/90 hover:bg-error text-white"
-                : "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90"
+                : "bg-linear-to-r from-primary to-secondary text-white hover:from-primary/90 hover:to-secondary/90"
             }
             scale-100 hover:scale-105 active:scale-95
           `}
@@ -121,9 +121,9 @@ export default function SaveDraftButton({
           `}
         >
           {isSuccess ? (
-            <Check className="w-5 h-5 flex-shrink-0" />
+            <Check className="w-5 h-5 shrink-0" />
           ) : (
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 shrink-0" />
           )}
           <span className="text-sm sm:text-base font-medium">{message}</span>
         </div>

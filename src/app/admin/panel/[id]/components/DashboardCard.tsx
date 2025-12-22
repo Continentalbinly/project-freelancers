@@ -24,7 +24,7 @@ export default function DashboardCard({
     >
       {/* Glow background */}
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${color} opacity-60`}
+        className={`absolute inset-0 bg-linear-to-br ${color} opacity-60`}
       />
 
       <div className="relative flex items-center justify-between p-6">
@@ -45,7 +45,7 @@ export default function DashboardCard({
           )}
         </div>
 
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <div className="p-3 rounded-xl bg-background flex items-center justify-center border border-border/60">
             {icon}
           </div>

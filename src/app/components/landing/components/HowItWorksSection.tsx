@@ -1,4 +1,8 @@
-export default function HowItWorksSection({ t }: any) {
+interface HowItWorksSectionProps {
+  t: (key: string) => string;
+}
+
+export default function HowItWorksSection({ t }: HowItWorksSectionProps) {
   const steps = [
     { color: "primary", num: 1, title: "step1" },
     { color: "secondary", num: 2, title: "step2" },
@@ -22,7 +26,7 @@ export default function HowItWorksSection({ t }: any) {
             <div key={num} className="flex flex-col items-center text-center group relative">
               {/* Animated connection line */}
               {idx < steps.length - 1 && (
-                <div className="hidden md:block absolute -right-20 top-10 w-40 h-0.5 bg-gradient-to-r from-gray-300 via-gray-300/50 to-transparent
+                <div className="hidden md:block absolute -right-20 top-10 w-40 h-0.5 bg-linear-to-r from-gray-300 via-gray-300/50 to-transparent
                               group-hover:from-primary group-hover:via-primary group-hover:to-primary/30 transition-all duration-500"></div>
               )}
               

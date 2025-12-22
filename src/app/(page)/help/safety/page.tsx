@@ -40,24 +40,24 @@ export default function SafetyGuidePage() {
             </h2>
             
             <p className="text-text-secondary mb-6">
-              We're creating a comprehensive safety and security guide. This guide will cover:
+              We&apos;re creating a comprehensive safety and security guide. This guide will cover:
             </p>
             
             <ul className="text-left max-w-md mx-auto space-y-3 mb-8">
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Platform security measures</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Protecting your personal information</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Safe communication practices</span>
               </li>
               <li className="flex items-start">
-                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-info rounded-full mt-2 mr-3 shrink-0"></div>
                 <span className="text-text-secondary">Reporting issues and getting help</span>
               </li>
             </ul>

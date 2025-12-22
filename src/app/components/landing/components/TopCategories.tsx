@@ -30,7 +30,11 @@ interface Category {
   name_lo: string;
 }
 
-export default function TopCategories({ t }: any) {
+interface TopCategoriesProps {
+  t: (key: string) => string;
+}
+
+export default function TopCategories({ t }: TopCategoriesProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -52,7 +56,7 @@ export default function TopCategories({ t }: any) {
           ...doc.data(),
         })) as Category[];
         setCategories(data);
-      } catch (error) {
+      } catch {
         //console.error("Error fetching categories:", error);
       } finally {
         setLoading(false);
@@ -98,7 +102,7 @@ export default function TopCategories({ t }: any) {
                   <button
                     key={cat.id}
                     onClick={() => handleClick(cat)}
-                    className="flex-shrink-0 snap-center w-28 h-24 flex flex-col items-center justify-center 
+                    className="shrink-0 snap-center w-28 h-24 flex flex-col items-center justify-center 
                                bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl 
                                hover:border-primary dark:hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 
                                hover:shadow-md dark:hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-primary/50 

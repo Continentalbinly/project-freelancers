@@ -3,7 +3,6 @@
 import {
   CheckCircle,
   XCircle,
-  User,
   CreditCard,
   Package,
   Wallet,
@@ -12,7 +11,7 @@ import {
 import { useState } from "react";
 import { Money } from "./Money";
 import type { Transaction, UserProfile } from "../page";
-import Avatar, { getAvatarProps } from "@/app/utils/avatarHandler";
+import Avatar from "@/app/utils/avatarHandler";
 
 export default function TransactionRow({
   tx,
@@ -134,7 +133,13 @@ export default function TransactionRow({
 
       {/* Date */}
       <td className="py-3 px-4 text-text-secondary whitespace-nowrap">
-        {tx.createdAt ? new Date(tx.createdAt.toDate()).toLocaleString() : "—"}
+        {tx.createdAt ? new Date(
+          typeof tx.createdAt === 'object' && 'toDate' in tx.createdAt
+            ? (tx.createdAt as Record<string, unknown> & { toDate: () => Date }).toDate()
+            : tx.createdAt instanceof Date
+            ? tx.createdAt
+            : new Date()
+        ).toLocaleString() : "—"}
       </td>
 
       {/* Transaction ID */}

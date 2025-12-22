@@ -1,8 +1,14 @@
 "use client";
 
 import { ChevronLeftIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-export default function ManageProjectsHeader({ t, router }: any) {
+interface ManageProjectsHeaderProps {
+  t: (key: string) => string;
+  router: AppRouterInstance;
+}
+
+export default function ManageProjectsHeader({ t, router }: ManageProjectsHeaderProps) {
   return (
     <div className="mb-8">
       <div className="flex items-center gap-4 mb-6">

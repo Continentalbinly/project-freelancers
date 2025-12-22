@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuth } from "firebase-admin/auth";
+import { DecodedIdToken, getAuth } from "firebase-admin/auth";
 import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
@@ -25,11 +25,9 @@ function initFirebaseAdmin() {
       adminAuth = getAuth();
       adminDB = getFirestore();
       adminInitialized = true;
-    } catch (error) {
+    } catch {
       adminInitError =
-        error instanceof Error
-          ? error
-          : new Error("Failed to attach to existing Firebase Admin app");
+        new Error("Failed to attach to existing Firebase Admin app");
     }
     return;
   }
@@ -59,11 +57,9 @@ function initFirebaseAdmin() {
     adminAuth = getAuth();
     adminDB = getFirestore();
     adminInitialized = true;
-  } catch (error) {
+  } catch {
     adminInitError =
-      error instanceof Error
-        ? error
-        : new Error("Failed to initialize Firebase Admin");
+      new Error("Failed to initialize Firebase Admin");
   }
 }
 
@@ -94,10 +90,10 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.split("Bearer ")[1];
-    let decodedToken;
+    let decodedToken: DecodedIdToken;
     try {
       decodedToken = await adminAuth.verifyIdToken(token);
-    } catch (error) {
+    } catch {
       //console.error("Æ’?O Invalid Firebase ID token:", error);
       return NextResponse.json(
         { success: false, error: "Invalid authorization token" },
@@ -116,7 +112,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
     }
-  } catch (error) {
+  } catch {
     //console.error("dY"Â API Error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
@@ -125,10 +121,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
+import type { SignupCredentials } from "@/types/auth";
+
 /**
  * ✅ Create user profile (full data from signup) with idempotency
  */
-async function createProfile(db: Firestore, userId: string, data: any) {
+async function createProfile(db: Firestore, userId: string, data: SignupCredentials & Record<string, unknown>) {
   try {
     const profileRef = db.collection("profiles").doc(userId);
     
@@ -241,11 +239,11 @@ async function createProfile(db: Firestore, userId: string, data: any) {
       data: profileData,
       message: "Profile created successfully",
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Firestore create error:", error);
     
     // Check if it's a permission error vs other error
-    const errorMessage = error?.message || "Failed to create profile";
+    const errorMessage = (error instanceof Error ? error.message : String(error)) || "Failed to create profile";
     const isPermissionError = errorMessage.includes("permission") || 
                              errorMessage.includes("PERMISSION_DENIED");
     
@@ -291,10 +289,10 @@ async function getProfile(db: Firestore, userId: string) {
       success: true, 
       data: { ...profileData, id: snap.id }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Firestore get error:", error);
     
-    const errorMessage = error?.message || "Failed to get profile";
+    const errorMessage = (error instanceof Error ? error.message : String(error)) || "Failed to get profile";
     const isPermissionError = errorMessage.includes("permission") || 
                              errorMessage.includes("PERMISSION_DENIED");
     

@@ -25,10 +25,10 @@ export const useTranslationContext = () => {
 function createFallbackTranslation() {
   const fallbackT = (key: string) => {
     const keys = key.split(".");
-    let value: any = en;
+    let value: unknown = en as unknown as Record<string, unknown>;
     for (const k of keys) {
       if (value && typeof value === "object" && k in value) {
-        value = value[k];
+        value = (value as Record<string, unknown>)[k];
       } else {
         return key;
       }
@@ -63,7 +63,7 @@ function LanguageProviderInner({ children }: { children: React.ReactNode }) {
 function LanguageLoadingBar() {
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-50 h-1">
-      <div className="h-full w-full bg-gradient-to-r from-primary via-secondary to-primary animate-[shimmer_1.4s_linear_infinite] opacity-90 shadow-sm" />
+      <div className="h-full w-full bg-linear-to-r from-primary via-secondary to-primary animate-[shimmer_1.4s_linear_infinite] opacity-90 shadow-sm" />
     </div>
   );
 }

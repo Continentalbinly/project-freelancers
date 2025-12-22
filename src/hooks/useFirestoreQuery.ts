@@ -3,17 +3,17 @@
  * Optimized Firestore data fetching with caching and deduplication
  */
 
-'use client';
+"use client";
 
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { Query, getDocs } from 'firebase/firestore';
-import { fetchWithCache, clearCache } from '@/service/dataFetch';
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Query, getDocs } from "firebase/firestore";
+import { fetchWithCache } from "@/service/dataFetch";
 
 interface UseFirestoreQueryOptions {
   enabled?: boolean;
   ttl?: number;
   onError?: (error: Error) => void;
-  dependencies?: any[];
+  dependencies?: unknown[];
 }
 
 export function useFirestoreQuery<T = any>(
@@ -34,52 +34,55 @@ export function useFirestoreQuery<T = any>(
   const isMounted = useRef(true);
   const abortController = useRef<AbortController | null>(null);
 
-  const refetch = useCallback(async (force = false) => {
-    if (!enabled || !query) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setError(null);
-      setLoading(true);
-
-      const result = await fetchWithCache<T[]>(
-        queryKey,
-        async (signal) => {
-          abortController.current = new AbortController();
-          const snapshot = await getDocs(query);
-          
-          // Check if request was aborted
-          if (signal.aborted) {
-            throw new Error('Request cancelled');
-          }
-
-          return snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as T[];
-        },
-        { ttl, useCache: !force, forceRefresh: force }
-      );
-
-      if (isMounted.current) {
-        setData(result);
-      }
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      
-      // Don't set error for aborted requests
-      if (error.message !== 'Request cancelled' && isMounted.current) {
-        setError(error);
-        onError?.(error);
-      }
-    } finally {
-      if (isMounted.current) {
+  const refetch = useCallback(
+    async (force = false) => {
+      if (!enabled || !query) {
         setLoading(false);
+        return;
       }
-    }
-  }, [queryKey, query, enabled, ttl, onError]);
+
+      try {
+        setError(null);
+        setLoading(true);
+
+        const result = await fetchWithCache<T[]>(
+          queryKey,
+          async (signal) => {
+            abortController.current = new AbortController();
+            const snapshot = await getDocs(query);
+
+            // Check if request was aborted
+            if (signal.aborted) {
+              throw new Error("Request cancelled");
+            }
+
+            return snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            })) as T[];
+          },
+          { ttl, useCache: !force, forceRefresh: force }
+        );
+
+        if (isMounted.current) {
+          setData(result);
+        }
+      } catch  {
+        const error = new Error('Failed to fetch data');
+
+        // Don't set error for aborted requests
+        if (error.message !== "Request cancelled" && isMounted.current) {
+          setError(error);
+          onError?.(error);
+        }
+      } finally {
+        if (isMounted.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [queryKey, query, enabled, ttl, onError]
+  );
 
   useEffect(() => {
     isMounted.current = true;
@@ -100,7 +103,11 @@ export function useFirestoreQuery<T = any>(
  * 🎣 useDashboardData Hook
  * Specialized hook for dashboard data with shorter TTL
  */
-export function useDashboardData(queryKey: string, query: Query | null, options = {}) {
+export function useDashboardData(
+  queryKey: string,
+  query: Query | null,
+  options = {}
+) {
   return useFirestoreQuery(queryKey, query, {
     ttl: 3 * 60 * 1000, // 3 minutes for dashboard
     ...options,
@@ -111,17 +118,17 @@ export function useDashboardData(queryKey: string, query: Query | null, options 
  * 🎣 useProfileData Hook
  * Specialized hook for profile data with longer TTL
  */
-export function useProfileData(queryKey: string, query: Query | null, options = {}) {
+export function useProfileData(
+  queryKey: string,
+  query: Query | null,
+  options = {}
+) {
   return useFirestoreQuery(queryKey, query, {
     ttl: 10 * 60 * 1000, // 10 minutes for profile data
     ...options,
   });
 }
 
-/**
- * 🎣 useApiData Hook
- * Hook for fetching from Next.js API routes
- */
 interface UseApiDataOptions {
   enabled?: boolean;
   method?: string;
@@ -132,12 +139,11 @@ interface UseApiDataOptions {
 
 export function useApiData<T = any>(
   endpoint: string,
-  options: UseApiDataOptions & { body?: any; token?: string } = {}
+  options: UseApiDataOptions & { body?: unknown; token?: string } = {}
 ) {
   const {
     enabled = true,
-    method = 'POST',
-    ttl = 5 * 60 * 1000,
+    method = "POST",
     onError,
     revalidateOnFocus = true,
     body,
@@ -152,7 +158,7 @@ export function useApiData<T = any>(
 
   const cacheKey = `${endpoint}:${JSON.stringify(body || {})}`;
 
-  const refetch = useCallback(async (force = false) => {
+  const refetch = useCallback(async () => {
     if (!enabled) {
       setLoading(false);
       return;
@@ -164,15 +170,20 @@ export function useApiData<T = any>(
 
       abortController.current = new AbortController();
 
-      const response = await fetch(endpoint, {
+      const fetchOptions: RequestInit = {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` }),
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
-        ...(body && { body: JSON.stringify(body) }),
         signal: abortController.current.signal,
-      });
+      };
+
+      if (body && typeof body === "object") {
+        fetchOptions.body = JSON.stringify(body);
+      }
+
+      const response = await fetch(endpoint, fetchOptions);
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
@@ -181,7 +192,7 @@ export function useApiData<T = any>(
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || 'API request failed');
+        throw new Error(result.error || "API request failed");
       }
 
       if (isMounted.current) {
@@ -191,13 +202,13 @@ export function useApiData<T = any>(
       // Cache the result
       try {
         sessionStorage.setItem(cacheKey, JSON.stringify(result.data));
-      } catch (e) {
+      } catch {
         // sessionStorage quota exceeded
       }
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
+    } catch  {
+      const error = new Error('Failed to fetch data');
 
-      if (error.message !== 'Request cancelled' && isMounted.current) {
+      if (error.message !== "Request cancelled" && isMounted.current) {
         setError(error);
         onError?.(error);
       }
@@ -218,7 +229,7 @@ export function useApiData<T = any>(
       if (cached) {
         setData(JSON.parse(cached));
       }
-    } catch (e) {
+    } catch {
       // Ignore cache errors
     }
 
@@ -226,10 +237,10 @@ export function useApiData<T = any>(
 
     // Revalidate on focus
     if (revalidateOnFocus) {
-      const handleFocus = () => refetch(true);
-      window.addEventListener('focus', handleFocus);
+      const handleFocus = () => refetch();
+      window.addEventListener("focus", handleFocus);
       return () => {
-        window.removeEventListener('focus', handleFocus);
+        window.removeEventListener("focus", handleFocus);
         isMounted.current = false;
         if (abortController.current) {
           abortController.current.abort();

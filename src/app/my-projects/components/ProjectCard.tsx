@@ -37,7 +37,7 @@ export default function ProjectCard({
       className="group block rounded-xl shadow-sm hover:shadow-xl dark:shadow-gray-900/50 border border-border dark:border-gray-700 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 dark:hover:border-primary/50 overflow-hidden cursor-pointer"
     >
       {/* Image Section */}
-      <div className="aspect-video w-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden relative">
+      <div className="aspect-video w-full bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden relative">
         {project.imageUrl ? (
           <img
             src={project.imageUrl}

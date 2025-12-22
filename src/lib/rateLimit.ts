@@ -74,10 +74,7 @@ export async function checkRateLimit(
       remaining: result.remaining,
       reset: result.reset,
     };
-  } catch (error) {
-    // If Redis is unavailable, allow the request (fail open)
-    // In production, you might want to fail closed
-    console.error('Rate limit check failed:', error);
+  } catch {
     return {
       success: true, // Fail open
       limit: 100,

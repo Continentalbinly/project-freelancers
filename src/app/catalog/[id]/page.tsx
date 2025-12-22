@@ -41,7 +41,7 @@ export default function CatalogDetailPage() {
       const db = requireDb();
       const snap = await getDoc(doc(db, "catalogs", id));
       if (snap.exists()) {
-        const data = snap.data() as any;
+        const data = snap.data() as Catalog;
         // Don't store the ID in the item object
         const catalogItem = {
           ...data,
@@ -98,7 +98,7 @@ export default function CatalogDetailPage() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-background-secondary dark:from-background-dark dark:via-background-dark dark:to-background-secondary-dark">
+    <div className="min-h-screen bg-linear-to-b from-background via-background to-background-secondary dark:from-background-dark dark:via-background-dark dark:to-background-secondary-dark">
       <div className="max-w-7xl mx-auto px-4">
         <HeroSection
           images={item.images || []}
@@ -126,7 +126,7 @@ export default function CatalogDetailPage() {
                   {item.packages.map((pkg, idx) => (
                     <div
                       key={idx}
-                      className="bg-gradient-to-br from-primary/10 dark:from-primary-dark/20 to-secondary/5 dark:to-secondary-dark/10 border border-primary/20 dark:border-primary-dark/30 rounded-2xl shadow-lg hover:shadow-xl transition-all flex flex-col"
+                      className="bg-linear-to-br from-primary/10 dark:from-primary-dark/20 to-secondary/5 dark:to-secondary-dark/10 border border-primary/20 dark:border-primary-dark/30 rounded-2xl shadow-lg hover:shadow-xl transition-all flex flex-col"
                     >
                       <div className="p-6 flex-1 overflow-y-auto">
                         <h3 className="text-xl font-bold text-text-primary dark:text-text-primary-dark mb-2">
@@ -153,7 +153,7 @@ export default function CatalogDetailPage() {
                           <ul className="space-y-2">
                             {(pkg.features || []).map((feature, fidx) => (
                               <li key={fidx} className="flex items-start gap-2">
-                                <div className="w-4 h-4 rounded-full bg-success/20 dark:bg-success/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <div className="w-4 h-4 rounded-full bg-success/20 dark:bg-success/30 flex items-center justify-center shrink-0 mt-0.5">
                                   <Check className="w-2.5 h-2.5 text-success" />
                                 </div>
                                 <span className="text-sm text-text-secondary dark:text-text-secondary-dark">
@@ -172,7 +172,7 @@ export default function CatalogDetailPage() {
                               setSelectedPackage(pkg);
                               setShowCheckout(true);
                             }}
-                            className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-2 px-4 rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all text-sm"
+                            className="w-full bg-linear-to-r from-primary to-secondary text-white font-bold py-2 px-4 rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all text-sm"
                           >
                             {t("catalogDetail.orderNow")}
                           </button>

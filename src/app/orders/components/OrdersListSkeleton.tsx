@@ -44,7 +44,7 @@ export default function OrdersListSkeleton() {
               <div className="flex items-center justify-between gap-4">
                 {/* Left: Order Info */}
                 <div className="flex-1 flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-background-tertiary flex-shrink-0"></div>
+                  <div className="w-10 h-10 rounded-lg bg-background-tertiary shrink-0"></div>
                   <div className="flex-1 space-y-2">
                     <div className="h-5 w-3/4 bg-background-tertiary rounded"></div>
                     <div className="flex gap-4">
@@ -55,7 +55,7 @@ export default function OrdersListSkeleton() {
                   </div>
                 </div>
                 {/* Right: Status & Arrow */}
-                <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="flex items-center gap-4 shrink-0">
                   <div className="h-7 w-20 bg-background-tertiary rounded-full"></div>
                   <div className="w-5 h-5 bg-background-tertiary rounded"></div>
                 </div>

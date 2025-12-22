@@ -73,7 +73,9 @@ export function getStatusLabel(
 // ================================
 // HELPER — DETERMINE USER ROLE IN A PROJECT
 // ================================
-export function getRole(project: any, userId?: string): UserRole {
+import type { Project } from "@/types/project";
+
+export function getRole(project: Project, userId?: string): UserRole {
   if (!userId) return null;
 
   if (project.acceptedFreelancerId === userId) return "freelancer";

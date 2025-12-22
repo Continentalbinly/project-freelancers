@@ -68,8 +68,9 @@ export default function FreelancerSection({
 
       setUploadedFiles((prev) => [...prev, ...uploadedUrls]);
       toast.success(t("common.uploadSuccess") || "Files uploaded successfully");
-    } catch (error: any) {
-      toast.error(error.message || t("common.uploadError") || "Failed to upload files");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t("common.uploadError") || "Failed to upload files";
+      toast.error(errorMessage);
     } finally {
       setUploading(false);
     }
@@ -119,8 +120,9 @@ export default function FreelancerSection({
 
       setUploadedScreenshots((prev) => [...prev, ...uploadedUrls]);
       toast.success(t("common.uploadSuccess") || "Screenshots uploaded successfully");
-    } catch (error: any) {
-      toast.error(error.message || t("common.uploadError") || "Failed to upload screenshots");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : t("common.uploadError") || "Failed to upload screenshots";
+      toast.error(errorMessage);
     } finally {
       setUploading(false);
     }
@@ -174,7 +176,7 @@ export default function FreelancerSection({
             <button
               onClick={() => onUpdateStatus("accepted")}
               disabled={updating}
-              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50"
+              className="px-6 py-2.5 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50"
             >
               {updating
                 ? t("common.processing") || "Processing..."
@@ -195,7 +197,7 @@ export default function FreelancerSection({
             <button
               onClick={() => onUpdateStatus("in_progress")}
               disabled={updating}
-              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50"
+              className="px-6 py-2.5 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50"
             >
               {updating
                 ? t("common.processing") || "Processing..."
@@ -256,7 +258,7 @@ export default function FreelancerSection({
             <button
               onClick={onAcceptRevision}
               disabled={updating || !onAcceptRevision}
-              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white font-medium hover:shadow-lg hover:shadow-amber-500/30 transition-all disabled:opacity-50"
+              className="px-6 py-2.5 rounded-lg bg-linear-to-r from-amber-500 to-amber-600 text-white font-medium hover:shadow-lg hover:shadow-amber-500/30 transition-all disabled:opacity-50"
             >
               {updating
                 ? t("common.processing") || "Processing..."
@@ -457,7 +459,7 @@ export default function FreelancerSection({
             <button
               onClick={handleSubmitDelivery}
               disabled={updating || uploading}
-              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50"
+              className="px-6 py-2.5 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50"
             >
               {updating ? t("common.submitting") || "Submitting..." : t("orderDetail.sendDelivery") || "Send Delivery"}
             </button>

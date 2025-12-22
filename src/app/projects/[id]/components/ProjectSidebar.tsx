@@ -5,8 +5,10 @@ import { formatLAK } from "@/service/currencyUtils";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { getTimelineLabelFromData } from "@/service/timelineUtils";
 
+import type { Project, CategoryRef } from "@/types/project";
+
 interface ProjectSidebarProps {
-  project: any;
+  project: Project;
   t: (key: string) => string;
 }
 
@@ -20,7 +22,7 @@ export default function ProjectSidebar({ project, t }: ProjectSidebarProps) {
   };
 
   // ✅ Get category name dynamically from Firestore object
-  const getLocalizedCategoryName = (category: any) => {
+  const getLocalizedCategoryName = (category: string | CategoryRef | undefined) => {
     if (!category) return t("projectDetail.noCategory");
     if (typeof category === "string") return category; // fallback for old projects
     return currentLanguage === "lo"

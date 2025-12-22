@@ -16,6 +16,7 @@ import { useNotifications } from "@/app/components/hooks/useNotifications";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { convertTimestampToDate } from "@/service/timeUtils";
+import type { Notification } from "@/types/notification";
 import {
   translateNotificationTitle,
   translateNotificationMessage,
@@ -137,7 +138,7 @@ export default function NotificationsPage() {
               >
                 <div className="flex items-start gap-2 sm:gap-3 md:gap-4">
                   {/* Icon skeleton */}
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-background-tertiary dark:bg-gray-700"></div>
                   </div>
                   {/* Content skeleton */}
@@ -205,7 +206,7 @@ export default function NotificationsPage() {
                 }}
               >
                 <div className="flex items-start gap-2 sm:gap-3 md:gap-4">
-                  <div className="flex-shrink-0 mt-0.5">
+                  <div className="shrink-0 mt-0.5">
                     <div className="w-5 h-5 sm:w-6 sm:h-6">
                       {getNotificationIcon(notif.type)}
                     </div>
@@ -216,7 +217,7 @@ export default function NotificationsPage() {
                         {translateNotificationTitle(notif.type, notif.title, t)}
                       </p>
                       {!notif.read && (
-                        <div className="flex-shrink-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-primary rounded-full mt-1.5 sm:mt-2"></div>
+                        <div className="shrink-0 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-primary rounded-full mt-1.5 sm:mt-2"></div>
                       )}
                     </div>
                     <p className="text-text-secondary text-xs sm:text-sm md:text-base mb-1.5 sm:mb-2 line-clamp-2 sm:line-clamp-3 leading-relaxed">
@@ -230,7 +231,13 @@ export default function NotificationsPage() {
                     </p>
                     <p className="text-text-secondary/70 text-[10px] sm:text-xs md:text-sm mt-1">
                       {formatTime(
-                        convertTimestampToDate(notif.createdAt as any)
+                        convertTimestampToDate(
+                          typeof notif.createdAt === 'object' && 'toDate' in notif.createdAt
+                            ? (notif.createdAt as any).toDate()
+                            : notif.createdAt instanceof Date
+                            ? notif.createdAt
+                            : notif.createdAt
+                        )
                       )}
                     </p>
                   </div>

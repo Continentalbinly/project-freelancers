@@ -1,6 +1,6 @@
 "use client";
 
-export default function ManageProjectsSkeleton({ t }: any) {
+export default function ManageProjectsSkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
       {Array.from({ length: 3 }).map((_, i) => (

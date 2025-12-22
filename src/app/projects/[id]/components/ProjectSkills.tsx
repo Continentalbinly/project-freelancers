@@ -1,4 +1,9 @@
-export default function ProjectSkills({ skills, t }: any) {
+interface ProjectSkillsProps {
+  skills?: string[];
+  t: (key: string) => string;
+}
+
+export default function ProjectSkills({ skills, t }: ProjectSkillsProps) {
   if (!skills || skills.length === 0) return null;
   return (
     <div className="mb-6">

@@ -87,8 +87,8 @@ export default function ComprehensiveProfileEditor({
       });
       toast.success(t("profile.editor.saved") || "Profile updated successfully");
       onSave();
-    } catch (error) {
-      console.error("Error updating profile:", error);
+    } catch {
+      // Silent fail
       toast.error(t("common.error") || "Failed to update profile");
     } finally {
       setSaving(false);
@@ -156,7 +156,7 @@ export default function ComprehensiveProfileEditor({
                 </label>
                 <select
                   value={formData.gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value as "male" | "female" | "other" | "prefer_not_to_say" })}
                   className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-text-primary"
                 >
                   <option value="male">{t("profile.gender.male") || "Male"}</option>

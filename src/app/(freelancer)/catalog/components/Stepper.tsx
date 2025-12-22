@@ -13,7 +13,9 @@ export default function Stepper({
   progressPosition?: "below" | "center";
 }) {
   const { t } = useTranslationContext();
-  const progress = ((current + 1) / steps.length) * 100;
+  // Calculate progress - when at final step, show 100% (all steps completed)
+  const isAllStepsCompleted = current === steps.length - 1;
+  const progress = isAllStepsCompleted ? 100 : ((current + 1) / steps.length) * 100;
 
   // Map step names to translation keys
   const stepTranslationMap: Record<string, string> = {
@@ -37,8 +39,11 @@ export default function Stepper({
           </>
         )}
         {steps.map((label, i) => {
-          const isCompleted = i < current;
-          const isCurrent = i === current;
+          // If we're at the final step and it's the current step, treat it as completed
+          const isFinalStep = i === steps.length - 1;
+          const isAtFinalStep = current === steps.length - 1;
+          const isCompleted = i < current || (isFinalStep && isAtFinalStep);
+          const isCurrent = i === current && !(isFinalStep && isAtFinalStep);
 
           return (
             <li
@@ -62,7 +67,7 @@ export default function Stepper({
                   isCompleted
                     ? "bg-primary text-white shadow-lg shadow-primary/30 scale-100"
                     : isCurrent
-                    ? "bg-gradient-to-br from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-110 ring-4 ring-primary/20"
+                    ? "bg-linear-to-br from-primary to-secondary text-white shadow-lg shadow-primary/30 scale-110 ring-4 ring-primary/20"
                     : "bg-background-secondary border-2 border-border text-text-secondary scale-90"
                 }`}
               >
@@ -97,10 +102,10 @@ export default function Stepper({
       {progressPosition === "below" && (
         <div className="relative h-2 bg-background-secondary rounded-full overflow-hidden">
           <div
-            className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
+            className="absolute top-0 left-0 h-full bg-linear-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
           </div>
         </div>
       )}

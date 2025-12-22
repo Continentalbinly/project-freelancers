@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from 'firebase-admin/auth'
+import { DecodedIdToken, getAuth } from 'firebase-admin/auth'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
@@ -35,10 +35,10 @@ export async function GET(request: NextRequest) {
     }
 
     const token = authHeader.split('Bearer ')[1];
-    let decodedToken;
+    let decodedToken: DecodedIdToken;
     try {
       decodedToken = await adminAuth.verifyIdToken(token);
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { success: false, error: 'Invalid authorization token' },
         { status: 401 }
@@ -67,9 +67,9 @@ export async function GET(request: NextRequest) {
 
     // Calculate stats efficiently
     const activeProjects = projects.filter(
-      (p: any) => p.status === 'open' || p.status === 'in_progress'
+      (p: Record<string, unknown>) => p.status === 'open' || p.status === 'in_progress'
     ).length;
-    const completedProjects = projects.filter((p: any) => p.status === 'completed').length;
+    const completedProjects = projects.filter((p: Record<string, unknown>) => p.status === 'completed').length;
     const credit = profileData?.credit || 0;
 
     // Set cache headers for 3 minutes
@@ -91,8 +91,7 @@ export async function GET(request: NextRequest) {
     );
 
     return response;
-  } catch (error: any) {
-    console.error('Dashboard error:', error);
+  } catch {
     return NextResponse.json(
       { success: false, error: 'Failed to fetch dashboard data' },
       { status: 500 }

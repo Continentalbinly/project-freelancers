@@ -1,11 +1,18 @@
 "use client";
 
+interface ProposalsFilterProps {
+  status: string;
+  setStatus: (status: string) => void;
+  total: number;
+  filtered: number;
+}
+
 export default function ProposalsFilter({
   status,
   setStatus,
   total,
   filtered,
-}: any) {
+}: ProposalsFilterProps) {
   return (
     <div className="rounded-xl shadow-sm border border-border p-6 mb-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

@@ -9,6 +9,7 @@ import {
   limit,
   getDocs,
   DocumentData,
+  Timestamp,
 } from "firebase/firestore";
 
 /** ✅ Define and export reusable types */
@@ -18,16 +19,16 @@ export interface ProjectData extends DocumentData {
   acceptedFreelancerId?: string;
   title?: string;
   status?: string;
-  updatedAt?: any;
-  createdAt?: any;
+  updatedAt?: Timestamp | Date | Record<string, unknown>;
+  createdAt?: Timestamp | Date | Record<string, unknown>;
 }
 
 export interface ProposalData extends DocumentData {
   id: string;
   freelancerId?: string;
   projectId?: string;
-  createdAt?: any;
-  [key: string]: any;
+  createdAt?: Timestamp | Date | Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 export default function useProfileData(user: { uid: string } | null) {

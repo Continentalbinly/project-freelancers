@@ -1,10 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-export default function CTASection({ t }: any) {
+interface CTASectionProps {
+  t: (key: string) => string;
+}
+
+export default function CTASection({ t }: CTASectionProps) {
   const router = useRouter();
   return (
-    <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-r from-primary to-secondary dark:from-gray-800 dark:to-gray-700">
+    <section className="py-12 sm:py-16 lg:py-20 bg-linear-to-r from-primary to-secondary dark:from-gray-800 dark:to-gray-700">
       <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
           {t("landingPage.cta.title")}

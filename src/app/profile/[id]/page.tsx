@@ -54,8 +54,8 @@ export default function PublicProfilePage() {
         }
 
         setProfile({ id: profileDoc.id, ...data } as Profile);
-      } catch (error) {
-        console.error("Error loading profile:", error);
+      } catch {
+        // Silent fail
         toast.error(t("common.error") || "Failed to load profile");
         router.push("/");
       } finally {

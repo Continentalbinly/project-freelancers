@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import type { Project } from "@/types/project";
 
-export default function StepPayoutFreelancer({ project }: { project: any }) {
+interface StepPayoutFreelancerProps {
+  project: Project;
+}
+
+export default function StepPayoutFreelancer({ project }: StepPayoutFreelancerProps) {
   const { t } = useTranslationContext();
   const [completed, setCompleted] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const pollInterval = useRef<any>(null);
+  const pollInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const amount = project.payoutAmount ?? project.budget ?? 0;
 
@@ -20,15 +24,16 @@ export default function StepPayoutFreelancer({ project }: { project: any }) {
       const snap = await getDoc(doc(firestore, "projects", project.id));
       if (snap.exists() && snap.data().status === "completed") {
         setCompleted(true);
-        clearInterval(pollInterval.current);
+        if (pollInterval.current) clearInterval(pollInterval.current);
       }
-      setLoading(false);
     };
 
-    checkStatus();
-    pollInterval.current = setInterval(checkStatus, 2500);
+    const interval = setInterval(checkStatus, 2500);
+    pollInterval.current = interval;
 
-    return () => clearInterval(pollInterval.current);
+    return () => {
+      if (pollInterval.current) clearInterval(pollInterval.current);
+    };
   }, [project.id]);
 
   return (

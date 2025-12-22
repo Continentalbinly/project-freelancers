@@ -54,7 +54,7 @@ export default function StepIndicator({ currentStep, totalSteps }: StepIndicator
                   isCompleted
                     ? "bg-success text-white shadow-md"
                     : isCurrent
-                    ? "bg-gradient-to-br from-primary to-secondary text-white shadow-md scale-105 ring-4 ring-primary/20"
+                    ? "bg-linear-to-br from-primary to-secondary text-white shadow-md scale-105 ring-4 ring-primary/20"
                     : "bg-background-secondary border-2 border-border text-text-secondary"
                 }`}
               >
@@ -92,10 +92,10 @@ export default function StepIndicator({ currentStep, totalSteps }: StepIndicator
       {/* Mobile progress bar (compact) */}
       <div className="relative h-2 bg-background-secondary rounded-full overflow-hidden sm:hidden">
         <div
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
+          className="absolute top-0 left-0 h-full bg-linear-to-r from-primary to-secondary rounded-full transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
         </div>
       </div>
     </div>

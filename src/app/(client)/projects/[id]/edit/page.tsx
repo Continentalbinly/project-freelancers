@@ -13,8 +13,7 @@ import {
 import { requireDb } from "@/service/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
-import { TIMELINE_OPTIONS, getTimelineData, getTimelineLabelFromData } from "@/service/timelineUtils";
+import { TIMELINE_OPTIONS, getTimelineData } from "@/service/timelineUtils";
 
 import ProjectStepper from "../../components/ProjectStepper";
 import ProjectBasics from "../../components/ProjectSteps/ProjectBasics";
@@ -25,6 +24,7 @@ import ProjectReview from "../../components/ProjectSteps/ProjectReview";
 import GlobalStatus from "../../../../components/GlobalStatus";
 
 import type { ProjectFormData } from "../../components/ProjectSteps/ProjectBasics";
+import type { Category } from "@/types/category";
 
 const MAX_STEPS = 5;
 
@@ -39,7 +39,7 @@ export default function EditProjectPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState("");
 
@@ -71,10 +71,9 @@ export default function EditProjectPage() {
       try {
         const firestore = requireDb();
         const snap = await getDocs(collection(firestore, "categories"));
-        const cats = snap.docs.map((d: any) => ({ id: d.id, ...(d.data() as any) }));
-        setCategories(cats as any[]);
-      } catch (err) {
-        console.error("Failed to load categories:", err);
+        const cats = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Category));
+        setCategories(cats);
+      } catch {
         setCategories([]);
       } finally {
         setCategoriesLoading(false);
@@ -110,9 +109,6 @@ export default function EditProjectPage() {
           return;
         }
 
-        // Pre-fill form with existing data
-        // For timeline: if it's an object with { id, label_en, label_lo }, extract the id
-        // If it's a string (old format), use it as is
         const timelineValue = typeof project.timeline === 'object' && project.timeline?.id 
           ? project.timeline.id 
           : project.timeline || "";
@@ -136,8 +132,7 @@ export default function EditProjectPage() {
         if (project.imageUrl) {
           setPreviewUrl(project.imageUrl);
         }
-      } catch (err) {
-        console.error("Error fetching project:", err);
+      } catch {
         setError("Failed to load project");
       } finally {
         setLoading(false);
@@ -168,22 +163,6 @@ export default function EditProjectPage() {
     }
   };
 
-  const handleImageUpload = async (file: File) => {
-    try {
-      setSaving(true);
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const url = evt.target?.result as string;
-        setFormData((p: ProjectFormData) => ({ ...p, imageUrl: url }));
-        setPreviewUrl(url);
-      };
-      reader.readAsDataURL(file);
-    } catch (err) {
-      console.error("Image upload failed:", err);
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleNext = () => {
     if (canNext()) setStep(Math.min(step + 1, MAX_STEPS - 1));
@@ -221,9 +200,9 @@ export default function EditProjectPage() {
       });
 
       router.push("/projects");
-    } catch (err: any) {
-      setError(err.message || "Update failed");
+      } catch {
       setSaving(false);
+      setError("Update failed");
     }
   };
 
@@ -286,7 +265,6 @@ export default function EditProjectPage() {
               t={t}
               previewUrl={previewUrl}
               setPreviewUrl={setPreviewUrl}
-              onImageUpload={handleImageUpload}
               uploading={saving}
             />
           )}
@@ -316,7 +294,7 @@ export default function EditProjectPage() {
             <button
               disabled={!canNext() || saving}
               onClick={handleNext}
-              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
             >
               {t("createProject.next") || "Next"}
             </button>
@@ -324,7 +302,7 @@ export default function EditProjectPage() {
             <button
               disabled={!canNext() || saving}
               onClick={handleSubmit}
-              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-primary to-secondary text-white font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 text-sm sm:text-base"
             >
               {saving ? (t("editProject.saving") || "Saving…") : (t("editProject.saveChanges") || "Save Changes")}
             </button>

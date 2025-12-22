@@ -21,7 +21,7 @@ export default function NotFound(): React.ReactElement {
           <h1 className="text-4xl sm:text-6xl font-bold text-primary">404</h1>
           <h2 className="text-xl sm:text-2xl font-semibold text-text-primary">Page Not Found</h2>
           <p className="text-text-secondary text-sm sm:text-base">
-            Sorry, the page you're looking for doesn't exist or has been moved.
+            Sorry, the page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
         </div>
 
@@ -109,7 +109,7 @@ export default function NotFound(): React.ReactElement {
         {/* Search Suggestion */}
         <div className="mt-6 sm:mt-8">
           <p className="text-xs sm:text-sm text-text-muted">
-            Try using the search bar to find what you're looking for
+            Try using the search bar to find what you&apos;re looking for
           </p>
         </div>
       </div>

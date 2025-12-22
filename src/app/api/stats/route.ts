@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { requireDb } from '@/service/firebase'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs } from 'firebase/firestore'
+import type { Profile } from "@/types/profile";
 
 export async function GET() {
   try {
     const db = requireDb();
     // Get all profiles to count freelancers and clients
-    const profilesRef = collection(db, 'profiles')
+    const profilesRef = collection(db, "profiles")
     const profilesSnapshot = await getDocs(profilesRef)
     
     let freelancerCount = 0
@@ -15,7 +16,7 @@ export async function GET() {
     let totalSpent = 0
     
     profilesSnapshot.forEach((doc) => {
-      const data = doc.data() as any
+      const data = doc.data() as Profile
       const role = data.role
 
       if (role === 'freelancer') {
@@ -58,10 +59,9 @@ export async function GET() {
         totalBudget: projectsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().budget || 0), 0)
       }
     })
-  } catch (error) {
-    //console.error('Error fetching platform stats:', error)
+  } catch {
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch platform statistics' },
+      { success: false, error: "Failed to fetch platform statistics" },
       { status: 500 }
     )
   }

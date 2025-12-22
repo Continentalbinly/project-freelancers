@@ -67,6 +67,11 @@ export default function ProposePage() {
           freelancerCompleted: data.freelancerCompleted,
           postingFee: data.postingFee,
           progress: data.progress,
+          client: client ? {
+            fullName: client.fullName || "",
+            avatarUrl: client.avatarUrl || null,
+            rating: client.rating || null,
+          } : null,
         } as Project);
       } finally {
         setLoadingProject(false);

@@ -93,7 +93,7 @@ export default function ProjectImage({
   if (!processedSrc || imageError) {
     return (
       <div 
-        className={`bg-gradient-to-br from-primary/20 via-secondary/20 to-primary/30 rounded-xl sm:rounded-2xl flex items-center justify-center text-primary font-semibold shadow-inner ${sizeClasses[size]} ${className}`}
+        className={`bg-linear-to-br from-primary/20 via-secondary/20 to-primary/30 rounded-xl sm:rounded-2xl flex items-center justify-center text-primary font-semibold shadow-inner ${sizeClasses[size]} ${className}`}
         title={alt || projectTitle}
       >
         <div className="text-center p-4">
@@ -113,8 +113,8 @@ export default function ProjectImage({
     <div className={`relative ${sizeClasses[size]} ${className} overflow-hidden`}>
       {/* Loading State */}
       {imageLoading && (
-        <div className="absolute inset-0 bg-gradient-to-br from-background-secondary to-background rounded-xl sm:rounded-2xl animate-pulse">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-background-secondary to-background rounded-xl sm:rounded-2xl animate-pulse">
+          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
         </div>
       )}
       
@@ -139,7 +139,7 @@ export default function ProjectImage({
         />
         
         {/* Subtle overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/10 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
       </div>
       
       {/* Image loading indicator */}

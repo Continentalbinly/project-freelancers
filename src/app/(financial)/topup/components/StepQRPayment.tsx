@@ -1,22 +1,32 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { doc, getDoc } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
+import type { TopupSession, UpdateSessionFunction } from "@/types/topup";
 
-export default function StepQRPayment({ session, updateSession, t }: any) {
+interface StepQRPaymentProps {
+  session: TopupSession | null;
+  updateSession: UpdateSessionFunction;
+  t: (key: string) => string;
+}
+
+export default function StepQRPayment({ session, updateSession, t }: StepQRPaymentProps) {
   const [remaining, setRemaining] = useState(
-    Math.max(0, Math.floor((session.expiresAt - Date.now()) / 1000))
+    Math.max(0, Math.floor((session?.expiresAt || 0) - Date.now()) / 1000)
   );
 
   const [qrLoaded, setQrLoaded] = useState(false);
 
-  const pollInterval = useRef<any>(null);
-  const timerInterval = useRef<any>(null);
+  const pollInterval = useRef<NodeJS.Timeout | null>(null);
+  const timerInterval = useRef<NodeJS.Timeout | null>(null);
 
-  const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(
-    session.qrCode
-  )}`;
+  const qrURL = session?.qrCode
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(session.qrCode)}`
+    : "";
+
+  if (!session) return null;
 
   const formatTime = (sec: number) => {
     const m = Math.floor(sec / 60);
@@ -28,30 +38,36 @@ export default function StepQRPayment({ session, updateSession, t }: any) {
   // TIMER: countdown
   // -------------------------------
   useEffect(() => {
-    if (!session.expiresAt) return;
+    if (!session?.expiresAt) return;
 
-    timerInterval.current = setInterval(() => {
-      const left = Math.floor((session.expiresAt - Date.now()) / 1000);
+      timerInterval.current = setInterval(() => {
+      const left = Math.floor((session!.expiresAt! - Date.now()) / 1000);
 
       setRemaining(left);
 
-      if (left <= 0) {
+        if (left <= 0) {
         // ❗ DO NOT expire if payment succeeded
-        if (session.status !== "confirmed") {
+        if (session!.status !== "confirmed") {
           updateSession({ step: "expired" });
         }
-        clearInterval(timerInterval.current);
+        if (timerInterval.current) {
+          clearInterval(timerInterval.current);
+        }
       }
     }, 1000);
 
-    return () => clearInterval(timerInterval.current);
-  }, [session.expiresAt]);
+    return () => {
+      if (timerInterval.current) {
+        clearInterval(timerInterval.current);
+      }
+    };
+  }, [session?.expiresAt, session?.status, updateSession, session]);
 
   // -------------------------------
   // POLLING: check Firestore for success
   // -------------------------------
   useEffect(() => {
-    const txId = session.transactionId;
+    const txId = session?.transactionId;
     if (!txId) return;
 
     pollInterval.current = setInterval(async () => {
@@ -59,24 +75,32 @@ export default function StepQRPayment({ session, updateSession, t }: any) {
       const snap = await getDoc(doc(firestore, "transactions", txId));
 
       if (snap.exists() && snap.data().status === "confirmed") {
-        clearInterval(timerInterval.current); // stop countdown
-        clearInterval(pollInterval.current);
+        if (timerInterval.current) {
+          clearInterval(timerInterval.current); // stop countdown
+        }
+        if (pollInterval.current) {
+          clearInterval(pollInterval.current);
+        }
 
         updateSession({ status: "confirmed", step: "success" });
       }
     }, 2000);
 
-    return () => clearInterval(pollInterval.current);
-  }, [session.transactionId]);
+    return () => {
+      if (pollInterval.current) {
+        clearInterval(pollInterval.current);
+      }
+    };
+  }, [session?.transactionId, updateSession, session]);
 
   // -------------------------------
   // REACT to session.status change
   // -------------------------------
   useEffect(() => {
-    if (session.status === "confirmed") {
+    if (session?.status === "confirmed") {
       updateSession({ step: "success" });
     }
-  }, [session.status]);
+  }, [session?.status, updateSession]);
 
   return (
     <div className="max-w-lg mx-auto text-center p-6 bg-background rounded-xl">
@@ -91,7 +115,7 @@ export default function StepQRPayment({ session, updateSession, t }: any) {
               <div className="absolute inset-0 rounded-lg animate-pulse" />
             )}
 
-            <img
+            <Image
               src={qrURL}
               alt="QR Code"
               onLoad={() => setQrLoaded(true)}
@@ -111,7 +135,7 @@ export default function StepQRPayment({ session, updateSession, t }: any) {
       </p>
 
       {/* Expired Message */}
-      {remaining <= 0 && session.status !== "confirmed" && (
+      {remaining <= 0 && session?.status !== "confirmed" && (
         <p className="text-error font-medium mt-2">{t("topup.expired")}</p>
       )}
     </div>

@@ -35,7 +35,7 @@ export default function FreelancersPage() {
   return (
     <div className="bg-background">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary via-primary-hover to-primary-hover dark:from-primary/90 dark:via-primary dark:to-primary-hover py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+      <section className="bg-linear-to-br from-primary via-primary-hover to-primary-hover dark:from-primary/90 dark:via-primary dark:to-primary-hover py-12 sm:py-16 lg:py-20 relative overflow-hidden">
         <div className="absolute top-0 right-0 -mt-40 -mr-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">

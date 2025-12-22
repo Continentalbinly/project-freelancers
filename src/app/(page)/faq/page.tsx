@@ -183,7 +183,7 @@ export default function FAQPage() {
               {categories.map((category) => (
                 <button suppressHydrationWarning
                   key={category.id}
-                  onClick={() => setActiveCategory(category.id as any)}
+                  onClick={() => setActiveCategory(category.id as "freelancers" | "all" | "general" | "clients" | "payments" | "technical")}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeCategory === category.id
                       ? 'bg-primary text-white shadow-md'
                       : 'text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary'

@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import type { CatalogForm } from "./types";
+import type { Category } from "@/types/category";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import { FolderOpen, Search, Tag, X, Plus, CheckCircle2 } from "lucide-react";
-
-type Category = { id: string; name_en?: string; name_lo?: string; description?: string };
 
 export default function StepCategoryTags({ form, setForm }: { form: CatalogForm; setForm: (f: Partial<CatalogForm>) => void }) {
   const { currentLanguage, t } = useTranslationContext();
@@ -19,7 +18,10 @@ export default function StepCategoryTags({ form, setForm }: { form: CatalogForm;
     (async () => {
       try {
         const snap = await getDocs(collection(requireDb(), "categories"));
-        const rows = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+        const rows = snap.docs.map((d) => {
+          const catData = d.data() as Category;
+          return { ...catData, id: d.id } as Category;
+        });
         setCategories(rows as Category[]);
       } finally {
         setLoading(false);
@@ -42,7 +44,7 @@ export default function StepCategoryTags({ form, setForm }: { form: CatalogForm;
       {/* Category Selection */}
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
             <FolderOpen className="w-4 h-4 text-primary" />
           </div>
           {t("stepCategory.chooseCategory") || "Choose Category"}
@@ -76,7 +78,7 @@ export default function StepCategoryTags({ form, setForm }: { form: CatalogForm;
                   onClick={() => setForm({ categoryId: cat.id, category: { id: cat.id, name_en: cat.name_en, name_lo: cat.name_lo } })}
                   className={`text-left p-4 rounded-xl border-2 transition-all duration-200 relative ${
                     selected
-                      ? "border-primary bg-gradient-to-br from-primary/15 to-secondary/15 shadow-lg"
+                      ? "border-primary bg-linear-to-br from-primary/15 to-secondary/15 shadow-lg"
                       : "border-border hover:border-primary/40 bg-background hover:shadow-sm"
                   }`}
                 >
@@ -113,7 +115,7 @@ export default function StepCategoryTags({ form, setForm }: { form: CatalogForm;
       {/* Tags Section */}
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-secondary/10 to-primary/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-secondary/10 to-primary/10 flex items-center justify-center">
             <Tag className="w-4 h-4 text-secondary" />
           </div>
           {t("stepCategory.addTags") || "Add Tags"}
@@ -135,7 +137,7 @@ export default function StepCategoryTags({ form, setForm }: { form: CatalogForm;
           />
           <button
             type="button"
-            className="px-6 py-3 bg-gradient-to-r from-secondary to-primary text-white rounded-xl hover:shadow-lg hover:shadow-secondary/30 transition-all flex items-center gap-2 font-medium"
+            className="px-6 py-3 bg-linear-to-r from-secondary to-primary text-white rounded-xl hover:shadow-lg hover:shadow-secondary/30 transition-all flex items-center gap-2 font-medium"
             onClick={() => {
               const el = document.getElementById("tagInput2") as HTMLInputElement | null;
               if (el) {
@@ -154,7 +156,7 @@ export default function StepCategoryTags({ form, setForm }: { form: CatalogForm;
             {form.tags.map((t) => (
               <span
                 key={t}
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border border-primary/20 group hover:shadow-md transition-all"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-full bg-linear-to-r from-primary/10 to-secondary/10 text-primary border border-primary/20 group hover:shadow-md transition-all"
               >
                 {t}
                 <button
