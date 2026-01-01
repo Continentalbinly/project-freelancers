@@ -3782,14 +3782,6 @@ const en = {
         noFiles: "No files available for download.",
       },
     },
-    filters: {
-      all: "All Projects",
-      open: "Open",
-      inProgress: "In Progress",
-      completed: "Completed",
-      awaitingReview: "Awaiting Review",
-    },
-    noProjectsInFilter: "No projects found in this category.",
   },
   payout: {
     title: "Project Payment",
@@ -4135,7 +4127,6 @@ const en = {
     youAreClient: "You are the client",
     youAreFreelancer: "You are the freelancer",
     totalAmount: "Total Amount",
-    statusAwaitingPayment: "Awaiting Payment",
   },
   orderReview: {
     rateFreelancer: "Rate the Freelancer",

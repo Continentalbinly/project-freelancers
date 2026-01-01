@@ -3737,14 +3737,6 @@ const lo = {
         noFiles: "ບໍ່ມີໄຟລ໌ໃຫ້ດາວໂຫຼດ.",
       },
     },
-    filters: {
-      all: "ໂປຣເຈັກທັງໝົດ",
-      open: "ໂປຣເຈັກເປີດ",
-      inProgress: "ໂປຣເຈັກທີ່ກຳລັງດໍາເນີນຢູ່",
-      completed: "ໂປຣເຈັກທີ່ສຳເລັດແລ້ວ",
-      awaitingReview: "ໂປຣເຈັກທີ່ລໍຖ້າການປະເມີນ",
-    },
-    noProjectsInFilter: "ບໍ່ມີໂປຣເຈັກໃນການຕັ້ງຄ່ານີ້.",
   },
   payout: {
     title: "ການຈ່າຍເງິນໂຄງການ",
@@ -4088,7 +4080,6 @@ const lo = {
     youAreClient: "ທ່ານເປັນລູກຄ້າ",
     youAreFreelancer: "ທ່ານເປັນຟຣີແລນຊ໌",
     totalAmount: "ຈຳນວນເງິນທັງໝົດ",
-    statusAwaitingPayment: "ລໍຖ້າການຊຳລະເງິນ",
   },
   orderReview: {
     rateFreelancer: "ໃຫ້ຄະແນນຟຣີແລນຊ໌",
