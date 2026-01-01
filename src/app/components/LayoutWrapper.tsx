@@ -20,9 +20,16 @@ export default function LayoutWrapper({
   const isSingleMessagePage = /^\/messages\/[^/]+$/.test(pathname || "");
   const isAuthPage = pathname?.startsWith("/auth");
   const isNotificationsPage = pathname?.startsWith("/notifications");
+  
+  // 🎯 Project routes that should hide footer (private routes)
+  const isPrivateProjectRoute =
+    pathname?.startsWith("/projects/create") ||
+    pathname?.startsWith("/projects/manage") ||
+    pathname?.startsWith("/projects/") && /^\/projects\/[^/]+\/(edit|proposals|propose)$/.test(pathname || "");
+  
   const isPrivateRoute =
     pathname?.startsWith("/dashboard") ||
-    pathname?.startsWith("/projects") ||
+    isPrivateProjectRoute ||
     pathname?.startsWith("/proposals") ||
     pathname?.startsWith("/profile");
 

@@ -17,6 +17,9 @@ import OrderPaymentStep from "../components/OrderPaymentStep";
 import OrderSidebar from "../components/OrderSidebar";
 import OrderDetailSkeleton from "../components/OrderDetailSkeleton";
 import OrderReviewSection from "../components/OrderReviewSection";
+import WorkroomLayout from "@/app/components/workroom/WorkroomLayout";
+import Skeleton from "@/app/components/ui/Skeleton";
+import StatusBadge from "@/app/components/ui/StatusBadge";
 import { createOrderNotification, createRevisionNotification, createRevisionDecisionNotification } from "../utils/notificationService";
 
 export default function OrderDetailPage() {
@@ -100,16 +103,37 @@ export default function OrderDetailPage() {
     return () => unsubscribe();
   }, [id, user, userRole]);
 
-  if (!user || !userRole || loading) return <OrderDetailSkeleton />;
-
-  if (!order)
+  if (!user || !userRole || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-text-secondary">
-        Order not found.
-      </div>
+      <WorkroomLayout
+        title={t("common.loading") || "Loading..."}
+        sidebarContent={
+          <div className="space-y-4">
+            <Skeleton height={100} />
+            <Skeleton height={200} />
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <Skeleton height={300} />
+          <Skeleton height={200} />
+        </div>
+      </WorkroomLayout>
     );
+  }
 
-  const config = statusConfig[order.status];
+  if (!order) {
+    return (
+      <WorkroomLayout
+        title={t("orderDetail.notFound") || "Order not found"}
+        sidebarContent={null}
+      >
+        <p className="text-center text-text-secondary py-8">
+          {t("orderDetail.notFoundDesc") || "The order you're looking for doesn't exist."}
+        </p>
+      </WorkroomLayout>
+    );
+  }
 
   const updateStatus = async (status: OrderStatus) => {
     setUpdating(true);
@@ -398,95 +422,41 @@ export default function OrderDetailPage() {
     }
   };
 
+  const orderTitle = order.catalogTitle || order.packageName || t("orderDetail.order") || "Order";
+  const subtitle = userRole === "client"
+    ? t("orderDetail.youAreClient") || "You are the client"
+    : userRole === "freelancer"
+    ? t("orderDetail.youAreFreelancer") || "You are the freelancer"
+    : undefined;
+
+  const breadcrumbs = [
+    { label: t("navigation.orders") || t("dashboard.orders") || "Orders", href: "/orders" },
+    { label: orderTitle },
+  ];
+
   return (
-    <div className="bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Order Header */}
-        <div className="mb-8">
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
-                {t("orderDetail.catalog") || "Catalog"}
+    <WorkroomLayout
+      title={orderTitle}
+      subtitle={subtitle}
+      breadcrumbs={breadcrumbs}
+      sidebarContent={
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-sm font-semibold text-text-secondary mb-3 uppercase tracking-wide">
+              {t("orderDetail.orderStatus") || "Status"}
+            </h3>
+            <StatusBadge status={order.status} type="order" />
+          </div>
+          {order.packagePrice && (
+            <div>
+              <h3 className="text-sm font-semibold text-text-secondary mb-3 uppercase tracking-wide">
+                {t("orderDetail.totalAmount") || "Total Amount"}
+              </h3>
+              <p className="text-2xl font-bold text-text-primary">
+                ₭{order.packagePrice.toLocaleString()}
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
-                {order.catalogTitle || order.packageName}
-              </h1>
-              {order.packageName && (
-                <p className="text-sm text-text-secondary">
-                  {t("orderDetail.package") || "Package"}:{" "}
-                  <span className="font-semibold text-text-primary">{order.packageName}</span>
-                </p>
-              )}
             </div>
-            <div className={`px-4 py-2 rounded-lg font-semibold ${config.bgColor} ${config.color}`}>
-              {config.label}
-            </div>
-          </div>
-        </div>
-
-        {/* Order Progress Timeline */}
-        <OrderProgressTimeline status={order.status} />
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Left Column - 2 cols */}
-          <div className="lg:col-span-2 space-y-6">
-            <OrderDetailsCard order={order} />
-
-            {/* Freelancer Section */}
-            {userRole === "freelancer" && (
-              <FreelancerSection
-                order={order}
-                updating={updating}
-                deliveryNote={deliveryNote}
-                setDeliveryNote={setDeliveryNote}
-                onUpdateStatus={updateStatus}
-                onDeliver={deliver}
-                onAcceptRevision={acceptRevision}
-                onDeclineRevision={declineRevision}
-              />
-            )}
-
-            {/* Client Section */}
-            {userRole === "client" && (
-              <ClientSection
-                order={order}
-                updating={updating}
-                onAcceptDelivery={() => updateStatus("awaiting_payment")}
-                onRequestRevision={requestRevision}
-              />
-            )}
-
-            {/* Payment Step - Show when awaiting payment */}
-            {order.status === "awaiting_payment" && (
-              <OrderPaymentStep order={order} />
-            )}
-
-            {/* Delivery History */}
-            <DeliveryHistory order={order} />
-
-            {/* Review Section - Show when order is completed */}
-            {order.status === "completed" && user && userRole && (
-              <OrderReviewSection
-                order={order}
-                userRole={userRole}
-                userId={user.uid}
-                onReviewSubmitted={() => {
-                  // Reload order to get updated rating status
-                  const reload = async () => {
-                    const db = requireDb();
-                    const snap = await getDoc(doc(db, "orders", order.id));
-                    if (snap.exists()) {
-                      setOrder({ id: snap.id, ...snap.data() } as Order);
-                    }
-                  };
-                  reload();
-                }}
-              />
-            )}
-          </div>
-
-          {/* Right Column - Sidebar */}
+          )}
           <OrderSidebar
             order={order}
             userRole={userRole || "client"}
@@ -495,7 +465,67 @@ export default function OrderDetailPage() {
             onSendMessage={handleSendMessage}
           />
         </div>
+      }
+    >
+      <div className="space-y-8">
+        <OrderProgressTimeline status={order.status} />
+
+        <div className="mt-8 space-y-6">
+          <OrderDetailsCard order={order} />
+
+          {/* Freelancer Section */}
+          {userRole === "freelancer" && (
+            <FreelancerSection
+              order={order}
+              updating={updating}
+              deliveryNote={deliveryNote}
+              setDeliveryNote={setDeliveryNote}
+              onUpdateStatus={updateStatus}
+              onDeliver={deliver}
+              onAcceptRevision={acceptRevision}
+              onDeclineRevision={declineRevision}
+            />
+          )}
+
+          {/* Client Section */}
+          {userRole === "client" && (
+            <ClientSection
+              order={order}
+              updating={updating}
+              onAcceptDelivery={() => updateStatus("awaiting_payment")}
+              onRequestRevision={requestRevision}
+            />
+          )}
+
+          {/* Payment Step - Show when awaiting payment */}
+          {order.status === "awaiting_payment" && (
+            <OrderPaymentStep order={order} />
+          )}
+
+          {/* Delivery History */}
+          <DeliveryHistory order={order} />
+
+          {/* Review Section - Show when order is completed */}
+          {order.status === "completed" && user && userRole && (
+            <OrderReviewSection
+              order={order}
+              userRole={userRole}
+              userId={user.uid}
+              onReviewSubmitted={() => {
+                // Reload order to get updated rating status
+                const reload = async () => {
+                  const db = requireDb();
+                  const snap = await getDoc(doc(db, "orders", order.id));
+                  if (snap.exists()) {
+                    setOrder({ id: snap.id, ...snap.data() } as Order);
+                  }
+                };
+                reload();
+              }}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </WorkroomLayout>
   );
 }

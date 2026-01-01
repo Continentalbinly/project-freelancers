@@ -148,17 +148,17 @@ export default function SignupWizard() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-background rounded-2xl shadow-lg border border-border overflow-hidden">
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-border dark:border-gray-700/50 bg-background-secondary/95 dark:bg-gray-800/80 backdrop-blur-lg shadow-xl dark:shadow-2xl dark:shadow-gray-900/50 overflow-hidden">
       {/* Header with gradient */}
-      <div className="bg-background-secondary sm:px-8 py-8">
+      <div className="bg-background-secondary/50 dark:bg-gray-800/50 sm:px-8 py-6 sm:py-8">
         <StepIndicator currentStep={currentStep} totalSteps={TOTAL_STEPS} />
       </div>
 
       {/* Content */}
-      <div className="px-6 sm:px-8 py-8">
+      <div className="px-6 sm:px-8 lg:px-10 py-6 sm:py-8">
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 rounded-lg text-sm flex items-start gap-3" style={{ backgroundColor: "color-mix(in oklab, var(--error) 12%, transparent)", border: "1px solid color-mix(in oklab, var(--error) 30%, transparent)", color: "var(--error)" }}>
+          <div className="mb-6 p-4 rounded-xl text-sm flex items-start gap-3 bg-error/10 dark:bg-error/20 border border-error/20 dark:border-error/30 text-error dark:text-error">
             <span className="text-lg shrink-0">⚠️</span>
             <span>{error}</span>
           </div>
@@ -188,7 +188,7 @@ export default function SignupWizard() {
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 pt-6 border-t border-border">
+        <div className="mt-8 pt-6 border-t border-border/60 dark:border-gray-700/60">
           <StepNavigation
             currentStep={currentStep}
             totalSteps={TOTAL_STEPS}

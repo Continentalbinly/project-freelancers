@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
+import MarketingSection from "@/app/(page)/components/MarketingSection";
+import Stagger from "@/app/components/motion/Stagger";
+import StaggerItem from "@/app/components/motion/StaggerItem";
 import {
   Briefcase,
   Code,
@@ -71,90 +74,81 @@ export default function TopCategories({ t }: TopCategoriesProps) {
   };
 
   return (
-    <section className="py-10 sm:py-12 bg-white dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-8">
-          {t("landingPage.categories.title") || "Popular Categories"}
-        </h3>
-
-        {/* ⏳ Loading skeleton */}
-        {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-xl"
-              />
-            ))}
-          </div>
-        ) : (
-          <>
-            {/* 📱 Mobile view — horizontal scroll */}
-            <div className="flex sm:hidden overflow-x-auto gap-4 px-2 pb-3 scrollbar-hide snap-x snap-mandatory">
-              {categories.map((cat, i) => {
-                const Icon = iconList[i % iconList.length];
-                const name =
-                  currentLanguage === "lo"
-                    ? cat.name_lo || cat.name_en
-                    : cat.name_en || cat.name_lo;
-
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => handleClick(cat)}
-                    className="shrink-0 snap-center w-28 h-24 flex flex-col items-center justify-center 
-                               bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl 
-                               hover:border-primary dark:hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 
-                               hover:shadow-md dark:hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-primary/50 
-                               transition-all duration-300 cursor-pointer focus:outline-none"
-                  >
-                    <Icon className="text-primary w-6 h-6 mb-1 transition-transform duration-300 group-hover:scale-110" />
-                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
-                      {name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* 💻 Desktop / Tablet grid */}
+    <MarketingSection
+      id="categories"
+      title={t("landingPage.categories.title") || "Popular Categories"}
+      background="default"
+    >
+      {/* ⏳ Loading skeleton */}
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+          {Array.from({ length: 5 }).map((_, i) => (
             <div
-              className={`hidden sm:grid justify-center gap-4 sm:gap-6 ${
-                categories.length <= 2
-                  ? "grid-cols-2 max-w-md mx-auto"
-                  : categories.length === 3
-                  ? "grid-cols-3 max-w-2xl mx-auto"
-                  : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-              }`}
-            >
-              {categories.map((cat, i) => {
-                const Icon = iconList[i % iconList.length];
-                const name =
-                  currentLanguage === "lo"
-                    ? cat.name_lo || cat.name_en
-                    : cat.name_en || cat.name_lo;
+              key={i}
+              className="h-24 bg-background-tertiary animate-pulse rounded-2xl"
+            />
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* 📱 Mobile view — horizontal scroll */}
+          <div className="flex sm:hidden overflow-x-auto gap-4 px-2 pb-3 scrollbar-hide snap-x snap-mandatory">
+            {categories.map((cat, i) => {
+              const Icon = iconList[i % iconList.length];
+              const name =
+                currentLanguage === "lo"
+                  ? cat.name_lo || cat.name_en
+                  : cat.name_en || cat.name_lo;
 
-                return (
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleClick(cat)}
+                  className="shrink-0 snap-center w-28 h-24 flex flex-col items-center justify-center 
+                               rounded-2xl border border-border bg-background-secondary
+                               hover:border-primary/40 hover:shadow-md hover:bg-background-tertiary
+                               transition-[box-shadow,border-color,background-color] duration-200
+                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer"
+                >
+                  <Icon className="text-primary w-6 h-6 mb-1" />
+                  <span className="text-xs font-medium text-text-primary text-center leading-tight">
+                    {name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 💻 Desktop / Tablet grid */}
+          <Stagger className="hidden sm:grid justify-center gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {categories.map((cat, i) => {
+              const Icon = iconList[i % iconList.length];
+              const name =
+                currentLanguage === "lo"
+                  ? cat.name_lo || cat.name_en
+                  : cat.name_en || cat.name_lo;
+
+              return (
+                <StaggerItem key={cat.id}>
                   <button
-                    key={cat.id}
                     onClick={() => handleClick(cat)}
-                    className="group flex flex-col items-center justify-center p-5 bg-white dark:bg-gray-800 
-                               border border-gray-200 dark:border-gray-700 rounded-xl min-w-[120px]
-                               hover:border-primary dark:hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 
-                               hover:shadow-lg dark:hover:shadow-xl hover:-translate-y-2 focus:ring-2 focus:ring-primary/50 
-                               transition-all duration-300 cursor-pointer focus:outline-none"
+                    className="flex flex-col items-center justify-center p-5 
+                               rounded-2xl border border-border bg-background-secondary min-w-[120px]
+                               hover:border-primary/40 hover:shadow-md hover:bg-background-tertiary
+                               transition-[box-shadow,border-color,background-color] duration-200
+                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer"
                   >
-                    <Icon className="text-primary w-7 h-7 mb-2 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-6" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate w-full text-center">
+                    <Icon className="text-primary w-7 h-7 mb-2" />
+                    <span className="text-sm font-medium text-text-primary truncate w-full text-center">
                       {name}
                     </span>
                   </button>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
-    </section>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        </>
+      )}
+    </MarketingSection>
   );
 }

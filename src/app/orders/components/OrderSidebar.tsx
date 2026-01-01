@@ -58,16 +58,6 @@ export default function OrderSidebar({
               {loadingChat ? t("common.loading") || "Loading..." : t("orderDetail.sendMessage") || "Send Message"}
             </button>
           </div>
-          <div>
-            <p className="text-xs text-text-secondary mb-1">
-              {t("orderDetail.orderStatus") || "Order Status"}
-            </p>
-            <div
-              className={`inline-block px-3 py-1 rounded-lg text-xs font-semibold ${config.bgColor} ${config.color}`}
-            >
-              {config.label}
-            </div>
-          </div>
         </div>
       </div>
 

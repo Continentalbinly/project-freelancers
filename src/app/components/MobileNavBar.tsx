@@ -13,6 +13,7 @@ import {
   ListCheck,
   ShoppingCart,
   LayoutDashboard,
+  Briefcase,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
@@ -46,6 +47,9 @@ function MobileNavBar() {
     if (href === "/dashboard" && pathname?.startsWith("/dashboard")) {
       return true;
     }
+    if (href === "/my-projects" && pathname?.startsWith("/my-projects")) {
+      return true;
+    }
     return pathname === href;
   };
 
@@ -62,6 +66,7 @@ function MobileNavBar() {
       : isClient
       ? { href: "/gigs", label: t("header.hireFreelancer"), icon: User }
       : null, // No default link for other roles
+    { href: "/my-projects", label: t("header.work") || "My Work", icon: Briefcase },
     { href: "/proposals", label: t("header.proposals"), icon: PlusSquare },
     { href: "/orders", label: t("header.orders"), icon: ShoppingCart },
     { href: "/dashboard", label: t("header.dashboard") || "Dashboard", icon: LayoutDashboard },

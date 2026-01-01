@@ -3,13 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { collection, onSnapshot, orderBy, query, where, getDoc, doc } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { requireDb } from "@/service/firebase";
 import { convertTimestampToDate } from "@/service/timeUtils";
 import type { Order, OrderStatus } from "@/types/order";
-import { ChevronRight, Calendar, DollarSign, Package, Clock, CheckCircle, AlertCircle, XCircle, User } from "lucide-react";
+import { ChevronRight, Calendar, DollarSign, Package, Clock, CheckCircle, User } from "lucide-react";
 import { useTranslationContext } from "@/app/components/LanguageProvider";
 import OrdersListSkeleton from "./components/OrdersListSkeleton";
+import { type OrderStatus as SharedOrderStatus, getStatusConfig } from "@/app/lib/workflow/status";
+import StatusBadge from "@/app/components/ui/StatusBadge";
 
 const statusOptions: OrderStatus[] = [
   "pending",
@@ -21,19 +23,6 @@ const statusOptions: OrderStatus[] = [
   "cancelled",
   "refunded",
 ];
-
-// Status color and icon mapping
-const statusConfig: Record<OrderStatus | "all", { color: string; bgColor: string; icon: React.ReactNode }> = {
-  all: { color: "text-text-secondary", bgColor: "bg-background", icon: null },
-  pending: { color: "text-amber-600", bgColor: "bg-amber-50", icon: <Clock className="w-4 h-4" /> },
-  accepted: { color: "text-blue-600", bgColor: "bg-blue-50", icon: <CheckCircle className="w-4 h-4" /> },
-  in_progress: { color: "text-purple-600", bgColor: "bg-purple-50", icon: <Clock className="w-4 h-4" /> },
-  delivered: { color: "text-green-600", bgColor: "bg-green-50", icon: <CheckCircle className="w-4 h-4" /> },
-  awaiting_payment: { color: "text-orange-600", bgColor: "bg-orange-50", icon: <DollarSign className="w-4 h-4" /> },
-  completed: { color: "text-success", bgColor: "bg-success/10", icon: <CheckCircle className="w-4 h-4" /> },
-  cancelled: { color: "text-error", bgColor: "bg-error/10", icon: <XCircle className="w-4 h-4" /> },
-  refunded: { color: "text-error", bgColor: "bg-error/10", icon: <XCircle className="w-4 h-4" /> },
-};
 
 // Skeleton Loader
 function OrderSkeleton() {
@@ -215,7 +204,7 @@ export default function OrdersListPage(): React.ReactElement {
           </button>
           {statusOptions.map((s) => {
             const count = orders.filter((o) => o.status === s).length;
-            const config = statusConfig[s];
+            const config = getStatusConfig(s as SharedOrderStatus, "order");
             const statusLabel = t(`ordersPage.status.${s}`) || s.replace("_", " ");
             return (
               <button
@@ -227,7 +216,7 @@ export default function OrdersListPage(): React.ReactElement {
                     : "bg-background border-2 border-border text-text-primary hover:border-primary/30"
                 }`}
               >
-                <span className="hidden sm:inline">{config.icon}</span>
+                <span className="hidden sm:inline">{config?.icon}</span>
                 <span className="hidden sm:inline">{statusLabel}</span>
                 <span className="sm:hidden">{statusLabel.substring(0, 3)}</span>
                 <span className="hidden sm:inline">({count})</span>
@@ -257,7 +246,6 @@ export default function OrdersListPage(): React.ReactElement {
         ) : (
           <div className="space-y-3">
             {filtered.map((order) => {
-              const config = statusConfig[order.status];
               const statusLabel = t(`ordersPage.status.${order.status}`) || order.status.replace("_", " ");
               return (
                 <div
@@ -279,9 +267,6 @@ export default function OrdersListPage(): React.ReactElement {
                   {/* Left: Order Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2 sm:gap-3">
-                      <div className={`w-8 sm:w-10 h-8 sm:h-10 rounded-lg ${config.bgColor} flex items-center justify-center shrink-0 mt-0.5`}>
-                        {config.icon && <div className={`${config.color} text-xs sm:text-base`}>{config.icon}</div>}
-                      </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-xs sm:text-base text-text-primary group-hover:text-primary transition-colors line-clamp-1">
                           {order.packageName}
@@ -308,10 +293,14 @@ export default function OrdersListPage(): React.ReactElement {
 
                   {/* Right: Status & Action */}
                   <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-                    <div className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-semibold border whitespace-nowrap ${config.bgColor} ${config.color}`}>
-                      <span className="hidden sm:inline">{statusLabel}</span>
-                      <span className="sm:hidden">{statusLabel.substring(0, 3)}</span>
-                    </div>
+                    <StatusBadge
+                      status={order.status as SharedOrderStatus}
+                      type="order"
+                      className="hidden sm:inline-flex"
+                    />
+                    <span className="sm:hidden px-2 py-1 rounded-full text-xs font-semibold border">
+                      {statusLabel.substring(0, 3)}
+                    </span>
                     <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5 text-text-secondary group-hover:text-primary transition-colors shrink-0" />
                   </div>
                 </div>
