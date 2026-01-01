@@ -24,17 +24,19 @@ export default function SearchBar({ t }: SearchBarProps) {
       onSubmit={handleSubmit}
       className="
         flex items-center justify-between
-        bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg
-        border border-gray-200 dark:border-gray-700 shadow-md
+        bg-background-secondary/95 backdrop-blur-lg
+        border border-border shadow-md
         rounded-full
-        w-[95%] sm:w-[85%] md:w-[75%] lg:w-[70%] xl:w-[60%] 2xl:w-[55%]
-        mx-auto mt-8
-        px-3 sm:px-6 py-2 sm:py-3
+        w-full max-w-4xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-7xl
+        mx-auto
+        h-12 sm:h-14
+        px-4 sm:px-6
         transition-all duration-200
-        focus-within:ring-2 focus-within:ring-primary
+        focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2
+        focus-within:border-primary/40 focus-within:shadow-lg
       "
     >
-      <Search className="text-gray-500 dark:text-gray-400 w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+      <Search className="text-text-secondary w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
 
       <input
         type="text"
@@ -48,22 +50,27 @@ export default function SearchBar({ t }: SearchBarProps) {
           flex-1 bg-transparent border-none outline-none
           text-sm sm:text-base lg:text-lg
           px-3 sm:px-4
-          placeholder:text-gray-400 dark:placeholder:text-gray-500
-          text-text-primary dark:text-gray-100
+          placeholder:text-text-secondary/60 dark:placeholder:text-text-secondary/60
+          text-text-primary dark:text-text-primary
         "
+        aria-label="Search for projects"
       />
 
       <button
         type="submit"
         disabled={!query.trim()}
         className="
-          bg-primary text-white font-medium
+          bg-primary text-white font-semibold
           rounded-full transition-all duration-200
-          px-4 sm:px-6 py-1.5 sm:py-2
+          px-5 sm:px-7
+          h-8 sm:h-9
           text-sm sm:text-base
-          hover:bg-primary/90 active:scale-95
+          hover:bg-primary-hover hover:shadow-md hover:shadow-primary/30
           disabled:opacity-50 disabled:cursor-not-allowed
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
+          shrink-0
         "
+        aria-label="Search"
       >
         {t("landingPage.hero.searchButton") || "Search"}
       </button>

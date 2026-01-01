@@ -36,9 +36,15 @@ function HeaderNav({ pathname }: { pathname: string }) {
     // Handle dashboard path separately
     const isActiveDashboard =
       path === "/dashboard" && pathname.startsWith("/dashboard");
+    // Handle my-projects path (Work)
+    const isActiveWork =
+      path === "/my-projects" && pathname.startsWith("/my-projects");
+    // Handle orders path (including /orders/[id])
+    const isActiveOrders =
+      path === "/orders" && pathname.startsWith("/orders");
     // Handle other paths
     const isActivePath = pathname === path;
-    const isActive = isActiveHome || isActiveDashboard || isActivePath;
+    const isActive = isActiveHome || isActiveDashboard || isActiveWork || isActiveOrders || isActivePath;
 
     return `text-sm font-medium transition-colors ${
       isActive
@@ -108,6 +114,17 @@ function HeaderNav({ pathname }: { pathname: string }) {
             </button>
           )}
 
+          {/* Work: My Projects link (for authenticated users) */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("/my-projects");
+            }}
+            className={linkClasses("/my-projects") + " cursor-pointer"}
+          >
+            {t("header.work")}
+          </button>
+
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -155,6 +172,16 @@ function HeaderNav({ pathname }: { pathname: string }) {
       ) : (
         <>
           {/* Guest Links */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation("/");
+            }}
+            className={linkClasses("/") + " cursor-pointer"}
+          >
+            {t("header.home")}
+          </button>
+
           <button
             onClick={(e) => {
               e.preventDefault();

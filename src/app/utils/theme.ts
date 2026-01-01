@@ -144,4 +144,9 @@ export const projectStatusColors = {
   }
 } as const
 
+// Utility function for merging classNames (similar to clsx/tailwind-merge)
+export function cn(...classes: (string | undefined | null | false)[]): string {
+  return classes.filter(Boolean).join(" ");
+}
+
 export default theme 

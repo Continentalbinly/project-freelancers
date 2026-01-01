@@ -288,7 +288,7 @@ export default function ProposalSidebar({
       )}
 
       {/* === Profile === */}
-      <section className="border border-border  rounded-md p-5">
+      <section className="border border-border rounded-xl bg-background-secondary p-6">
         <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
           <UserIcon className="w-4 h-4 text-primary" />
           {isClient
@@ -331,7 +331,7 @@ export default function ProposalSidebar({
       </section>
 
       {/* === Proposal Details === */}
-      <section className="border border-border  rounded-md p-5 text-sm">
+      <section className="border border-border rounded-xl bg-background-secondary p-6 text-sm">
         <h3 className="font-semibold mb-3 flex items-center gap-2">
           <CurrencyDollarIcon className="w-4 h-4 text-primary" />
           {t("proposals.detail.details")}
@@ -369,13 +369,18 @@ export default function ProposalSidebar({
       </section>
 
       {/* === Actions === */}
-      <section className="border border-border  rounded-md p-5 space-y-3">
+      <section className="border border-border rounded-xl bg-background-secondary p-6 space-y-4">
+        <h3 className="text-base font-semibold text-text-primary mb-4 flex items-center gap-2">
+          <ExclamationTriangleIcon className="w-5 h-5 text-primary" />
+          {t("proposals.detail.actions") || "Actions"}
+        </h3>
+
         {proposal.status === "pending" && isClient && (
-          <>
+          <div className="space-y-3">
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("accept")}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-md flex items-center justify-center gap-2"
+              className="w-full bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md"
             >
               <CheckCircleIcon className="w-5 h-5" />
               <span>{t("proposals.detail.accept")}</span>
@@ -384,20 +389,20 @@ export default function ProposalSidebar({
             <button
               disabled={loadingAction}
               onClick={() => setConfirmAction("reject")}
-              className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-md flex items-center justify-center gap-2"
+              className="w-full bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md"
             >
               <XCircleIcon className="w-5 h-5" />
               <span>{t("proposals.detail.reject")}</span>
             </button>
-          </>
+          </div>
         )}
 
         {proposal.status === "accepted" && (
           <button
             onClick={handleStartChat}
             disabled={loadingChat}
-            className={`w-full bg-primary text-white py-2.5 rounded-md flex items-center justify-center gap-2 hover:bg-primary-hover ${
-              loadingChat ? "opacity-70 pointer-events-none" : ""
+            className={`w-full bg-linear-to-r from-primary to-secondary text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 ${
+              loadingChat ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
             <ChatBubbleLeftRightIcon className="w-5 h-5" />
@@ -409,12 +414,15 @@ export default function ProposalSidebar({
           </button>
         )}
 
-        <Link
-          href="/proposals"
-          className="w-full py-2.5 text-sm rounded-md border border-border  flex justify-center gap-2"
-        >
-          ← {t("proposals.detail.backToList")}
-        </Link>
+        {(proposal.status === "rejected" || proposal.status === "withdrawn") && (
+          <div className="p-4 bg-background-tertiary rounded-lg border border-border/50">
+            <p className="text-sm text-text-secondary text-center">
+              {proposal.status === "rejected"
+                ? t("proposals.detail.rejectedStatus") || "This proposal has been rejected."
+                : t("proposals.detail.withdrawnStatus") || "This proposal has been withdrawn."}
+            </p>
+          </div>
+        )}
       </section>
 
       {/* === Confirmation Modal === */}
