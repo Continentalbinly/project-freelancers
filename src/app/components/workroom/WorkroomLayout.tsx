@@ -4,12 +4,14 @@ import { ReactNode } from "react";
 import { cn } from "@/app/utils/theme";
 import WorkroomHeader from "./WorkroomHeader";
 import WorkroomSidebar from "./WorkroomSidebar";
+import type { BreadcrumbItem } from "../ui/Breadcrumbs";
 
 export interface WorkroomLayoutProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
   sidebarContent?: ReactNode;
+  breadcrumbs?: BreadcrumbItem[];
   className?: string;
 }
 
@@ -18,12 +20,13 @@ export default function WorkroomLayout({
   subtitle,
   children,
   sidebarContent,
+  breadcrumbs,
   className,
 }: WorkroomLayoutProps) {
   return (
     <div className={cn("min-h-screen bg-background", className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <WorkroomHeader title={title} subtitle={subtitle} />
+        <WorkroomHeader title={title} subtitle={subtitle} breadcrumbs={breadcrumbs} />
         
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Content */}
