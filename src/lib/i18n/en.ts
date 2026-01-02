@@ -198,7 +198,7 @@ const en = {
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
     cookiePolicy: "Cookie Policy",
-    copyright: "© 2025 UniJobs. All rights reserved.",
+    copyright: "© {year} UniJobs. All rights reserved.",
   },
   contact: {
     title: "Contact Us",

@@ -6,6 +6,7 @@ import { useTranslationContext } from "../../LanguageProvider";
 export default function FooterBottom() {
   const { t } = useTranslationContext();
   const router = useRouter();
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="border-t border-border dark:border-gray-800 mt-10 pt-6">
@@ -28,7 +29,7 @@ export default function FooterBottom() {
           </button>
         </div>
 
-        <div className="text-center md:text-right">{t("footer.copyright")}</div>
+        <div className="text-center md:text-right">{t("footer.copyright").replace("{year}", currentYear.toString())}</div>
       </div>
     </div>
   );
