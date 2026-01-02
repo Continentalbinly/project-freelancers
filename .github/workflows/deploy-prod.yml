@@ -1,0 +1,116 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    environment: production
+    needs: validate
+    concurrency:
+      group: deploy-prod
+      cancel-in-progress: true
+    timeout-minutes: 20
+
+    steps:
+      - name: Preflight – Verify SSH and environment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            echo "👤 User: $(whoami)"
+            echo "🖥 Host: $HOSTNAME"
+
+            if [ -d /var/www/unijobs.app ]; then
+              echo "✅ App directory exists"
+            else
+              echo "❌ App directory missing"; exit 1
+            fi
+
+            if command -v pm2 >/dev/null 2>&1; then
+              echo "✅ PM2 installed"
+            else
+              echo "❌ PM2 not installed"; exit 1
+            fi
+
+            if command -v node >/dev/null 2>&1; then
+              echo "✅ Node version: $(node -v)"
+            else
+              echo "❌ Node not installed"; exit 1
+            fi
+
+            echo "✅ Preflight passed"
+
+      - name: Deploy to VPS (main branch)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            set -e
+
+            echo "🚀 Deploying production branch"
+            cd /var/www/unijobs.app
+
+            echo "🔄 Reset repository to origin/main"
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd
+
+            echo "📦 Install dependencies"
+            npm install
+
+            echo "🧹 Remove old build"
+            rm -rf .next
+
+            echo "🏗 Build application"
+            npm run build
+
+            echo "♻️ Restart PM2 using ecosystem"
+            pm2 start ecosystem.config.js --only unijobs-prod || pm2 restart unijobs-prod
+            pm2 save
+
+            echo "🔎 Health check (non-blocking)"
+            ss -tulpn | grep 3000 || echo "⚠️ Port 3000 not listening yet"
+            curl http://localhost:3000 || echo "⚠️ App not responding yet"
+
+            echo "✅ Deployment completed successfully"
+
+      - name: Deployment Status
+        if: success()
+        run: echo "🚀 Successfully deployed to https://unijobs.app"
+
