@@ -203,7 +203,7 @@ const lo = {
     privacyPolicy: "ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ",
     termsOfService: "ເງື່ອນໄຂການໃຫ້ບໍລິການ",
     cookiePolicy: "ນະໂຍບາຍຄຸກກີ້",
-    copyright: "© 2025 UniJobs. ສະຫງວນລິຂະສິດທັງໝົດ.",
+    copyright: "© {year} UniJobs. ສະຫງວນລິຂະສິດທັງໝົດ.",
   },
   // Contact page translations
   contact: {
