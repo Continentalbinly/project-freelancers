@@ -61,14 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        {/* Google AdSense verification */}
-        <meta name="google-adsense-account" content="ca-pub-4690643109358058" />
-        {/* Google AdSense code */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4690643109358058"
-          crossOrigin="anonymous"
-        />
+
         {/* Theme initialization script to prevent flash */}
         <script
           dangerouslySetInnerHTML={{
