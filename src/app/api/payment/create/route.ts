@@ -24,7 +24,21 @@ export async function POST(req: Request) {
 
     const orderNo = generateOrderNo();
 
-    const payload = { amount, description, tag1, tag2, tag3 };
+    // Get webhook URL from environment (fallback to localhost for dev)
+    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL ||
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/payment/webhook`;
+
+    const payload = {
+      amount,
+      description,
+      tag1,
+      tag2,
+      tag3,
+      callbackUrl: webhookUrl // ← PhayJay will send webhook here
+    };
+
+    console.log(`[Payment Create] Webhook URL: ${webhookUrl}`);
+    console.log(`[Payment Create] Creating payment for ${tag2}, amount: ${amount}`);
 
     const res = await fetch(QR_URL, {
       method: "POST",
@@ -78,7 +92,7 @@ export async function POST(req: Request) {
       transactionId: data.transactionId,
       orderNo,
     });
-  } catch  {
+  } catch {
     // Silent fail
     return NextResponse.json(
       { success: false, error: "Server error" },

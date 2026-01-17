@@ -32,13 +32,21 @@ export async function POST(req: Request) {
 
     const oldTx = oldSnap.data();
 
+    // Get webhook URL from environment (fallback to localhost for dev)
+    const webhookUrl = process.env.NEXT_PUBLIC_WEBHOOK_URL ||
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/payment/webhook`;
+
     const payload = {
       amount: oldTx.amount,
       description: oldTx.description,
       tag1: oldTx.userId,
       tag2: oldTx.type,
       tag3: oldTx.tag3, // projectId or orderId depending on type
+      callbackUrl: webhookUrl // ← PhayJay will send webhook here
     };
+
+    console.log(`[Payment Regenerate] Webhook URL: ${webhookUrl}`);
+    console.log(`[Payment Regenerate] Regenerating payment for ${oldTx.type}, oldTxId: ${oldTxId}`);
 
     const res = await fetch(QR_URL, {
       method: "POST",
@@ -105,7 +113,7 @@ export async function POST(req: Request) {
       transactionId: newTxId,
       qrCode: data.qrCode,
     });
-  } catch  {
+  } catch {
     // Silent fail
     return NextResponse.json({ success: false, error: "Server error" });
   }

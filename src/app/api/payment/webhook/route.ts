@@ -20,21 +20,34 @@ export async function POST(req: Request) {
     const raw = await req.text();
     const data = JSON.parse(raw);
 
-    // Log webhook for debugging
-    await addDoc(collection(db, "payment_logs"), {
+    // Enhanced logging for debugging
+    const logEntry = {
       raw,
       parsed: data,
       receivedAt: serverTimestamp(),
-    });
+      headers: {
+        origin: req.headers.get("origin"),
+        userAgent: req.headers.get("user-agent"),
+        contentType: req.headers.get("content-type"),
+      },
+    };
+
+    await addDoc(collection(db, "payment_logs"), logEntry);
 
     const { transactionId, txnAmount, status } = data;
     const tag1 = data.tag1 ?? null;
     const tag2 = data.tag2 ?? null;
     const tag3 = data.tag3 ?? null;
 
-    // ❗ PhayJay ALWAYS sends transactionId — this is correct
+    // Validate required fields
     if (!transactionId) {
-      return NextResponse.json({ error: true });
+      console.error("[Webhook] Missing transactionId in webhook data:", data);
+      await addDoc(collection(db, "payment_logs"), {
+        error: "missing_transactionId",
+        data,
+        receivedAt: serverTimestamp(),
+      });
+      return NextResponse.json({ error: true, message: "Missing transactionId" });
     }
 
     // ⭐ Match Firestore transaction by ID (your new regenerate flow)
@@ -42,7 +55,13 @@ export async function POST(req: Request) {
     const txSnap = await getDoc(txRef);
 
     if (!txSnap.exists()) {
-      return NextResponse.json({ error: true });
+      console.error(`[Webhook] Transaction not found: ${transactionId}`);
+      await addDoc(collection(db, "payment_logs"), {
+        error: "transaction_not_found",
+        transactionId,
+        receivedAt: serverTimestamp(),
+      });
+      return NextResponse.json({ error: true, message: "Transaction not found" });
     }
 
     const savedTx = txSnap.data();
@@ -70,8 +89,12 @@ export async function POST(req: Request) {
 
     // Stop here if payment is not completed yet
     if (status !== "PAYMENT_COMPLETED") {
-      return NextResponse.json({ ok: true });
+      console.log(`[Webhook] Payment not completed yet. Status: ${status}, TxID: ${transactionId}`);
+      return NextResponse.json({ ok: true, message: "Status updated, awaiting completion" });
     }
+
+    console.log(`[Webhook] Processing completed payment. Type: ${safeTag2}, TxID: ${transactionId}`);
+
 
     // ────────────────────────────────────────────────
     // 1) TOPUP FLOW (KEPT EXACTLY AS YOUR OLD LOGIC)
@@ -102,17 +125,19 @@ export async function POST(req: Request) {
         } else if (savedTx.amount !== undefined && savedTx.amount !== null) {
           amountPaid = Number(savedTx.amount);
         }
-        
+
         const creditsToNotify = Number(credits) || Number(savedTx.credits) || 0;
-        
+
         if (amountPaid > 0 && creditsToNotify > 0 && userId) {
           await createTopupNotification(userId, creditsToNotify, amountPaid);
         }
-      } catch {
+      } catch (notifError) {
+        console.error("[Webhook] Failed to create topup notification:", notifError);
         // Don't fail the webhook if notification creation fails
       }
 
-      return NextResponse.json({ ok: true });
+      console.log(`[Webhook] Topup completed successfully. User: ${userId}, Credits: ${credits}`);
+      return NextResponse.json({ ok: true, message: "Topup processed" });
     }
 
     // ────────────────────────────────────────────────
@@ -251,7 +276,8 @@ export async function POST(req: Request) {
         confirmedAt: serverTimestamp(),
       });
 
-      return NextResponse.json({ ok: true });
+      console.log(`[Webhook] Project payout completed. ProjectID: ${projectId}, Amount: ${amountPaid}`);
+      return NextResponse.json({ ok: true, message: "Project payout processed" });
     }
 
     // ────────────────────────────────────────────────
@@ -360,7 +386,7 @@ export async function POST(req: Request) {
       // CREATE NOTIFICATIONS FOR BOTH PARTIES
       try {
         const orderTitle = orderData?.catalogTitle || orderData?.packageName || "Order";
-        
+
         // Notify freelancer about payment received
         await addDoc(collection(db, "notifications"), {
           userId: freelancerId,
@@ -420,11 +446,14 @@ export async function POST(req: Request) {
         confirmedAt: serverTimestamp(),
       });
 
-      return NextResponse.json({ ok: true });
+      console.log(`[Webhook] Order payout completed. OrderID: ${orderId}, Amount: ${amountPaid}`);
+      return NextResponse.json({ ok: true, message: "Order payout processed" });
     }
 
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: true });
+    console.log(`[Webhook] Unknown payment type: ${safeTag2}`);
+    return NextResponse.json({ ok: true, message: "Webhook received but no action taken" });
+  } catch (error) {
+    console.error("[Webhook] Fatal error processing webhook:", error);
+    return NextResponse.json({ error: true, message: "Internal server error" });
   }
 }
