@@ -66,18 +66,33 @@ export async function POST(req: Request) {
 
     const savedTx = txSnap.data();
 
-    // Prevent undefined fields
-    const safeTag1 = tag1 ?? savedTx.tag1 ?? null;
-    const safeTag2 = tag2 ?? savedTx.tag2 ?? null;
+    // Extract data from webhook payload with fallbacks to saved transaction
+    // PhayJay may not send tag3, so we need to get credits from saved transaction
+    const safeTag1 = tag1 ?? savedTx.tag1 ?? savedTx.userId ?? null;
+    const safeTag2 = tag2 ?? savedTx.tag2 ?? savedTx.type ?? null;
     const safeTag3 = tag3 ?? savedTx.tag3 ?? null;
 
     const userId = safeTag1;
-    const credits = Number(safeTag3 ?? savedTx.credits ?? 0);
+
+    // For topup: credits should be in savedTx.credits or tag3
+    // For payouts: amount is in txnAmount
+    const credits = Number(savedTx.credits ?? safeTag3 ?? 0);
+    const amountPaid = Number(txnAmount ?? savedTx.amount ?? 0);
+
+    console.log(`[Webhook] Processing transaction ${transactionId}:`, {
+      userId,
+      type: safeTag2,
+      status,
+      credits,
+      amountPaid,
+      hasTag3: !!tag3,
+      hasSavedCredits: !!savedTx.credits
+    });
 
     // ⭐ Always update transaction (pre-completion)
     await updateDoc(txRef, {
       status: status ?? savedTx.status ?? "unknown",
-      amountPaid: txnAmount ?? savedTx.amount,
+      amountPaid,
       userId,
       credits,
       type: safeTag2,
@@ -101,10 +116,29 @@ export async function POST(req: Request) {
     // ────────────────────────────────────────────────
     if (safeTag2 === "topup") {
       if (!userId) {
-        return NextResponse.json({ error: true });
+        console.error("[Webhook] Topup failed: missing userId");
+        return NextResponse.json({ error: true, message: "Missing userId for topup" });
       }
 
+      console.log(`[Webhook] Starting topup for user ${userId}, credits: ${credits}`);
+
       const userRef = doc(db, "profiles", userId);
+
+      // Check if user exists
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        console.error(`[Webhook] Topup failed: user ${userId} not found`);
+        await addDoc(collection(db, "payment_logs"), {
+          error: "user_not_found",
+          userId,
+          transactionId,
+          receivedAt: serverTimestamp(),
+        });
+        return NextResponse.json({ error: true, message: "User not found" });
+      }
+
+      const oldCredit = Number(userSnap.data()?.credit ?? 0);
+      console.log(`[Webhook] User ${userId} current credits: ${oldCredit}, adding: ${credits}`);
 
       await updateDoc(userRef, {
         credit: increment(credits),
@@ -115,6 +149,8 @@ export async function POST(req: Request) {
         status: "confirmed",
         confirmedAt: serverTimestamp(),
       });
+
+      console.log(`[Webhook] Topup successful. User ${userId} credits updated: ${oldCredit} + ${credits} = ${oldCredit + credits}`);
 
       // Create top-up notification
       try {
@@ -453,7 +489,24 @@ export async function POST(req: Request) {
     console.log(`[Webhook] Unknown payment type: ${safeTag2}`);
     return NextResponse.json({ ok: true, message: "Webhook received but no action taken" });
   } catch (error) {
+    // Enhanced error logging for production debugging
     console.error("[Webhook] Fatal error processing webhook:", error);
+    console.error("[Webhook] Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    console.error("[Webhook] Error message:", error instanceof Error ? error.message : String(error));
+
+    // Log to Firebase for debugging
+    try {
+      const db = requireDb();
+      await addDoc(collection(db, "payment_logs"), {
+        error: "webhook_processing_error",
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : null,
+        receivedAt: serverTimestamp(),
+      });
+    } catch (logError) {
+      console.error("[Webhook] Failed to log error to Firebase:", logError);
+    }
+
     return NextResponse.json({ error: true, message: "Internal server error" });
   }
 }
