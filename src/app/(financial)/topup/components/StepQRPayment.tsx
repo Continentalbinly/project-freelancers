@@ -13,11 +13,10 @@ interface StepQRPaymentProps {
 }
 
 export default function StepQRPayment({ session, updateSession, t }: StepQRPaymentProps) {
-  const [remaining, setRemaining] = useState(
-    Math.max(0, Math.floor((session?.expiresAt || 0) - Date.now()) / 1000)
-  );
-
+  // Initialize to 0 to avoid hydration mismatch
+  const [remaining, setRemaining] = useState(0);
   const [qrLoaded, setQrLoaded] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const pollInterval = useRef<NodeJS.Timeout | null>(null);
   const timerInterval = useRef<NodeJS.Timeout | null>(null);
@@ -35,17 +34,28 @@ export default function StepQRPayment({ session, updateSession, t }: StepQRPayme
   };
 
   // -------------------------------
+  // MOUNT: Initialize timer on client side only
+  // -------------------------------
+  useEffect(() => {
+    setMounted(true);
+    if (session?.expiresAt) {
+      const left = Math.max(0, Math.floor((session.expiresAt - Date.now()) / 1000));
+      setRemaining(left);
+    }
+  }, [session?.expiresAt]);
+
+  // -------------------------------
   // TIMER: countdown
   // -------------------------------
   useEffect(() => {
     if (!session?.expiresAt) return;
 
-      timerInterval.current = setInterval(() => {
+    timerInterval.current = setInterval(() => {
       const left = Math.floor((session!.expiresAt! - Date.now()) / 1000);
 
       setRemaining(left);
 
-        if (left <= 0) {
+      if (left <= 0) {
         // ❗ DO NOT expire if payment succeeded
         if (session!.status !== "confirmed") {
           updateSession({ step: "expired" });
@@ -119,9 +129,8 @@ export default function StepQRPayment({ session, updateSession, t }: StepQRPayme
               src={qrURL}
               alt="QR Code"
               onLoad={() => setQrLoaded(true)}
-              className={`absolute inset-0 rounded-lg transition-opacity duration-500 ${
-                qrLoaded ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute inset-0 rounded-lg transition-opacity duration-500 ${qrLoaded ? "opacity-100" : "opacity-0"
+                }`}
               width={240}
               height={240}
             />
